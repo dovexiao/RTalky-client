@@ -88,3 +88,5 @@ ios/build/
 
 # Debug logs
 *.log
+
+.history

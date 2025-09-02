@@ -5,12 +5,12 @@ interface AuthStore {
   userId: string;
   nickname: string;
   avatar: string;
-  introduction: string;
+  bio: string;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   setUserId: (userId: string) => void;
   setNickname: (nickname: string) => void;
   setAvatar: (avatar: string) => void;
-  setIntroduction: (introduction: string) => void;
+  setBio: (bio: string) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -18,10 +18,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   userId: '',
   nickname: '',
   avatar: '',
-  introduction: '',
+  bio: '',
   setIsLoggedIn: (isLoggedIn:  boolean) => set(() => ({ isLoggedIn })),
   setUserId: (userId: string) => set(() => ({ userId })),
   setNickname: (nickname: string) => set(() => ({ nickname })),
   setAvatar: (avatar: string) => set(() => ({ avatar })),
-  setIntroduction: (introduction: string) => set(() => ({ introduction })),
+  setBio: (bio: string) => set(() => ({ bio })),
 }));
