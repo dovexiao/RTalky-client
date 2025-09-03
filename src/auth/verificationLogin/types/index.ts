@@ -1,6 +1,7 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { RouteProp } from '@react-navigation/native';
+import { CountryInfo } from '@utils/CountryManager.ts';
 
 type VerificationLoginNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
@@ -18,3 +19,7 @@ export type VerificationLoginProps = {
     navigation: VerificationLoginNavigationProp;
     route: VerificationLoginRouteProp;
 };
+
+export type Country = CountryInfo & {
+    countryId: string;
+}
