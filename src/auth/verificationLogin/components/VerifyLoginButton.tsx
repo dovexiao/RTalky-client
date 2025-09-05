@@ -9,11 +9,14 @@ import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const isFormValid = useVerificationLoginStore(state => state.isFormValid);
-    const resetForm = useVerificationLoginStore(state => state.resetForm);
+    // const resetForm = useVerificationLoginStore(state => state.resetForm);
+    const validateAndFormatPhone = useVerificationLoginStore(state => state.validateAndFormatPhone);
 
     const handleVerifyLogin = () => {
-        if (isFormValid) {
-            resetForm();
+        const isValidAndFormatted = validateAndFormatPhone();
+
+        if (isFormValid && isValidAndFormatted) {
+            // resetForm();
             navigation.navigate('VerificationCode');
         }
     };

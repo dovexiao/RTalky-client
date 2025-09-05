@@ -1,4 +1,4 @@
-import { CountryInfo } from '@utils/CountryManager.ts';
+import { CountryInfo } from '@/auth/verificationLogin/utils';
 import { Country, CountryListItem, SectionIndexMap } from '@/auth/verificationLogin/types';
 import { ALPHABET } from '@/auth/verificationLogin/components/CountryAlphabetNavigator.tsx';
 

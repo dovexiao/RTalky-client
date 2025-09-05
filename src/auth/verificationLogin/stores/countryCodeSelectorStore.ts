@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { countryManager } from '@utils/CountryManager.ts';
+import { countryManager } from '@/auth/verificationLogin/utils';
 import { CountryListItem, SectionIndexMap } from '@/auth/verificationLogin/types';
 import generateCountrySectionData, { FlashListData } from '@/auth/verificationLogin/utils/generateCountrySectionData.ts';
 

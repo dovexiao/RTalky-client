@@ -36,7 +36,6 @@ class CountryManager {
                     // 使用 libphonenumber-js 获取权威的国家区号
                     if (isSupportedCountry(country.cca2)) {
                         callingCode = `+${getCountryCallingCode(country.cca2 as CountryCode)}`;
-                        console.log('callingCode(libphonenumber):', callingCode);
                     } else {
                         const root = country.idd.root || '';
                         const suffix = country.idd.suffixes?.[0] || '';
@@ -186,8 +185,8 @@ class CountryManager {
     validatePhoneNumber(callingCode: string, phoneNumber: string): PhoneValidationResult {
         try {
             // 移除区号前缀的+号
-            const cleanCallingCode = callingCode.replace('+', '');
-            const countryInfo = this.callingCodeMap.get(cleanCallingCode);
+            // const cleanCallingCode = callingCode.replace('+', '');
+            const countryInfo = this.callingCodeMap.get(callingCode);
 
             if (!countryInfo) {
                 return {
@@ -208,7 +207,7 @@ class CountryManager {
             }
 
             // 构建完整的国际号码
-            const fullNumber = `+${cleanCallingCode}${cleanPhoneNumber}`;
+            const fullNumber = `${callingCode}${cleanPhoneNumber}`;
 
             // 使用 libphonenumber-js 进行验证
             try {

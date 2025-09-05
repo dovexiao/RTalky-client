@@ -1,7 +1,7 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { RouteProp } from '@react-navigation/native';
-import { CountryInfo } from '@utils/CountryManager.ts';
+import { CountryInfo } from '@/auth/verificationLogin/utils';
 
 type VerificationLoginNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
