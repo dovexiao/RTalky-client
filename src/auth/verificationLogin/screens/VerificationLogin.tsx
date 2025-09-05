@@ -16,18 +16,26 @@ import { useNavigationStore } from '@/navigation/navigationStore';
 import PhoneInput from '../components/PhoneInput';
 import VerifyLoginButton from '../components/VerifyLoginButton';
 import AgreementCheckbox from '../components/AgreementCheckbox';
+import { useGlobal } from '@contexts/GlobalContext.tsx';
 
 const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => {
     const initialRouteName = useNavigationStore(state => state.initialRouteName);
+    const { countryCodeDialogRef } = useGlobal();
 
     // 密码登录跳转逻辑
     const handlePasswordLogin = () => {
         navigation.navigate('PasswordLogin');
     };
 
+    // 显示国家区号选择弹窗
+    const handleCountryCodePress = () => {
+        countryCodeDialogRef.current?.show();
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor={'#FFFFFF'} />
+            <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
+            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
 
             {/* 根据路由条件渲染顶部导航或Logo */}
             {initialRouteName === 'VerificationLogin' ? (
@@ -50,7 +58,7 @@ const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => 
                 <Text style={styles.desc}>未注册的手机号验证通过后将自动注册</Text>
 
                 {/* 手机号输入 */}
-                <PhoneInput />
+                <PhoneInput onCountryCodePress={handleCountryCodePress} />
 
                 {/* 密码登录跳转 */}
                 <TouchableOpacity style={styles.passwordLoginContainer} onPress={handlePasswordLogin}>

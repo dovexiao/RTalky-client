@@ -2,11 +2,12 @@ import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ViewToken } from 'react-native';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTheme } from '@ui-kitten/components';
-import { useCountryCodeSelectorStore } from '../stores/countryCodeSelectorStore.ts';
+import { useCountryCodeSelectorStore, useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { CountryListItem } from '@/auth/verificationLogin/types';
+import { useGlobal } from '@contexts/GlobalContext.tsx';
 
 const ITEM_HEIGHT: number = 60;
-const HEADER_HEIGHT: number = ITEM_HEIGHT;
+const HEADER_HEIGHT: number = 45;
 
 export interface CountrySectionListAPI {
     scrollToSection: (letter: string) => void;
@@ -15,10 +16,16 @@ export interface CountrySectionListAPI {
 const CountrySectionList = forwardRef<CountrySectionListAPI>((_, ref) => {
     const flashListRef = useRef<FlashListRef<CountryListItem>>(null);
     const themes = useTheme();
+    const { countryCodeDialogRef } = useGlobal();
 
     const flashListData = useCountryCodeSelectorStore(state => state.flashListData);
     const sectionIndexMap = useCountryCodeSelectorStore(state => state.sectionIndexMap);
     const setActiveLetter = useCountryCodeSelectorStore(state => state.setActiveLetter);
+    const setSelectedCallingCode = useVerificationLoginStore(state => state.setSelectedCallingCode);
+    const setSelectedCCA2 = useVerificationLoginStore(state => state.setSelectedCCA2);
+    const selectedCallingCode = useVerificationLoginStore(state => state.selectedCallingCode);
+    const selectedCCA2 = useVerificationLoginStore(state => state.selectedCCA2);
+    const setSelectedSectionLetter = useVerificationLoginStore(state => state.setSelectedSectionLetter);
 
     // 暴露给父组件的API方法
     useImperativeHandle(ref, () => ({
@@ -29,35 +36,54 @@ const CountrySectionList = forwardRef<CountrySectionListAPI>((_, ref) => {
                     index: targetIndex,
                     animated: true,
                     viewPosition: 0,
-                }).then(r => {});
+                });
             }
         },
     }));
 
     // 渲染列表项
-    const renderItem = ({ item }: { item: any }) => {
+    const renderItem = ({ item }: { item: CountryListItem }) => {
         if (typeof item === 'string') {
             // 渲染分组标题
             return (
-                <View style={[styles.sectionHeader, { backgroundColor: '#FFF' }]}>
+                <View style={styles.sectionHeader}>
                     <Text style={[
                         styles.sectionHeaderText,
-                        // { color: themes['color-primary-500'] },
+                        { color: themes['color-primary-500'] },
                     ]}>
                         {item}
                     </Text>
                 </View>
             );
         } else {
+            // 检查是否为选中项
+            const isSelected = item.callingCode === selectedCallingCode && item.cca2 === selectedCCA2;
+
             return (
-                <TouchableOpacity style={styles.itemContainer}>
+                <TouchableOpacity
+                    style={[
+                        styles.itemContainer,
+                        isSelected && { backgroundColor: themes['color-primary-100'] },
+                    ]}
+                    onPress={() => {
+                        setSelectedCallingCode(item.callingCode);
+                        setSelectedCCA2(item.cca2);
+                        setSelectedSectionLetter(item.sectionLetters);
+                        countryCodeDialogRef.current?.hide();
+                    }}
+                >
                     <View style={styles.flagContainer}>
                         <Text style={styles.flag}>{item.flag}</Text>
                     </View>
 
                     <View style={styles.codeRow}>
                         <Text style={styles.callingCode}>{item.callingCode}</Text>
-                        <Text style={styles.countryCode}>{item.cca2}</Text>
+                        <Text style={[
+                            styles.countryCode,
+                            isSelected && { color: themes['color-primary-500'], backgroundColor: themes['color-primary-200'] },
+                        ]}>
+                            {item.cca2}
+                        </Text>
                     </View>
 
                     <View style={styles.countryInfo}>
@@ -73,29 +99,6 @@ const CountrySectionList = forwardRef<CountrySectionListAPI>((_, ref) => {
                 </TouchableOpacity>
             );
         }
-        // return (
-        //     <TouchableOpacity style={styles.itemContainer}>
-        //         <View style={styles.flagContainer}>
-        //             <Text style={styles.flag}>{item.flag}</Text>
-        //         </View>
-        //
-        //         <View style={styles.codeRow}>
-        //             <Text style={styles.callingCode}>{item.callingCode}</Text>
-        //             <Text style={styles.countryCode}>{item.cca2}</Text>
-        //         </View>
-        //
-        //         <View style={styles.countryInfo}>
-        //             <View style={styles.nameRow}>
-        //                 <Text style={styles.countryNameZh} numberOfLines={1}>
-        //                     {item.nameZh}
-        //                 </Text>
-        //                 <Text style={styles.countryNameEn} numberOfLines={1}>
-        //                     {item.nameEn}
-        //                 </Text>
-        //             </View>
-        //         </View>
-        //     </TouchableOpacity>
-        // );
     };
 
     // 记录当前可视分组
@@ -153,6 +156,8 @@ const styles = StyleSheet.create({
         height: HEADER_HEIGHT,
         justifyContent: 'center',
         paddingHorizontal: 15,
+        paddingTop: 10,
+        backgroundColor: '#FFF',
     },
     sectionHeaderText: {
         fontSize: 16,
@@ -190,7 +195,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        marginRight: 4,
+        marginRight: 15,
     },
     countryNameZh: {
         fontSize: 16,
@@ -203,15 +208,17 @@ const styles = StyleSheet.create({
         color: '#666666',
     },
     codeRow: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
+        minWidth: 47,
+        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 12,
     },
     callingCode: {
         fontSize: 16,
         fontWeight: '600',
         color: '#333333',
-        marginRight: 4,
+        marginBottom: 4,
     },
     countryCode: {
         fontSize: 12,

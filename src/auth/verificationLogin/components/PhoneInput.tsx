@@ -1,16 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Input } from '@ui-kitten/components';
-import { useVerificationLoginStore } from '../stores/verificationLoginStore';
+import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
-const PhoneInput: React.FC = () => {
+interface PhoneInputProps {
+    onCountryCodePress?: () => void;
+}
+
+const PhoneInput: React.FC<PhoneInputProps> = ({ onCountryCodePress }) => {
     const phoneNumber = useVerificationLoginStore(state => state.phoneNumber);
     const setPhoneNumber = useVerificationLoginStore(state => state.setPhoneNumber);
+    const selectedCallingCode = useVerificationLoginStore(state => state.selectedCallingCode);
 
     const InputAccessory = () => (
-        <View>
-            <Text style={styles.countryCode}>+86</Text>
-        </View>
+        <TouchableOpacity style={styles.countryCodeContainer} onPress={onCountryCodePress}>
+            <Text style={styles.countryCode}>{selectedCallingCode}</Text>
+            <Text style={styles.dropdownIcon}>▼</Text>
+        </TouchableOpacity>
     );
 
     return (
@@ -31,8 +37,18 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 15,
     },
+    countryCodeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+    },
     countryCode: {
         fontSize: 16,
+        marginRight: 4,
+    },
+    dropdownIcon: {
+        fontSize: 12,
+        color: '#666',
     },
 });
 

@@ -9,7 +9,7 @@ import Animated, {
     withDelay,
     cancelAnimation,
 } from 'react-native-reanimated';
-import { useCountryCodeSelectorStore } from '../stores/countryCodeSelectorStore.ts';
+import { useCountryCodeSelectorStore } from '@/auth/verificationLogin/stores';
 
 export interface CountryLetterPopupAPI {
     show: (letter?: string) => void;

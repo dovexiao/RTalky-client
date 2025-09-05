@@ -1,5 +1,5 @@
-import countries from 'world-countries';
-import { parsePhoneNumberWithError, isValidPhoneNumber, CountryCode, getCountryCallingCode } from 'libphonenumber-js';
+import countries, { Country } from 'world-countries';
+import { parsePhoneNumberWithError, isValidPhoneNumber, CountryCode, getCountryCallingCode, isSupportedCountry } from 'libphonenumber-js';
 
 export interface CountryInfo {
     flag: string;
@@ -28,27 +28,31 @@ class CountryManager {
      */
     private initializeCountries(): void {
         this.countries = countries
-            .filter(country => country.idd)
+            .filter((country: Country) => country.independent && country.idd?.root)
             .map(country => {
                 let callingCode = '';
                 // 获取国家区号
                 try {
                     // 使用 libphonenumber-js 获取权威的国家区号
-                    callingCode = getCountryCallingCode(country.cca2 as CountryCode);
-                } catch (error) {
-                    // 如果获取失败，回退到原来的方法
-                    if (country.idd?.root) {
+                    if (isSupportedCountry(country.cca2)) {
+                        callingCode = `+${getCountryCallingCode(country.cca2 as CountryCode)}`;
+                        console.log('callingCode(libphonenumber):', callingCode);
+                    } else {
                         const root = country.idd.root || '';
                         const suffix = country.idd.suffixes?.[0] || '';
                         callingCode = `${root}${suffix}`.replace(/\s+/g, '');
                     }
+                } catch (error) {
+                    const root = country.idd.root || '';
+                    const suffix = country.idd.suffixes?.[0] || '';
+                    callingCode = `${root}${suffix}`.replace(/\s+/g, '');
                 }
 
                 const countryInfo: CountryInfo = {
                     flag: country.flag,
                     nameEn: country.name.common,
                     nameZh: this.getChineseName(country.cca2, country.translations?.zho?.common || country.translations?.zho?.official || country.name.common),
-                    callingCode: `+${callingCode}`,
+                    callingCode: callingCode,
                     cca2: country.cca2,
                 };
 

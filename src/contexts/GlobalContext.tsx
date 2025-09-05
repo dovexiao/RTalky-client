@@ -5,6 +5,7 @@ import {
     SliderVerification,
     BottomActionSheet,
     ActionDialog,
+    CountryCodeDialog,
 } from '@/global';
 import type {
     AvatarActionsModalAPI,
@@ -12,6 +13,7 @@ import type {
     SliderVerificationAPI,
     BottomActionSheetAPI,
     ActionDialogAPI,
+    CountryCodeDialogAPI,
 } from '@/global';
 import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
 
@@ -21,6 +23,7 @@ interface GlobalContextType {
     avatarActionsModalRef: React.RefObject<AvatarActionsModalAPI>,
     bottomActionSheetRef: React.RefObject<BottomActionSheetAPI>
     actionDialogRef: React.RefObject<ActionDialogAPI>
+    countryCodeDialogRef: React.RefObject<CountryCodeDialogAPI>
 }
 
 const GlobalContext = React.createContext<GlobalContextType | null>(null);
@@ -31,6 +34,8 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     const avatarActionsModalRef = useRef<AvatarActionsModalAPI>(null);
     const bottomActionSheetRef = useRef<BottomActionSheetAPI>(null);
     const actionDialogRef = useRef<ActionDialogAPI>(null);
+    const countryCodeDialogRef = React.useRef<CountryCodeDialogAPI>(null);
+
 
     const globalValue: GlobalContextType = {
         sliderVerificationRef,
@@ -38,6 +43,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
         avatarActionsModalRef,
         bottomActionSheetRef,
         actionDialogRef,
+        countryCodeDialogRef,
     };
 
     return (
@@ -50,6 +56,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
             <AvatarActionsModal ref={avatarActionsModalRef} />
             <BottomActionSheet ref={bottomActionSheetRef} />
             <ActionDialog ref={actionDialogRef} />
+            <CountryCodeDialog ref={countryCodeDialogRef} />
         </GlobalContext.Provider>
     );
 };

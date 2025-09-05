@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { CheckBox, useTheme } from '@ui-kitten/components';
-import { useVerificationLoginStore } from '../stores/verificationLoginStore';
+import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 const AgreementCheckbox: React.FC = () => {
   const themes = useTheme();

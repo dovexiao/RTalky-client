@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { useTheme } from '@ui-kitten/components';
-import { useCountryCodeSelectorStore } from '../stores/countryCodeSelectorStore.ts';
+import { useCountryCodeSelectorStore, useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 export const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
 
@@ -13,6 +13,7 @@ const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onL
     const themes = useTheme();
     const sectionIndexMap = useCountryCodeSelectorStore(state => state.sectionIndexMap);
     const activeLetter = useCountryCodeSelectorStore(state => state.activeLetter);
+    const selectedLetter = useVerificationLoginStore(state => state.selectedSectionLetter);
 
     const handleLetterPress = (letter: string) => {
         // 如果有数据才触发点击事件
@@ -25,10 +26,11 @@ const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onL
     return (
         <View style={[
             styles.alphabetContainer,
-            { transform: [{ translateY: '-50%' }] }
+            { transform: [{ translateY: '-50%' }] },
         ]}>
             {ALPHABET.map(letter => {
                 const isActive = letter === activeLetter;
+                const isSelected = letter === selectedLetter;
                 const hasData = sectionIndexMap[letter] !== undefined;
 
                 return (
@@ -40,6 +42,7 @@ const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onL
                     >
                         <Text style={[
                             styles.letterText,
+                            isSelected && [styles.activeLetter, { color: themes['color-primary-300'] }],
                             isActive && [styles.activeLetter, { color: themes['color-primary-500'] }],
                             !hasData && styles.disabledLetter,
                         ]}>

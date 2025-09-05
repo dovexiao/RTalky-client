@@ -4,7 +4,7 @@ import { Button } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
-import { useVerificationLoginStore } from '../stores/verificationLoginStore';
+import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
