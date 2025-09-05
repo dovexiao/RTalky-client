@@ -18,6 +18,7 @@
     "@react-native/assets-registry": "^0.79.3",
     "@react-navigation/native-stack": "^7.2.0",
     "@react-navigation/stack": "^7.1.1",
+    "@shopify/flash-list": "^2.0.3",
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
     "axios": "^1.10.0",

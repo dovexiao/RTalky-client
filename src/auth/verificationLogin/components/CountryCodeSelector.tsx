@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import CountrySectionList, { CountrySectionListAPI } from './CountrySectionList';
 import CountryLetterPopup, { CountryLetterPopupAPI } from './CountryLetterPopup';
 import CountryAlphabetNavigator from './CountryAlphabetNavigator';
-import { useCountryCodeSelectorStore } from '../stores/countryCodeSelectorStore.ts';
 
 export const CountryCodeSelector = () => {
     const sectionListRef = useRef<CountrySectionListAPI>(null);
@@ -11,8 +10,7 @@ export const CountryCodeSelector = () => {
 
     const onLetterPress = (letter: string) => {
         letterPopupRef.current?.show(letter);
-        const sectionIndex = useCountryCodeSelectorStore.getState().sections.findIndex(s => s.title === letter);
-        sectionListRef.current?.scrollToSection(sectionIndex);
+        sectionListRef.current?.scrollToSection(letter);
     };
 
     return (

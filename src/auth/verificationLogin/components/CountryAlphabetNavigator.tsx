@@ -11,12 +11,12 @@ interface CountryAlphabetNavigatorProps {
 
 const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onLetterPress }) => {
     const themes = useTheme();
-    const sections = useCountryCodeSelectorStore(state => state.sections);
+    const sectionIndexMap = useCountryCodeSelectorStore(state => state.sectionIndexMap);
     const activeLetter = useCountryCodeSelectorStore(state => state.activeLetter);
 
     const handleLetterPress = (letter: string) => {
         // 如果有数据才触发点击事件
-        const hasData = sections.some(s => s.title === letter);
+        const hasData = sectionIndexMap[letter] !== undefined;
         if (hasData && onLetterPress) {
             onLetterPress(letter);
         }
@@ -29,7 +29,7 @@ const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onL
         ]}>
             {ALPHABET.map(letter => {
                 const isActive = letter === activeLetter;
-                const hasData = sections.some(s => s.title === letter);
+                const hasData = sectionIndexMap[letter] !== undefined;
 
                 return (
                     <TouchableOpacity

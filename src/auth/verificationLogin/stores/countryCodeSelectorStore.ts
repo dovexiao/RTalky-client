@@ -1,24 +1,30 @@
 import { create } from 'zustand';
 import { countryManager } from '@utils/CountryManager.ts';
-import { SectionListData } from 'react-native';
-import { Country } from '@/auth/verificationLogin/types';
-import generateCountrySectionData from '@/auth/verificationLogin/utils/generateCountrySectionData.ts';
+import { CountryListItem, SectionIndexMap } from '@/auth/verificationLogin/types';
+import generateCountrySectionData, { FlashListData } from '@/auth/verificationLogin/utils/generateCountrySectionData.ts';
 
 interface CountryCodeSelectorState {
-    sections: SectionListData<Country>[];
+    flashListData: CountryListItem[];
+    sectionIndexMap: SectionIndexMap;
     activeLetter: string;
     popupLetter: string;
-    setSections: (sections: SectionListData<Country>[]) => void;
+    setFlashListData: (data: FlashListData) => void;
     setActiveLetter: (letter: string) => void;
     setPopupLetter: (letter: string) => void;
 }
 
+const initialData = generateCountrySectionData(countryManager.getAllCountries());
+
 export const useCountryCodeSelectorStore = create<CountryCodeSelectorState>((set) => ({
-    sections: generateCountrySectionData(countryManager.getAllCountries()),
+    flashListData: initialData.data,
+    sectionIndexMap: initialData.sectionIndexMap,
     activeLetter: '',
     popupLetter: '',
 
-    setSections: (sections: SectionListData<Country>[]) => set({ sections }),
+    setFlashListData: (data: FlashListData) => set({
+        flashListData: data.data,
+        sectionIndexMap: data.sectionIndexMap,
+    }),
     setActiveLetter: (letter: string) => set({ activeLetter: letter }),
     setPopupLetter: (letter: string) => set({ popupLetter: letter }),
 }));

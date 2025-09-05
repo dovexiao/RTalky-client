@@ -22,4 +22,11 @@ export type VerificationLoginProps = {
 
 export type Country = CountryInfo & {
     countryId: string;
+    sectionLetters: string;
+}
+
+export type CountryListItem = Country | string;
+
+export type SectionIndexMap = {
+    [letter: string]: number;
 }
