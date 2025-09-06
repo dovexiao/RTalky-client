@@ -1,69 +1,84 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
-import { NoteRecycleBin } from "@/center/recycleBin/components";
+import React, {useState} from 'react';
+import {SafeAreaView, Text, StyleSheet, Platform, TextInput, View} from 'react-native';
+import type { TextInputProps } from 'react-native';
+import {
+    CodeField,
+    Cursor,
+    useBlurOnFulfill,
+    useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import { useTheme } from '@ui-kitten/components';
+import CountryCodeSelector from "../auth/verificationLogin/components/CountryCodeSelector.tsx";
 
-// 测试页面组件
-const TestPage = () => {
-    return (
-        <View style={styles.container}>
-            <NoteRecycleBin />
-        </View>
-    );
-};
-
-// 样式定义
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    root: {flex: 1, backgroundColor: '#FFF'},
+    title: {textAlign: 'center', fontSize: 30, marginBottom: 20},
+    codeFieldRoot: {
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 30,
-    },
-    customButton: {
-        marginTop: 20,
-        padding: 15,
-        backgroundColor: '#6200ee',
+    cell: {
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 8,
-        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E8E8E8',
+        backgroundColor: '#F7F7F7',
     },
-    customButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    actionSheetContent: {
-        // padding: 16,
-        backgroundColor: '#FFF',
-    },
-    menuItem: {
-        paddingVertical: 18,
-        alignItems: 'center',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#e0e0e0',
-        backgroundColor: 'white',
-    },
-    menuText: {
-        fontSize: 16,
-        color: '#333',
-    },
-    cancelButton: {
-        // marginTop: 10,
-        paddingVertical: 18,
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-    },
-    cancelText: {
-        fontSize: 16,
-        color: '#f44336',
-        fontWeight: '500',
+    cellText: {
+        fontSize: 24,
+        textAlign: 'center',
+        color: '#000',
     },
 });
+
+const autoComplete = Platform.select<TextInputProps['autoComplete']>({
+    android: 'sms-otp',
+    default: 'one-time-code',
+});
+
+const cellWidths = {
+    4: 55,
+    5: 55,
+    6: 50,
+    7: 45,
+};
+
+const cellHeights = {
+    4: 55,
+    5: 55,
+    6: 50,
+    7: 45,
+};
+
+const cellMargins = {
+    4: 10,
+    5: 7,
+    6: 4,
+    7: 2,
+};
+
+const TestPage = () => {
+    const cellCount = 5;
+
+    const [value, setValue] = useState('');
+    const ref = useBlurOnFulfill({value, cellCount}) as React.RefObject<TextInput>;
+    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+        value,
+        setValue,
+    });
+    const themes = useTheme();
+
+    const cellWidth: number = cellWidths[cellCount];
+    const cellHeight: number = cellHeights[cellCount];
+    const cellMargin: number = cellMargins[cellCount];
+
+    return (
+        <SafeAreaView style={styles.root}>
+            <CountryCodeSelector />
+        </SafeAreaView>
+    );
+};
 
 export default TestPage;
