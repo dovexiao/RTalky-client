@@ -1,23 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { Button } from '@ui-kitten/components';
+import { Button, Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
+import { SmsService } from '@/auth/verificationLogin/services';
 
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const isFormValid = useVerificationLoginStore(state => state.isFormValid);
-    // const resetForm = useVerificationLoginStore(state => state.resetForm);
+    const formattedNumber = useVerificationLoginStore(state => state.formattedNumber);
+    const isAgreed = useVerificationLoginStore(state => state.isAgreed);
     const validateAndFormatPhone = useVerificationLoginStore(state => state.validateAndFormatPhone);
 
-    const handleVerifyLogin = () => {
+    const [isWaiting, setIsWaiting] = useState(false);
+
+    const LoadingIndicator = (): React.ReactElement => (
+        <Spinner size="small" status="control" />
+    );
+
+    const handleVerifyLogin = async () => {
         const isValidAndFormatted = validateAndFormatPhone();
 
         if (isFormValid && isValidAndFormatted) {
-            // resetForm();
-            navigation.navigate('VerificationCode');
+            try {
+                setIsWaiting(true);
+
+                // 发送短信验证码
+                const response = await SmsService.sendSmsCode(formattedNumber, isAgreed);
+
+                if (response.success) {
+                    // 短信发送成功，跳转到验证码页面
+                    navigation.navigate('VerificationCode');
+                }
+            } catch (error: any) {
+                console.error('发送短信验证码失败:', error);
+            } finally {
+                setIsWaiting(false);
+            }
         }
     };
 
@@ -26,8 +47,11 @@ const VerifyLoginButton: React.FC = () => {
             style={styles.button}
             onPress={handleVerifyLogin}
             disabled={!isFormValid}
+            accessoryLeft={isWaiting ? LoadingIndicator : <></>}
         >
-            <Text style={styles.buttonText}>验证并登录</Text>
+            <Text style={styles.buttonText}>
+                {isWaiting ? '发送中...' : '验证并登录'}
+            </Text>
         </Button>
     );
 };
@@ -44,6 +68,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    indicator: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 
