@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Button, Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +6,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { SmsService } from '@/auth/verificationLogin/services';
+
+const LoadingIndicator = (): React.ReactElement => (
+    <Spinner size="small" status="control" />
+);
 
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -15,16 +19,47 @@ const VerifyLoginButton: React.FC = () => {
 
     const [isWaiting, setIsWaiting] = useState(false);
 
-    const LoadingIndicator = (): React.ReactElement => (
-        <Spinner size="small" status="control" />
-    );
+    // 防抖相关ref
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const isProcessingRef = useRef<boolean>(false);
 
-    const handleVerifyLogin = async () => {
+    // 清理定时器，避免内存泄漏
+    useEffect(() => {
+        return () => {
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+        };
+    }, []);
+
+    const handleVerifyLogin = () => {
         const isValidAndFormatted = validateAndFormatPhone();
 
-        if (isFormValid && isValidAndFormatted) {
+        if (!isFormValid || !isValidAndFormatted) {
+            return;
+        }
+
+        // 防抖检查：如果正在处理中，直接返回
+        if (isProcessingRef.current) {
+            return;
+        }
+
+        // 清除之前的防抖定时器
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        // 设置防抖定时器
+        debounceTimerRef.current = setTimeout(async () => {
+            // 再次检查是否正在处理（防止快速点击）
+            if (isProcessingRef.current) {
+                return;
+            }
+
             try {
+                isProcessingRef.current = true;
                 setIsWaiting(true);
+
                 const { formattedNumber, isAgreed } = useVerificationLoginStore.getState();
                 // console.log('发送短信验证码...', formattedNumber, isAgreed)
                 // 发送短信验证码
@@ -41,9 +76,10 @@ const VerifyLoginButton: React.FC = () => {
             } catch (error: any) {
                 console.error('发送短信验证码失败:', error);
             } finally {
+                isProcessingRef.current = false;
                 setIsWaiting(false);
             }
-        }
+        }, 300); // 300ms防抖延迟
     };
 
     return (
