@@ -31,8 +31,7 @@ export class DeviceInfoManager {
             return {
                 deviceId: deviceId || 'unknown',
                 deviceModel: deviceModel || 'unknown',
-                // osType: Platform.OS,
-                osType: '422',
+                osType: Platform.OS,
                 osVersion: osVersion || 'unknown',
                 appVersion: appVersion || '1.0.0',
             };
