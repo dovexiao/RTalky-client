@@ -71,7 +71,7 @@ const VerifyLoginButton: React.FC = () => {
                         setCodeDigits(response.codeDigits);
                     }
                     // 短信发送成功，跳转到验证码页面
-                    navigation.navigate('VerificationCode');
+                    navigation.replace('VerificationCode');
                 }
             } catch (error: any) {
                 console.error('发送短信验证码失败:', error);

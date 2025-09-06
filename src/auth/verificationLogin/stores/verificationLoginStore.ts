@@ -11,12 +11,16 @@ interface VerificationLoginState {
     selectedSectionLetter: string;
     formattedNumber: string;
     codeDigits: number,
+    verificationCode: string,
+    isCodeComplete: boolean,
     setPhoneNumber: (phoneNumber: string) => void;
     setIsAgreed: (isAgreed: boolean) => void;
     setSelectedCallingCode: (countryCode: string) => void;
     setSelectedCCA2: (cca2: string) => void;
     setSelectedSectionLetter: (letter: string) => void;
     setCodeDigits: (digits: number) => void;
+    setVerificationCode: (code: string) => void,
+    setIsCodeComplete: (isComplete: boolean) => void,
     validateAndFormatPhone: () => boolean;
     resetForm: () => void;
 }
@@ -31,6 +35,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     selectedSectionLetter: 'C',
     formattedNumber: '',
     codeDigits: 6,
+    verificationCode: '',
+    isCodeComplete: false,
 
     setPhoneNumber: (phoneNumber: string) => {
         const { isAgreed } = get();
@@ -58,6 +64,14 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
     setCodeDigits: (digits: number) => {
         set({ codeDigits: digits });
+    },
+
+    setVerificationCode: (code: string) => {
+        set({ verificationCode: code });
+    },
+
+    setIsCodeComplete: (isComplete: boolean) => {
+        set({ isCodeComplete: isComplete });
     },
 
     validateAndFormatPhone: () => {
@@ -88,5 +102,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         selectedSectionLetter: 'C',
         formattedNumber: '',
         errorMessage: '',
+        codeDigits: 6,
+        verificationCode: '',
+        isCodeComplete: false,
     }),
 }));

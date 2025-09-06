@@ -43,6 +43,8 @@ interface VerificationCodeInputProps {
     activeColor?: string;
     /** 非激活状态边框颜色 */
     inactiveColor?: string;
+    /** 是否可编辑，默认true */
+    editable?: boolean;
 }
 
 export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
@@ -58,6 +60,7 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
     textStyle,
     activeColor = '#4285F4',
     inactiveColor = '#E8E8E8',
+    editable = true,
 }) => {
     const [value, setValue] = useState('');
     const ref = useBlurOnFulfill({ value, cellCount }) as React.RefObject<TextInput>;
@@ -115,6 +118,8 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
                     </Text>
                 </View>
             )}
+            disableFullscreenUI={true}
+            editable={editable}
         />
     );
 };
