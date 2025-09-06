@@ -17,6 +17,7 @@ export interface SendSmsResponse {
     success: boolean;
     message?: string;
     timestamp?: string;
+    codeDigits?: number;
 }
 
 /**

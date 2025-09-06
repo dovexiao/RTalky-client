@@ -227,7 +227,7 @@ class CountryManager {
                         const parsedNumber = parsePhoneNumberWithError(fullNumber, countryCode as any);
                         return {
                             isValid: true,
-                            formattedNumber: parsedNumber?.formatInternational() || fullNumber,
+                            formattedNumber: parsedNumber?.formatInternational() || `${callingCode}${cleanPhoneNumber}`,
                         };
                     } catch (countryParseError) {
                         // 继续到错误处理

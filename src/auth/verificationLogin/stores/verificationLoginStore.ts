@@ -10,11 +10,13 @@ interface VerificationLoginState {
     selectedCCA2: string;
     selectedSectionLetter: string;
     formattedNumber: string;
+    codeDigits: number,
     setPhoneNumber: (phoneNumber: string) => void;
     setIsAgreed: (isAgreed: boolean) => void;
     setSelectedCallingCode: (countryCode: string) => void;
     setSelectedCCA2: (cca2: string) => void;
     setSelectedSectionLetter: (letter: string) => void;
+    setCodeDigits: (digits: number) => void;
     validateAndFormatPhone: () => boolean;
     resetForm: () => void;
 }
@@ -28,6 +30,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     selectedCCA2: 'CN',
     selectedSectionLetter: 'C',
     formattedNumber: '',
+    codeDigits: 6,
 
     setPhoneNumber: (phoneNumber: string) => {
         const { isAgreed } = get();
@@ -51,6 +54,10 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
     setSelectedSectionLetter: (letter: string) => {
         set({ selectedSectionLetter: letter });
+    },
+
+    setCodeDigits: (digits: number) => {
+        set({ codeDigits: digits });
     },
 
     validateAndFormatPhone: () => {

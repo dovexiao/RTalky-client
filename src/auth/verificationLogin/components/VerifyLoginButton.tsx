@@ -10,9 +10,8 @@ import { SmsService } from '@/auth/verificationLogin/services';
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const isFormValid = useVerificationLoginStore(state => state.isFormValid);
-    const formattedNumber = useVerificationLoginStore(state => state.formattedNumber);
-    const isAgreed = useVerificationLoginStore(state => state.isAgreed);
     const validateAndFormatPhone = useVerificationLoginStore(state => state.validateAndFormatPhone);
+    const setCodeDigits = useVerificationLoginStore(state => state.setCodeDigits);
 
     const [isWaiting, setIsWaiting] = useState(false);
 
@@ -26,11 +25,16 @@ const VerifyLoginButton: React.FC = () => {
         if (isFormValid && isValidAndFormatted) {
             try {
                 setIsWaiting(true);
-
+                const { formattedNumber, isAgreed } = useVerificationLoginStore.getState();
+                // console.log('发送短信验证码...', formattedNumber, isAgreed)
                 // 发送短信验证码
                 const response = await SmsService.sendSmsCode(formattedNumber, isAgreed);
 
                 if (response.success) {
+                    // 设置验证码位数
+                    if (response.codeDigits) {
+                        setCodeDigits(response.codeDigits);
+                    }
                     // 短信发送成功，跳转到验证码页面
                     navigation.navigate('VerificationCode');
                 }
