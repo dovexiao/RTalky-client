@@ -128,6 +128,11 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-vector-icons')
+
+    // 添加 AndroidX 核心库
+    implementation "androidx.core:core-ktx:${rootProject.ext.androidxCoreVersion}"
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
@@ -136,8 +141,8 @@ dependencies {
 }
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
-repositories {
-    maven { url 'https://maven.aliyun.com/repository/public' }  // 阿里云镜像
-    maven { url 'https://maven.aliyun.com/repository/google' }  // 如果是 Google 依赖
-    mavenCentral()  // 保留原有源
-}
+//repositories {
+//    maven { url 'https://maven.aliyun.com/repository/public' }  // 阿里云镜像
+//    maven { url 'https://maven.aliyun.com/repository/google' }  // 如果是 Google 依赖
+//    mavenCentral()  // 保留原有源
+//}
