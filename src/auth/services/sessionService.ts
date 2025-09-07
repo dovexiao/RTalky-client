@@ -1,0 +1,26 @@
+import { get } from '@/services/fetch/request';
+
+// 会话验证响应
+export interface SessionValidationResponse {
+    success: boolean;
+    message: string;
+    timestamp: string;
+}
+
+export class SessionService {
+    /**
+     * 验证会话令牌
+     * 注意：由于axios拦截器会自动从UserAuthManager获取token并设置Authorization头，
+     * 所以这里不需要手动传递sessionToken参数
+     * @returns 验证结果
+     */
+    static async validateSession(): Promise<SessionValidationResponse> {
+        try {
+            const response = await get<SessionValidationResponse>('/auth/validate');
+            return response;
+        } catch (error) {
+            console.error('会话验证失败:', error);
+            throw error;
+        }
+    }
+}

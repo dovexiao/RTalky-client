@@ -5,21 +5,16 @@ import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
-    runOnJS,
     Easing,
     useDerivedValue,
 } from 'react-native-reanimated';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/types';
 import { LoginService } from '@/auth/services';
 import UserAuthManager from '@/utils/UserAuthManager';
 import { useAuthStore } from '@/auth/stores';
+import { useNavigationStore } from '@navigation/stores';
 
 export const LoginStatusIndicator: React.FC = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
     // 只订阅需要的状态，避免不必要的重渲染
     const isCodeComplete = useVerificationLoginStore(state => state.isCodeComplete);
     const resetForm = useVerificationLoginStore(state => state.resetForm);
@@ -49,7 +44,7 @@ export const LoginStatusIndicator: React.FC = () => {
                     sessionToken: loginData.sessionToken,
                 };
 
-                const saveSuccess = await UserAuthManager.saveUserAuthWithList(
+                const saveSuccess = await UserAuthManager.saveUserAuthComplete(
                     loginData.userId,
                     authData
                 );
@@ -64,23 +59,27 @@ export const LoginStatusIndicator: React.FC = () => {
 
         // 同步执行存储和动画
         saveAuthData();
-        handleLogin(loginData.userId, loginData.userProfile);
 
         // 延迟执行动画和导航（同步延迟）
         setTimeout(() => {
-            transitionValue.value = withTiming(
-                0,
-                {
-                    duration: animationDuration,
-                    easing: Easing.in(Easing.cubic),
-                },
-                () => {
-                    runOnJS(resetForm)();
-                    runOnJS(navigation.replace)('AppMain');
-                }
-            );
+            // transitionValue.value = withTiming(
+            //     0,
+            //     {
+            //         duration: animationDuration,
+            //         easing: Easing.in(Easing.cubic),
+            //     },
+            //     () => {
+            //         runOnJS(resetForm)();
+            //         runOnJS(navigation.replace)('AppMain');
+            //     }
+            // );
+            const setInitialRouteName = useNavigationStore.getState().setInitialRouteName;
+            setInitialRouteName('AppMain');
+            handleLogin(loginData.userId, loginData.userProfile);
+            resetForm();
+            // navigation.replace('AppMain');
         }, 1500);
-    }, [handleLogin, transitionValue, resetForm, navigation.replace]);
+    }, [handleLogin, resetForm]);
 
     const handleLoginError = useCallback((error: any) => {
         console.error('登录失败:', error);

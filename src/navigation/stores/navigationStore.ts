@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { RootStackParamList } from '@/types';
 
-type RouteName = keyof RootStackParamList;
+export type RouteName = keyof RootStackParamList;
 
 interface NavigationState {
   initialRouteName: RouteName;

@@ -17,9 +17,9 @@ type ApiResponse<T> = {
 export const get = async <T = any>(
     url: string,
     config?: Record<string, any>
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
     try {
-        const response = await api.get<ApiResponse<T>>(url, config);
+        const response = await api.get<T>(url, config);
         return response.data;
     } catch (error: any) {
         // 统一错误处理逻辑

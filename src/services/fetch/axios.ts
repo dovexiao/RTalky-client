@@ -20,15 +20,13 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(async (config) => {
     try {
-        const { userId } = useAuthStore.getState();
-        if (userId) {
-            const token = await UserAuthManager.getSessionToken(userId);
-            if (token) {
-                if (token && config.headers) {
-                    // 使用 set 方法设置 Authorization 头
-                    (config.headers as AxiosRequestHeaders).set('Authorization', `Bearer ${token}`);
-                }
-            }
+        // 优先从UserAuthManager获取当前用户ID，如果为空则从useAuthStore获取
+        let userId = await UserAuthManager.getCurrentUserId() || '';
+        console.log('当前用户ID:', userId);
+        const token = await UserAuthManager.getSessionToken(userId);
+        console.log('当前用户Token:', token);
+        if (config.headers) {
+            (config.headers as AxiosRequestHeaders).set('Authorization', `Bearer ${token ?? ''}`);
         }
 
         // 为每个请求添加取消令牌
@@ -78,10 +76,16 @@ api.interceptors.response.use((response) => {
                     pendingRequests.delete(requestId);
                 });
 
-                const { userId, setIsLoggedIn, setUserId } = useAuthStore.getState();
+                // 优先从UserAuthManager获取当前用户ID
+                const userId = await UserAuthManager.getCurrentUserId() || '';
+
                 if (userId) {
-                    await UserAuthManager.deleteUserAuth(userId);
+                    // 使用完整删除方法，包含当前用户ID的清理
+                    await UserAuthManager.deleteUserAuthComplete(userId);
                 }
+
+                // 清理useAuthStore状态
+                const { setIsLoggedIn, setUserId } = useAuthStore.getState();
                 setIsLoggedIn(false);
                 setUserId('');
 

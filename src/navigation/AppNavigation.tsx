@@ -3,8 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 // import BootSplash from 'react-native-bootsplash';
-import AppLogin from '@/auth/login/screens/AppLogin.tsx';
-// import AppRegister from '@/auth/register/screens/AppRegister.tsx';
 import AppMain from '@/main/screen/AppMain.tsx';
 import TestPage from '@/test/TestPage.tsx';
 import QuestionBank from '@/question/questionBank/screens/QuestionBank.tsx';
@@ -23,18 +21,17 @@ import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
 import PasswordLogin from '@/auth/passwordLogin/screens/PasswordLogin.tsx';
-import { useNavigationStore } from './navigationStore';
+import { RouteName } from '@navigation/stores';
 import { navigationRef } from '@navigation/navigationRef.ts';
 import SessionWatcher from './SessionWatcher';
 
 const { Navigator, Screen } = createNativeStackNavigator<RootStackParamList>();
 
 const AppStackNavigator = () => {
-    const { initialRouteName } = useNavigationStore();
-
+    // const initialRouteName = useNavigationStore(state => state.initialRouteName);
+    const initialRouteName: RouteName = 'VerificationLogin';
     return (
         <Navigator initialRouteName={initialRouteName} screenOptions={{headerShown: false}}>
-            <Screen name="AppLogin" component={AppLogin} />
             <Screen name="OneTapLogin" component={OneTapLogin} />
             <Screen name="VerificationLogin" component={VerificationLogin} />
             <Screen name="VerificationCode" component={VerificationCode} />

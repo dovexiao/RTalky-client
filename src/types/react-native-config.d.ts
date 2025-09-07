@@ -7,6 +7,7 @@ declare module 'react-native-config' {
         APP_VERSION: string;
         DEFAULT_LOCALE: 'zh-CN' | 'en-US';
         LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
+        CURRENT_USER_ID_KEY: string;
     }
     export const Config: NativeConfig;
     export default Config;

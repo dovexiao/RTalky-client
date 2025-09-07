@@ -1,10 +1,17 @@
 import Keychain from 'react-native-keychain';
+import Config from 'react-native-config';
 
 // 用户认证信息键名常量
 const AUTH_KEYS = {
   PHONE_NUMBER: 'phone_number',
   SESSION_TOKEN: 'session_token',
+  CURRENT_USER_ID: 'current_user_id',
 } as const;
+
+// 获取当前用户ID的存储键
+const getCurrentUserIdKey = (): string => {
+  return Config.CURRENT_USER_ID_KEY || 'rtalky_current_user_id';
+};
 
 // 用户认证数据类型定义
 export interface UserAuthData {
@@ -331,6 +338,95 @@ class UserAuthManager {
       return false;
     }
   }
+
+  /**
+   * 保存当前用户ID到Keychain
+   * @param userId 用户ID
+   * @returns 是否保存成功
+   */
+  static async saveCurrentUserId(userId: string): Promise<boolean> {
+    try {
+      await Keychain.setInternetCredentials(
+        getCurrentUserIdKey(),
+        AUTH_KEYS.CURRENT_USER_ID,
+        userId
+      );
+      return true;
+    } catch (error) {
+      console.error('保存当前用户ID失败:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 获取当前用户ID
+   * @returns 当前用户ID或null
+   */
+  static async getCurrentUserId(): Promise<string | null> {
+    try {
+      const result = await Keychain.getInternetCredentials(getCurrentUserIdKey());
+      return (result && result.password) || null;
+    } catch (error) {
+      console.error('获取当前用户ID失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 删除当前用户ID
+   * @returns 是否删除成功
+   */
+  static async deleteCurrentUserId(): Promise<boolean> {
+    try {
+      await Keychain.resetInternetCredentials({
+        service: getCurrentUserIdKey(),
+      });
+      return true;
+    } catch (error) {
+      console.error('删除当前用户ID失败:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 完整的用户认证数据保存（包含当前用户ID和用户列表管理）
+   * @param userId 用户ID
+   * @param authData 用户认证数据
+   * @returns 是否保存成功
+   */
+  static async saveUserAuthComplete(userId: string, authData: UserAuthData): Promise<boolean> {
+    try {
+      const saveSuccess = await this.saveUserAuthWithList(userId, authData);
+      if (saveSuccess) {
+        // 保存当前用户ID
+        await this.saveCurrentUserId(userId);
+      }
+      console.log('保存用户认证数据（完整）成功');
+      return saveSuccess;
+    } catch (error) {
+      console.error('保存用户认证数据（完整）失败:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 完整的用户认证数据删除（包含当前用户ID和用户列表管理）
+   * @param userId 用户ID
+   * @returns 是否删除成功
+   */
+  static async deleteUserAuthComplete(userId: string): Promise<boolean> {
+    try {
+      const deleteSuccess = await this.deleteUserAuthWithList(userId);
+      if (deleteSuccess) {
+        // 删除当前用户ID
+        await this.deleteCurrentUserId();
+      }
+      return deleteSuccess;
+    } catch (error) {
+      console.error('删除用户认证数据（完整）失败:', error);
+      return false;
+    }
+  }
 }
 
 // 导出UserAuthManager类
@@ -352,4 +448,9 @@ export const {
   removeUserFromList,
   saveUserAuthWithList,
   deleteUserAuthWithList,
+  saveCurrentUserId,
+  getCurrentUserId,
+  deleteCurrentUserId,
+  saveUserAuthComplete,
+  deleteUserAuthComplete,
 } = UserAuthManager;

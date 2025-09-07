@@ -12,7 +12,7 @@ import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider } from '@ui-kitten/components';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { VerificationLoginProps } from '@/auth/verificationLogin/types';
-import { useNavigationStore } from '@/navigation/navigationStore';
+import { useNavigationStore } from '@navigation/stores/navigationStore.ts';
 import PhoneInput from '../components/PhoneInput';
 import VerifyLoginButton from '../components/VerifyLoginButton';
 import AgreementCheckbox from '../components/AgreementCheckbox';
