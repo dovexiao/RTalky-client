@@ -1,8 +1,6 @@
 import React from 'react';
 import { TouchableWithoutFeedback, StyleSheet, View } from 'react-native';
 import { Icon, IconElement, Input, Text } from '@ui-kitten/components';
-import { useRegisterStore } from '../stores/register.store.ts';
-import { useLoginStore } from '../stores/login.store.ts';
 
 type InputProps = {
     label: string;
@@ -17,16 +15,8 @@ const AlertIcon = (props: any): IconElement => (
     />
 );
 
-const useEmailAccountField = (type: InputProps['type']) => {
-    const store = type === 'LOGIN' ? useLoginStore : useRegisterStore;
-    const value = store(state => state.emailAccount);
-    const setValue = store(state => state.setEmailAccount);
-    const caption = store(state => state.emailCaption);
-    return { value, setValue, caption };
-};
-
 const EmailInput = ({ label, type }: InputProps): React.ReactElement => {
-    const { value, setValue, caption } = useEmailAccountField(type);
+    const { value = '', setValue = '', caption = '' } = {};
 
     const renderIcon = (props: any): React.ReactElement => (
         <TouchableWithoutFeedback>
@@ -68,7 +58,7 @@ const EmailInput = ({ label, type }: InputProps): React.ReactElement => {
             placeholder={label}
             caption={renderCaption}
             accessoryRight={renderIcon}
-            onChangeText={nextValue => setValue(nextValue)}
+            onChangeText={nextValue => {}}
         />
     );
 };

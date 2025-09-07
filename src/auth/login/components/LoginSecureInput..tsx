@@ -2,7 +2,6 @@ import React from 'react';
 import {StyleSheet, View, Pressable} from 'react-native';
 import { Icon, Input, Text } from '@ui-kitten/components';
 import type {IconElement} from '@ui-kitten/components';
-import {usePasswordLoginStore} from '../stores/passwordLogin.store.ts';
 
 type InputProps = {
     label: string;
@@ -16,17 +15,8 @@ const AlertIcon = (props: any): IconElement => (
     />
 );
 
-// 组合使用
-const usePasswordField = () => {
-    return {
-        value: usePasswordLoginStore(sate => sate.password),
-        setValue: usePasswordLoginStore(sate => sate.setPassword),
-        caption: usePasswordLoginStore(sate => sate.passwordCaption),
-    };
-};
-
 const LoginSecureInput = ({ label }: InputProps): React.ReactElement => {
-    const { value, setValue, caption } = usePasswordField();
+    const { value = '', setValue = '', caption = '' } = {};
 
     const [secureTextEntry, setSecureTextEntry] = React.useState(true);
 
@@ -75,7 +65,7 @@ const LoginSecureInput = ({ label }: InputProps): React.ReactElement => {
             caption={renderCaption}
             accessoryRight={renderIcon}
             secureTextEntry={secureTextEntry}
-            onChangeText={nextValue => setValue(nextValue)}
+            onChangeText={nextValue => {}}
             maxLength={11}
         />
     );
