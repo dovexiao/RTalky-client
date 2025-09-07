@@ -9,3 +9,7 @@ export type { LoginRequest, LoginResponse, UserProfile, ErrorResponse } from './
 // 会话服务
 export { SessionService } from './sessionService.ts';
 export type { SessionValidationResponse } from './sessionService.ts';
+
+// 用户信息服务
+export { UserInfoService } from './userInfoService.ts';
+export type { UserInfoResponse, UserInfoData } from './userInfoService.ts';

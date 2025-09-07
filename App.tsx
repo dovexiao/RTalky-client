@@ -16,8 +16,8 @@ import { AppNavigator } from '@navigation/AppNavigation.tsx';
 import { GlobalProvider } from '@contexts/GlobalContext.tsx';
 import BootSplash from 'react-native-bootsplash';
 import { useNavigationStore } from '@/navigation/stores/navigationStore';
-import { SessionService } from '@/auth/services';
-import { useAuthStore } from '@/auth/stores';
+import { SessionService, UserInfoService } from '@/auth/services';
+import { useAuthStore, UserProfile } from '@/auth/stores';
 
 type Theme = 'light' | 'dark';
 
@@ -39,20 +39,42 @@ function App(): JSX.Element {
     useEffect(() => {
         const init = async () => {
             try {
-                const response = await SessionService.validateSession();
+                // 并行执行会话验证和用户信息获取
+                const [sessionResponse, userInfoResponse] = await Promise.allSettled([
+                    SessionService.validateSession(),
+                    UserInfoService.getUserInfo(),
+                ]);
 
-                if (response.success) {
+                // 检查会话验证结果
+                const isSessionValid = sessionResponse.status === 'fulfilled' && sessionResponse.value.success;
+
+                if (isSessionValid) {
                     console.log('会话有效，设置初始路由为AppMain');
                     setInitialRouteName('AppMain');
-                    const setIsLoggedIn = useAuthStore.getState().setIsLoggedIn;
+
+                    // 设置登录状态
+                    const { setIsLoggedIn } = useAuthStore.getState();
                     setIsLoggedIn(true);
+
+                    // 处理用户信息（如果获取成功）
+                    if (userInfoResponse.status === 'fulfilled' && userInfoResponse.value.success) {
+                        const { setUserProfile } = useAuthStore.getState();
+                        setUserProfile(userInfoResponse.value.data as UserProfile);
+                        console.log('获取用户信息成功:', JSON.stringify(userInfoResponse.value.data));
+                    } else {
+                        console.log('获取用户信息失败:',
+                            userInfoResponse.status === 'fulfilled'
+                                ? userInfoResponse.value.message
+                                : '网络错误'
+                        );
+                    }
                 } else {
                     console.log('会话无效，设置初始路由为VerificationLogin');
                     setInitialRouteName('VerificationLogin');
                 }
             } catch (error) {
-                console.error('会话验证失败:', error);
-                // 验证失败时，默认设置为登录页面
+                console.error('初始化失败:', error);
+                // 初始化失败时，默认设置为登录页面
                 resetInitialRouteName();
             }
         };

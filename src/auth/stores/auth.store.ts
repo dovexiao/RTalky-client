@@ -1,5 +1,11 @@
 import { create } from 'zustand';
 
+export type UserProfile = {
+    nickname: string;
+    avatar: string;
+    bio: string;
+};
+
 interface AuthStore {
     isLoggedIn: boolean;
     userId: string;
@@ -11,7 +17,7 @@ interface AuthStore {
     setNickname: (nickname: string) => void;
     setAvatar: (avatar: string) => void;
     setBio: (bio: string) => void;
-    setUserProfile: (userProfile: { nickname: string; avatar: string; bio: string }) => void;
+    setUserProfile: (userProfile: UserProfile) => void;
     handleLogin: (userId: string, userProfile: { nickname: string; avatar: string; bio: string }) => void;
 }
 
@@ -32,7 +38,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             avatar: userProfile.avatar,
             bio: userProfile.bio,
         })),
-    handleLogin: (userId: string, userProfile: { nickname: string; avatar: string; bio: string }) =>
+    handleLogin: (userId: string, userProfile: UserProfile) =>
         set(() => ({
             isLoggedIn: true,
             userId,
