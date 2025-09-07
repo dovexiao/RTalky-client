@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestHeaders, CancelTokenSource } from 'axios';
 import Config from 'react-native-config';
 import UserAuthManager from '@/utils/UserAuthManager';
-import { useAuthStore } from '@/auth/login/stores/auth.store.ts';
+import { useAuthStore } from '@/auth/stores/auth.store.ts';
 // import { useNavigationStore } from '@navigation/navigationStore.ts';
 
 // 401 处理并发锁
@@ -40,7 +40,7 @@ api.interceptors.request.use(async (config) => {
         pendingRequests.set(requestId, cancelTokenSource);
 
         // 输出请求信息的 JSON
-        console.log('请求信息 JSON:', config);
+        console.log('请求信息 JSON:', JSON.stringify(config));
 
         return config;
     } catch (error) {
@@ -55,7 +55,7 @@ api.interceptors.response.use((response) => {
         pendingRequests.delete(requestId);
     }
 
-    console.log('响应信息 JSON:', response);
+    console.log('响应信息 JSON:', JSON.stringify(response));
     return response;
 }, async (resError) => {
     try {
@@ -101,7 +101,7 @@ api.interceptors.response.use((response) => {
         }
 
         // 输出错误响应信息的 JSON
-        console.log('错误响应信息 JSON:', resError);
+        console.log('错误响应信息 JSON:', JSON.stringify(resError));
         return Promise.reject(resError);
     } catch (error) {
         throw error;

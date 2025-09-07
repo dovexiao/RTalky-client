@@ -1,5 +1,5 @@
-import { post } from '@/services/fetch/request';
-import { DeviceInfoManager, DeviceInfoUtils } from '../utils';
+import { post } from '@services/fetch/request.ts';
+import { DeviceInfoManager, DeviceInfoUtils } from '../verificationLogin/utils';
 
 /**
  * 发送短信验证码请求参数

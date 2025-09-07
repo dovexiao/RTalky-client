@@ -38,9 +38,9 @@ export const post = async <T = any>(
     url: string,
     data?: Record<string, any>,
     config?: Record<string, any>
-): Promise<ApiResponse<T>> => {
+): Promise<T> => {
     try {
-        const response = await api.post<ApiResponse<T>>(url, data, config);
+        const response = await api.post<T>(url, data, config);
         return response.data;
     } catch (error: any) {
         // 统一错误处理逻辑

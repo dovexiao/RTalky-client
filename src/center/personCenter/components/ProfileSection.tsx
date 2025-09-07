@@ -6,7 +6,7 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
-import { useAuthStore } from '@/auth/login/stores/auth.store.ts';
+import { useAuthStore } from '@/auth/stores';
 import RandomAvatar from '@/main/components/RandomAvatar.tsx';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 

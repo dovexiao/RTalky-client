@@ -3,7 +3,7 @@ import { countryManager } from '@/auth/verificationLogin/utils';
 
 interface VerificationLoginState {
     phoneNumber: string;
-    isAgreed: boolean;
+    isAgreedToTerms: boolean;
     isFormValid: boolean;
     errorMessage: string;
     selectedCallingCode: string;
@@ -11,15 +11,15 @@ interface VerificationLoginState {
     selectedSectionLetter: string;
     formattedNumber: string;
     codeDigits: number,
-    verificationCode: string,
+    smsCode: string,
     isCodeComplete: boolean,
     setPhoneNumber: (phoneNumber: string) => void;
-    setIsAgreed: (isAgreed: boolean) => void;
+    setIsAgreedToTerms: (isAgreed: boolean) => void;
     setSelectedCallingCode: (countryCode: string) => void;
     setSelectedCCA2: (cca2: string) => void;
     setSelectedSectionLetter: (letter: string) => void;
     setCodeDigits: (digits: number) => void;
-    setVerificationCode: (code: string) => void,
+    setSmsCode: (code: string) => void,
     setIsCodeComplete: (isComplete: boolean) => void,
     validateAndFormatPhone: () => boolean;
     resetForm: () => void;
@@ -27,7 +27,7 @@ interface VerificationLoginState {
 
 export const useVerificationLoginStore = create<VerificationLoginState>((set, get) => ({
     phoneNumber: '',
-    isAgreed: false,
+    isAgreedToTerms: false,
     isFormValid: false,
     errorMessage: '',
     selectedCallingCode: '+86',
@@ -35,19 +35,19 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     selectedSectionLetter: 'C',
     formattedNumber: '',
     codeDigits: 6,
-    verificationCode: '',
+    smsCode: '',
     isCodeComplete: false,
 
     setPhoneNumber: (phoneNumber: string) => {
-        const { isAgreed } = get();
-        const isValid = phoneNumber !== '' && isAgreed;
+        const { isAgreedToTerms } = get();
+        const isValid = phoneNumber !== '' && isAgreedToTerms;
         set({ phoneNumber, isFormValid: isValid });
     },
 
-    setIsAgreed: (isAgreed: boolean) => {
+    setIsAgreedToTerms: (isAgreedToTerms: boolean) => {
         const { phoneNumber } = get();
-        const isValid = phoneNumber !== '' && isAgreed;
-        set({ isAgreed, isFormValid: isValid });
+        const isValid = phoneNumber !== '' && isAgreedToTerms;
+        set({ isAgreedToTerms, isFormValid: isValid });
     },
 
     setSelectedCallingCode: (callingCode: string) => {
@@ -66,8 +66,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         set({ codeDigits: digits });
     },
 
-    setVerificationCode: (code: string) => {
-        set({ verificationCode: code });
+    setSmsCode: (code: string) => {
+        set({ smsCode: code });
     },
 
     setIsCodeComplete: (isComplete: boolean) => {
@@ -95,7 +95,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
     resetForm: () => set({
         phoneNumber: '',
-        isAgreed: false,
+        isAgreedToTerms: false,
         isFormValid: false,
         selectedCallingCode: '+86',
         selectedCCA2: 'CN',
@@ -103,7 +103,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         formattedNumber: '',
         errorMessage: '',
         codeDigits: 6,
-        verificationCode: '',
+        smsCode: '',
         isCodeComplete: false,
     }),
 }));

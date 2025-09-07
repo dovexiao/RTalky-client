@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
-import { SmsService } from '@/auth/verificationLogin/services';
+import { SmsService } from '@/auth/services';
 
 const LoadingIndicator = (): React.ReactElement => (
     <Spinner size="small" status="control" />
@@ -60,10 +60,10 @@ const VerifyLoginButton: React.FC = () => {
                 isProcessingRef.current = true;
                 setIsWaiting(true);
 
-                const { formattedNumber, isAgreed } = useVerificationLoginStore.getState();
+                const { formattedNumber, isAgreedToTerms } = useVerificationLoginStore.getState();
                 // console.log('发送短信验证码...', formattedNumber, isAgreed)
                 // 发送短信验证码
-                const response = await SmsService.sendSmsCode(formattedNumber, isAgreed);
+                const response = await SmsService.sendSmsCode(formattedNumber, isAgreedToTerms);
 
                 if (response.success) {
                     // 设置验证码位数

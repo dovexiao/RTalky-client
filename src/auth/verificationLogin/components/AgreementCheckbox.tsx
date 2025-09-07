@@ -5,8 +5,8 @@ import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 const AgreementCheckbox: React.FC = () => {
   const themes = useTheme();
-  const isAgreed = useVerificationLoginStore(state => state.isAgreed);
-  const setIsAgreed = useVerificationLoginStore(state => state.setIsAgreed);
+  const isAgreed = useVerificationLoginStore(state => state.isAgreedToTerms);
+  const setIsAgreed = useVerificationLoginStore(state => state.setIsAgreedToTerms);
 
   return (
     <View style={styles.checkboxContainer}>

@@ -11,6 +11,8 @@ interface AuthStore {
   setNickname: (nickname: string) => void;
   setAvatar: (avatar: string) => void;
   setBio: (bio: string) => void;
+  setUserProfile: (userProfile: { nickname: string; avatar: string; bio: string }) => void;
+  handleLogin: (userId: string, userProfile: { nickname: string; avatar: string; bio: string }) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -24,4 +26,18 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setNickname: (nickname: string) => set(() => ({ nickname })),
   setAvatar: (avatar: string) => set(() => ({ avatar })),
   setBio: (bio: string) => set(() => ({ bio })),
+  setUserProfile: (userProfile: { nickname: string; avatar: string; bio: string }) =>
+    set(() => ({
+      nickname: userProfile.nickname,
+      avatar: userProfile.avatar,
+      bio: userProfile.bio,
+    })),
+  handleLogin: (userId: string, userProfile: { nickname: string; avatar: string; bio: string }) =>
+    set(() => ({
+      isLoggedIn: true,
+      userId,
+      nickname: userProfile.nickname,
+      avatar: userProfile.avatar,
+      bio: userProfile.bio,
+    })),
 }));

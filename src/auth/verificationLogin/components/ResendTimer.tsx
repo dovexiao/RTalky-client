@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SmsService } from '@/auth/verificationLogin/services';
+import { SmsService } from '@/auth/services';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 export const ResendTimer = ({ initialCount = 300 }) => {

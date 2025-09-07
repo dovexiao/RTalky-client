@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { CommonActions } from '@react-navigation/native';
-import { useAuthStore } from '@/auth/login/stores/auth.store';
+import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { navigationRef } from '@navigation/navigationRef.ts';
 
 export default function SessionWatcher() {

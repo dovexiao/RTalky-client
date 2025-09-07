@@ -11,7 +11,7 @@ import {
     VerificationCodeSection,
     NoVerificationCodeHelper,
     ResendTimer,
-    LoginStatusIndicator
+    LoginStatusIndicator,
 } from '@/auth/verificationLogin/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider } from '@ui-kitten/components';
@@ -21,14 +21,14 @@ import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 const VerificationCode = () => {
     const { formattedNumber } = useVerificationLoginStore.getState();
     const setIsCodeComplete = useVerificationLoginStore(state => state.setIsCodeComplete);
-    const setVerificationCode = useVerificationLoginStore(state => state.setVerificationCode);
+    const setSmsCode = useVerificationLoginStore(state => state.setSmsCode);
 
     const { bottomActionSheetRef } = useGlobal();
 
     // 处理验证码输入完成
     const handleCodeComplete = (inputCode: string) => {
         setIsCodeComplete(true);
-        setVerificationCode(inputCode);
+        setSmsCode(inputCode);
     };
 
     return (

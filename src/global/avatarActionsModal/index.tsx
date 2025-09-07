@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ImagePicker from 'react-native-image-crop-picker';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import { useAuthStore } from '@/auth/login/stores/auth.store.ts';
+import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { usePermission } from '@hooks/usePermission.ts';
 
 type AvatarActionsModalAPI = {

@@ -52,8 +52,8 @@ const CountryAlphabetNavigator: React.FC<CountryAlphabetNavigatorProps> = ({ onL
                 );
             })}
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     alphabetContainer: {
