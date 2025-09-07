@@ -14,7 +14,7 @@ export const ResendTimer = ({ initialCount = 300 }) => {
     const isProcessingRef = useRef<boolean>(false);
 
     // 获取store中的状态
-    const { formattedNumber, isAgreed, setCodeDigits } = useVerificationLoginStore();
+    const { formattedNumber, isAgreedToTerms, setCodeDigits } = useVerificationLoginStore();
 
     useEffect(() => {
         if (isActive && count > 0) {
@@ -75,7 +75,7 @@ export const ResendTimer = ({ initialCount = 300 }) => {
                 setIsResending(true);
 
                 // 重新发送验证码
-                const response = await SmsService.sendSmsCode(formattedNumber, isAgreed);
+                const response = await SmsService.sendSmsCode(formattedNumber, isAgreedToTerms);
 
                 if (response.success) {
                     // 设置验证码位数

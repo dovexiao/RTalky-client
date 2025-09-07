@@ -20,13 +20,13 @@ import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 const VerificationCode = () => {
     const { formattedNumber } = useVerificationLoginStore.getState();
-    const setIsCodeComplete = useVerificationLoginStore(state => state.setIsCodeComplete);
-    const setSmsCode = useVerificationLoginStore(state => state.setSmsCode);
 
     const { bottomActionSheetRef } = useGlobal();
 
     // 处理验证码输入完成
     const handleCodeComplete = (inputCode: string) => {
+        const setSmsCode = useVerificationLoginStore.getState().setSmsCode;
+        const setIsCodeComplete = useVerificationLoginStore.getState().setIsCodeComplete;
         setIsCodeComplete(true);
         setSmsCode(inputCode);
     };

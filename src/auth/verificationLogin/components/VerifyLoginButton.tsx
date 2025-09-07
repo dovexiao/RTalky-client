@@ -14,8 +14,6 @@ const LoadingIndicator = (): React.ReactElement => (
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const isFormValid = useVerificationLoginStore(state => state.isFormValid);
-    const validateAndFormatPhone = useVerificationLoginStore(state => state.validateAndFormatPhone);
-    const setCodeDigits = useVerificationLoginStore(state => state.setCodeDigits);
 
     const [isWaiting, setIsWaiting] = useState(false);
 
@@ -33,6 +31,7 @@ const VerifyLoginButton: React.FC = () => {
     }, []);
 
     const handleVerifyLogin = () => {
+        const validateAndFormatPhone = useVerificationLoginStore.getState().validateAndFormatPhone;
         const isValidAndFormatted = validateAndFormatPhone();
 
         if (!isFormValid || !isValidAndFormatted) {
@@ -68,6 +67,7 @@ const VerifyLoginButton: React.FC = () => {
                 if (response.success) {
                     // 设置验证码位数
                     if (response.codeDigits) {
+                        const setCodeDigits = useVerificationLoginStore.getState().setCodeDigits;
                         setCodeDigits(response.codeDigits);
                     }
                     // 短信发送成功，跳转到验证码页面

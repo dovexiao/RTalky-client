@@ -17,7 +17,7 @@ import { GlobalProvider } from '@contexts/GlobalContext.tsx';
 import BootSplash from 'react-native-bootsplash';
 import { useNavigationStore } from '@/navigation/stores/navigationStore';
 import { SessionService } from '@/auth/services';
-import {useAuthStore} from "@/auth/stores";
+import { useAuthStore } from '@/auth/stores';
 
 type Theme = 'light' | 'dark';
 

@@ -17,7 +17,6 @@ const AlertIcon = (props: any): IconElement => (
 
 const PhoneInput: React.FC<PhoneInputProps> = ({ onCountryCodePress }) => {
     const phoneNumber = useVerificationLoginStore(state => state.phoneNumber);
-    const setPhoneNumber = useVerificationLoginStore(state => state.setPhoneNumber);
     const selectedCallingCode = useVerificationLoginStore(state => state.selectedCallingCode);
     const errorMessage = useVerificationLoginStore(state => state.errorMessage);
 
@@ -45,7 +44,10 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onCountryCodePress }) => {
         <Input
             style={styles.phoneInput}
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
+            onChangeText={(value: string) => {
+                const setPhoneNumber = useVerificationLoginStore.getState().setPhoneNumber;
+                setPhoneNumber(value);
+            }}
             size={'large'}
             caption={renderCaption}
             placeholder="请输入手机号"

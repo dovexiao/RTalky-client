@@ -17,7 +17,6 @@ import { useNavigationStore } from '@navigation/stores';
 export const LoginStatusIndicator: React.FC = () => {
     // 只订阅需要的状态，避免不必要的重渲染
     const isCodeComplete = useVerificationLoginStore(state => state.isCodeComplete);
-    const resetForm = useVerificationLoginStore(state => state.resetForm);
 
     // 使用ref来避免函数重渲染
     const isLoadingRef = useRef(false);
@@ -25,12 +24,11 @@ export const LoginStatusIndicator: React.FC = () => {
 
     // 状态管理
     const [statusText, setStatusText] = useState('');
+
     const themes = useTheme();
 
     // 动画值
     const transitionValue = useSharedValue(0);
-
-    const handleLogin = useAuthStore(state => state.handleLogin);
 
     // 使用useCallback缓存函数，避免重渲染
     const handleLoginSuccess = useCallback((loginData: any) => {
@@ -62,24 +60,15 @@ export const LoginStatusIndicator: React.FC = () => {
 
         // 延迟执行动画和导航（同步延迟）
         setTimeout(() => {
-            // transitionValue.value = withTiming(
-            //     0,
-            //     {
-            //         duration: animationDuration,
-            //         easing: Easing.in(Easing.cubic),
-            //     },
-            //     () => {
-            //         runOnJS(resetForm)();
-            //         runOnJS(navigation.replace)('AppMain');
-            //     }
-            // );
             const setInitialRouteName = useNavigationStore.getState().setInitialRouteName;
+            const handleLogin = useAuthStore.getState().handleLogin;
+            const resetForm = useVerificationLoginStore.getState().resetForm;
+
             setInitialRouteName('AppMain');
             handleLogin(loginData.userId, loginData.userProfile);
             resetForm();
-            // navigation.replace('AppMain');
         }, 1500);
-    }, [handleLogin, resetForm]);
+    }, []);
 
     const handleLoginError = useCallback((error: any) => {
         console.error('登录失败:', error);
