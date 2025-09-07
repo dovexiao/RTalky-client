@@ -7,9 +7,10 @@ import Animated, {
     Easing,
     withTiming,
 } from 'react-native-reanimated';
-import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker, { Image } from 'react-native-image-crop-picker';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
+import { UserInfoService } from '@/auth/services';
 import { usePermission } from '@hooks/usePermission.ts';
 
 type AvatarActionsModalAPI = {
@@ -72,6 +73,23 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
 
     const avatar = useAuthStore(state => state.avatar);
     const setAvatar = useAuthStore(state => state.setAvatar);
+
+    // 处理头像更新
+    const handleAvatarUpdate = async (imagePath: string, base64Data?: string) => {
+        try {
+            // 更新服务器
+            await UserInfoService.updateUserInfo({
+                avatar: base64Data || imagePath,
+            });
+            // 更新本地状态
+            setAvatar(imagePath);
+            // 隐藏模态框
+            hideActionsModal();
+        } catch (error) {
+            console.error('更新头像失败:', error);
+            // 这里可以添加错误提示，比如 Toast
+        }
+    };
 
     const display = useDerivedValue(() => {
         // console.log('display', transitionValue.value);
@@ -141,10 +159,9 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
                                                 cropping: true,
                                                 cropperCircleOverlay: true,
                                                 includeBase64: true,
-                                            }).then((image) => {
+                                            }).then((image: Image) => {
                                                 // console.log(image);
-                                                hideActionsModal();
-                                                setAvatar(image.path);
+                                                handleAvatarUpdate(image.path, image.data ?? '');
                                             });
                                         }
                                         // console.log('photosPermission', photosPermission.isGranted);
@@ -159,10 +176,9 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
                                                 cropping: true,
                                                 cropperCircleOverlay: true,
                                                 includeBase64: true,
-                                            }).then((image) => {
+                                            }).then((image: Image) => {
                                                 // console.log(image);
-                                                hideActionsModal();
-                                                setAvatar(image.path);
+                                                handleAvatarUpdate(image.path, image.data ?? '');
                                             });
                                         }
                                         // console.log('cameraPermission', cameraPermission.isGranted);

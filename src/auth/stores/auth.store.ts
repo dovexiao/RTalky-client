@@ -34,16 +34,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
     setBio: (bio: string) => set(() => ({bio})),
     setUserProfile: (userProfile: { nickname: string; avatar: string; bio: string }) =>
         set(() => ({
-            nickname: userProfile.nickname,
-            avatar: userProfile.avatar,
-            bio: userProfile.bio,
+            nickname: userProfile.nickname || '',
+            avatar: userProfile.avatar || '',
+            bio: userProfile.bio || '',
         })),
     handleLogin: (userId: string, userProfile: UserProfile) =>
         set(() => ({
             isLoggedIn: true,
             userId,
-            nickname: userProfile.nickname,
-            avatar: userProfile.avatar,
-            bio: userProfile.bio,
+            nickname: userProfile.nickname || '',
+            avatar: userProfile.avatar || '',
+            bio: userProfile.bio || '',
         })),
 }));

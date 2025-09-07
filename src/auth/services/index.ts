@@ -12,4 +12,4 @@ export type { SessionValidationResponse } from './sessionService.ts';
 
 // 用户信息服务
 export { UserInfoService } from './userInfoService.ts';
-export type { UserInfoResponse, UserInfoData } from './userInfoService.ts';
+export type { UserInfoResponse, UserInfoData, UpdateUserInfoRequest } from './userInfoService.ts';

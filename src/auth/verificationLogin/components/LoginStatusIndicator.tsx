@@ -13,6 +13,7 @@ import { LoginService } from '@/auth/services';
 import UserAuthManager from '@/utils/UserAuthManager';
 import { useAuthStore } from '@/auth/stores';
 import { useNavigationStore } from '@navigation/stores';
+import { ImageCache } from '@/utils';
 
 export const LoginStatusIndicator: React.FC = () => {
     // 只订阅需要的状态，避免不必要的重渲染
@@ -59,13 +60,15 @@ export const LoginStatusIndicator: React.FC = () => {
         saveAuthData();
 
         // 延迟执行动画和导航（同步延迟）
-        setTimeout(() => {
-            const setInitialRouteName = useNavigationStore.getState().setInitialRouteName;
-            const handleLogin = useAuthStore.getState().handleLogin;
-            const resetForm = useVerificationLoginStore.getState().resetForm;
+        setTimeout(async () => {
+            const { setInitialRouteName } = useNavigationStore.getState();
+            const { handleLogin, setAvatar } = useAuthStore.getState();
+            const { resetForm } = useVerificationLoginStore.getState();
 
             setInitialRouteName('AppMain');
             handleLogin(loginData.userId, loginData.userProfile);
+            const imagePath = await ImageCache.saveImageToFile(loginData.userProfile.avatar, 'AVATARS');
+            setAvatar(imagePath);
             resetForm();
         }, 1500);
     }, []);

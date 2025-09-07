@@ -10,3 +10,6 @@ export * from './getTagColor';
 // 导出Token管理工具
 export * from './UserAuthManager.ts';
 
+// 导出图片缓存工具
+export * from './ImageCache';
+

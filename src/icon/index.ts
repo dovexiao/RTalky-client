@@ -20,6 +20,7 @@ export * from './PersonAddIcon';
 export * from './FileAddIcon';
 export * from './FolderAddIcon';
 export * from './EditIcon.tsx';
+export * from './CameraIcon';
 export * from './PeopleIcon';
 export * from './ATIcon';
 export * from './CheckmarkIcon';

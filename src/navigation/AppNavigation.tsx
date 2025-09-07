@@ -21,15 +21,15 @@ import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
 import PasswordLogin from '@/auth/passwordLogin/screens/PasswordLogin.tsx';
-import { RouteName } from '@navigation/stores';
+import { RouteName, useNavigationStore } from '@navigation/stores';
 import { navigationRef } from '@navigation/navigationRef.ts';
 import SessionWatcher from './SessionWatcher';
 
 const { Navigator, Screen } = createNativeStackNavigator<RootStackParamList>();
 
 const AppStackNavigator = () => {
-    // const initialRouteName = useNavigationStore(state => state.initialRouteName);
-    const initialRouteName: RouteName = 'VerificationLogin';
+    const initialRouteName: RouteName = useNavigationStore.getState().initialRouteName;
+
     return (
         <Navigator initialRouteName={initialRouteName} screenOptions={{headerShown: false}}>
             <Screen name="OneTapLogin" component={OneTapLogin} />

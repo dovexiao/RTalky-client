@@ -18,6 +18,7 @@ import BootSplash from 'react-native-bootsplash';
 import { useNavigationStore } from '@/navigation/stores/navigationStore';
 import { SessionService, UserInfoService } from '@/auth/services';
 import { useAuthStore, UserProfile } from '@/auth/stores';
+import { ImageCache } from '@/utils';
 
 type Theme = 'light' | 'dark';
 
@@ -58,9 +59,12 @@ function App(): JSX.Element {
 
                     // 处理用户信息（如果获取成功）
                     if (userInfoResponse.status === 'fulfilled' && userInfoResponse.value.success) {
-                        const { setUserProfile } = useAuthStore.getState();
+                        const { setUserId, setUserProfile, setAvatar } = useAuthStore.getState();
+                        setUserId(userInfoResponse.value.data?.userId ?? '');
                         setUserProfile(userInfoResponse.value.data as UserProfile);
-                        console.log('获取用户信息成功:', JSON.stringify(userInfoResponse.value.data));
+                        const imagePath = await ImageCache.saveImageToFile(userInfoResponse.value.data?.avatar ?? '', 'AVATARS');
+                        setAvatar(imagePath);
+                        console.log('获取用户信息成功:', JSON.stringify({...userInfoResponse.value.data, avatar: imagePath}));
                     } else {
                         console.log('获取用户信息失败:',
                             userInfoResponse.status === 'fulfilled'

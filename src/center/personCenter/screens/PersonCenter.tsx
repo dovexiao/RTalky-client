@@ -4,7 +4,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {SettingsSection, ProfileSection, OtherSection, ActionsSection} from '@/center/personCenter/components';
+import { SettingsSection, ProfileSection, OtherSection } from '@/center/personCenter/components';
 
 // 个人中心具体内容：仅包含UI和内容相关逻辑
 const PersonCenter = () => {
@@ -18,7 +18,7 @@ const PersonCenter = () => {
                 {/* 个人信息区域 */}
                 <ProfileSection />
                 {/*功能项区域*/}
-                <ActionsSection />
+                {/*<ActionsSection />*/}
                 {/* 操作项区域 */}
                 <SettingsSection />
                 {/*其他*/}
