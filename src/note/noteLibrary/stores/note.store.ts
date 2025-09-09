@@ -12,9 +12,10 @@ interface NoteStore {
 export const useNoteStore = create<NoteStore>((set, get) => ({
     notes: notes as Note[],
     createNote: (note: Note) => {
-        const newQuestionId = generateNoteId(get().notes[get().notes.length - 1].noteId);
+        // const newQuestionId = generateNoteId(get().notes[get().notes.length - 1].noteId);
         set((state) => ({
-            notes: [...state.notes, { ...note, noteId: newQuestionId }],
+            // notes: [...state.notes, { ...note, noteId: newQuestionId }],
+            notes: [...state.notes, { ...note }],
         }));
     },
     updateNote: (note: any) => {
