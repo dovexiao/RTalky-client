@@ -3,11 +3,11 @@ import {
     View,
     StyleSheet,
     SafeAreaView,
-    StatusBar,
+    StatusBar, ScrollView,
 } from 'react-native';
 import { Divider } from '@ui-kitten/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import { TagsEditor } from '../components';
+import {NoteContentEditor, TagsEditor} from '../components';
 import { CreateNoteTagProps } from '../types';
 import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
@@ -70,18 +70,20 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
                 renderItemAccessory={() => <></>}
             />
             <Divider />
-            <TagsEditor
-                title="添加标签"
-                tags={tags}
-                tagInput={tagInput}
-                setTagInput={setTagInput}
-                onAddTag={handleAddTag}
-                onRemoveTag={(tagIndex) => {
-                    const removeTag = useOpeNoteStore.getState().removeTag;
-                    removeTag(tagIndex);
-                }}
-                onSubmit={handleSubmit}
-            />
+            <View style={styles.container}>
+                <TagsEditor
+                    title="添加标签"
+                    tags={tags}
+                    tagInput={tagInput}
+                    setTagInput={setTagInput}
+                    onAddTag={handleAddTag}
+                    onRemoveTag={(tagIndex) => {
+                        const removeTag = useOpeNoteStore.getState().removeTag;
+                        removeTag(tagIndex);
+                    }}
+                    onSubmit={handleSubmit}
+                />
+            </View>
         </SafeAreaView>
     );
 };
@@ -93,7 +95,8 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 20,
         backgroundColor: '#FFFFFF',
     },
 });

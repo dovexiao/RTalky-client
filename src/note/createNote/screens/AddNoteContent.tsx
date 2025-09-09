@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 10,
         paddingVertical: 20,
+        paddingBottom: 0,
         backgroundColor: '#FFFFFF',
     },
     nextButton: {
