@@ -1,10 +1,8 @@
 import React from 'react';
-import {View, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, Image, Pressable } from 'react-native';
 import {
-    // Icon,
     Text,
     TopNavigation,
-    // useTheme,
 } from '@ui-kitten/components';
 import RandomAvatar from './RandomAvatar.tsx';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
@@ -55,7 +53,7 @@ const RenderAvatar = () : React.ReactElement => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={handleToPersonCenter}>
+            <Pressable onPress={handleToPersonCenter}>
                 {avatar ?
                     <Image
                         source={{uri: 'https://randomuser.me/api/portraits/men/47.jpg'}} // Placeholder for avatar
@@ -63,7 +61,7 @@ const RenderAvatar = () : React.ReactElement => {
                     /> :
                     <RandomAvatar size={45}/>
                 }
-            </TouchableOpacity>
+            </Pressable>
             {/*<View style={styles.userInfo}>*/}
             {/*    <Text style={styles.name}>{'xxx'}</Text>*/}
             {/*    <Text style={styles.title}>{'xxx-xxx-xxx'}</Text>*/}
