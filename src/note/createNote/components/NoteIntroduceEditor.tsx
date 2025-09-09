@@ -5,14 +5,16 @@ import { Input } from '@ui-kitten/components';
 
 export const NoteIntroduceEditor = () => {
     const introduce = useOpeNoteStore(state => state.noteIntroduce);
-    const setIntroduce = useOpeNoteStore(state => state.setNoteIntroduce);
 
     return (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>笔记介绍</Text>
             <Input
                 value={introduce.trim()}
-                onChangeText={setIntroduce}
+                onChangeText={(value) => {
+                    const setIntroduce = useOpeNoteStore.getState().setNoteIntroduce;
+                    setIntroduce(value);
+                }}
                 textStyle={styles.contentInput}
                 multiline={true}
                 placeholder="请输入笔记介绍"

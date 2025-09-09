@@ -4,11 +4,10 @@ import { TagsEditor } from './TagsEditor.tsx';
 
 export const NoteTagsEditor = () => {
     const tags = useOpeNoteStore(state => state.noteTags);
-    const addTag = useOpeNoteStore(state => state.addTag);
-    const removeTag = useOpeNoteStore(state => state.removeTag);
     const [tagInput, setTagInput] = useState('');
 
     const handleAddTag = () => {
+        const addTag = useOpeNoteStore.getState().addTag;
         if (tagInput.trim() !== '') {
             addTag(tagInput.trim());
             setTagInput('');
@@ -22,7 +21,10 @@ export const NoteTagsEditor = () => {
             tagInput={tagInput}
             setTagInput={setTagInput}
             onAddTag={handleAddTag}
-            onRemoveTag={removeTag}
+            onRemoveTag={(tagIndex) => {
+                const removeTag = useOpeNoteStore.getState().removeTag;
+                removeTag(tagIndex);
+            }}
         />
     );
 };

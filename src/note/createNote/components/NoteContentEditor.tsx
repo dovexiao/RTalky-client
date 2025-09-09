@@ -5,7 +5,6 @@ import { useOpeNoteStore } from '../stores';
 
 export const NoteContentEditor = () => {
     const content = useOpeNoteStore(state => state.noteContent);
-    const setContent = useOpeNoteStore(state => state.setNoteContent);
 
     const placeholder = '请输入笔记内容...';
 
@@ -14,7 +13,10 @@ export const NoteContentEditor = () => {
             <Text style={styles.sectionTitle}>笔记内容</Text>
             <Input
                 value={content.trim()}
-                onChangeText={setContent}
+                onChangeText={(value) => {
+                    const setContent = useOpeNoteStore.getState().setNoteContent;
+                    setContent(value);
+                }}
                 textStyle={styles.contentInput}
                 multiline={true}
                 placeholder={placeholder}

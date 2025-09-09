@@ -5,21 +5,23 @@ import { Input } from '@ui-kitten/components';
 
 export const NoteTitleEditor = () => {
     const title = useOpeNoteStore(state => state.noteTitle);
-    const setTitle = useOpeNoteStore(state => state.setNoteTitle);
 
     return (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>笔记标题</Text>
             <Input
                 value={title.trim()}
-                onChangeText={setTitle}
+                onChangeText={(value) => {
+                    const setTitle = useOpeNoteStore.getState().setNoteTitle;
+                    setTitle(value);
+                }}
                 textStyle={styles.contentInput}
                 multiline={true}
                 placeholder="请输入笔记标题"
             />
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     section: {

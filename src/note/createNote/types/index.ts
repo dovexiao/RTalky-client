@@ -1,5 +1,5 @@
 // 定义导航属性类型
-import { RootStackParamList } from '../../../types';
+import { RootStackParamList } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 

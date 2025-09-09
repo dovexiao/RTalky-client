@@ -14,15 +14,14 @@ import { NoteIntroduceEditor, NoteTitleEditor } from '../components';
 import { AddNoteCoverProps } from '../types';
 
 const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
-    const reset = useOpeNoteStore(state => state.reset);
-
     useEffect(() => {
+        const reset = useOpeNoteStore.getState().reset;
         reset();
 
         return () => {
             reset();
         };
-    }, [reset]);
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
