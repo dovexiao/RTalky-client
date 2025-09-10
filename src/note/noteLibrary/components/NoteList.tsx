@@ -20,7 +20,7 @@ interface NoteListProps {
 
 export const NoteList: React.FC<NoteListProps> = ({
     style,
-    contentContainerStyle
+    contentContainerStyle,
 }) => {
     const notes = useNoteStore(state => state.notes);
     const loadNotes = useNoteStore(state => state.loadNotes);
