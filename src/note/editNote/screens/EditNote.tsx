@@ -82,6 +82,7 @@ const SaveStepButton = ({ navigation }: { navigation: any }) => {
             // 将 NoteResponse 转换为 Note 类型并更新本地 store
             updateNote({
                 noteId: updatedNote.noteId,
+                displayId: updatedNote.displayId,
                 title: updatedNote.title,
                 content: updatedNote.content,
                 introduce: updatedNote.description,

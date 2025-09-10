@@ -30,6 +30,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     // 将 NoteResponse 转换为 Note 类型
                     const updatedNote: Note = {
                         noteId: noteDetail.noteId,
+                        displayId: noteDetail.displayId,
                         title: noteDetail.title,
                         content: noteDetail.content,
                         introduce: noteDetail.description,

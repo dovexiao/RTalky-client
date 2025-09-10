@@ -44,6 +44,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
             // 创建成功后，更新本地 store
             createNote({
                 noteId: createdNote.noteId,
+                displayId: createdNote.displayId,
                 title: createdNote.title,
                 content: createdNote.content,
                 introduce: createdNote.description,
