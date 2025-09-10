@@ -19,6 +19,7 @@ interface NoteStore {
 // 将 NoteInfo 转换为 Note 类型的辅助函数
 const convertNoteInfoToNote = (noteInfo: NoteInfo): Note => ({
     noteId: noteInfo.noteId,
+    displayId: noteInfo.displayId,
     title: noteInfo.title,
     content: '',
     introduce: noteInfo.description,

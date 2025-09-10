@@ -11,7 +11,7 @@ import { Note } from '@/note/noteLibrary/types';
 import { NoteCard } from './NoteCard';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { usePaginationStore } from '@/note/noteLibrary/stores';
-import {useTheme} from "@ui-kitten/components";
+import { useTheme } from '@ui-kitten/components';
 
 interface NoteListProps {
     style?: any;

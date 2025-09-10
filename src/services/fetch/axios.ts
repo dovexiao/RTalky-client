@@ -38,7 +38,8 @@ api.interceptors.request.use(async (config) => {
         pendingRequests.set(requestId, cancelTokenSource);
 
         // 输出请求信息的 JSON
-        console.log('请求信息 JSON:', JSON.stringify(config));
+        // console.log('请求信息 JSON:', JSON.stringify(config));
+        console.log('请求信息 JSON:', config);
 
         return config;
     } catch (error) {
@@ -53,7 +54,9 @@ api.interceptors.response.use((response) => {
         pendingRequests.delete(requestId);
     }
 
-    console.log('响应信息 JSON:', JSON.stringify(response));
+    // console.log('响应信息 JSON:', JSON.stringify(response));
+    console.log('响应信息 JSON:', response);
+
     return response;
 }, async (resError) => {
     try {
@@ -105,7 +108,8 @@ api.interceptors.response.use((response) => {
         }
 
         // 输出错误响应信息的 JSON
-        console.log('错误响应信息 JSON:', JSON.stringify(resError));
+        // console.log('错误响应信息 JSON:', JSON.stringify(resError));
+        console.log('错误响应信息 JSON:', resError);
         return Promise.reject(resError);
     } catch (error) {
         throw error;
