@@ -10,6 +10,7 @@ interface TopNavigationOpeProps {
     title?: string;
     navigation?: any;
     renderItemAccessory?: () => React.ReactElement;
+    onBackPress?: () => void;
 }
 
 const BackIcon = (props: any): IconElement => (
@@ -20,13 +21,19 @@ const BackIcon = (props: any): IconElement => (
     />
 );
 
-const TopNavigationOpe: React.FC<TopNavigationOpeProps> = ({ title, renderItemAccessory }) => {
+const TopNavigationOpe: React.FC<TopNavigationOpeProps> = ({ title, renderItemAccessory, onBackPress }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const themes = useTheme();
 
     const handleGoBack = () => {
-        if (navigation.canGoBack()) {
-            navigation.goBack();
+        if (onBackPress) {
+            // 如果提供了自定义回退逻辑，则使用自定义逻辑
+            onBackPress();
+        } else {
+            // 否则使用默认回退逻辑
+            if (navigation.canGoBack()) {
+                navigation.goBack();
+            }
         }
     };
 

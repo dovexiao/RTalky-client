@@ -20,6 +20,23 @@ export type VerificationLoginProps = {
     route: VerificationLoginRouteProp;
 };
 
+type VerificationCodeNavigationProp = NativeStackNavigationProp<
+    RootStackParamList,
+    'VerificationCode'
+>;
+
+// 定义路由参数类型
+type VerificationCodeRouteProp = RouteProp<
+    RootStackParamList,
+    'VerificationCode'
+>;
+
+// VerificationCode 组件属性类型
+export type VerificationCodeProps = {
+    navigation: VerificationCodeNavigationProp;
+    route: VerificationCodeRouteProp;
+};
+
 export type Country = CountryInfo & {
     countryId: string;
     sectionLetters: string;

@@ -17,8 +17,9 @@ import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider } from '@ui-kitten/components';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
+import { VerificationCodeProps } from '@/auth/verificationLogin/types';
 
-const VerificationCode = () => {
+const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
     const { formattedNumber } = useVerificationLoginStore.getState();
 
     const { bottomActionSheetRef } = useGlobal();
@@ -36,7 +37,9 @@ const VerificationCode = () => {
             <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
             <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
             {/* 顶部返回与帮助 */}
-            <TopNavigationOpe />
+            <TopNavigationOpe onBackPress={() => {
+                navigation.navigate('VerificationLogin');
+            }} />
             <Divider />
             <View style={styles.container}>
                 {/* 标题与手机号提示 */}

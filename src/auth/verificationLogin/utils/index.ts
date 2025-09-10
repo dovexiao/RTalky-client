@@ -7,3 +7,4 @@ export { DeviceInfoUtils } from './DeviceInfoUtils';
 
 // 重新导出CountryManager
 export { countryManager } from './CountryManager';
+export type { CountryInfo } from './CountryManager';

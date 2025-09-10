@@ -6,7 +6,6 @@ import {
     SafeAreaView,
     ScrollView,
     StatusBar,
-    Alert,
 } from 'react-native';
 import { Button, Divider } from '@ui-kitten/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
