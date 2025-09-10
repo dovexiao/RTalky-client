@@ -160,6 +160,7 @@ export const NoteList: React.FC<NoteListProps> = ({
                 onEndReachedThreshold={0.1}
                 ListFooterComponent={renderFooter}
                 ListEmptyComponent={renderEmpty}
+                removeClippedSubviews={false}
             />
         </View>
     );

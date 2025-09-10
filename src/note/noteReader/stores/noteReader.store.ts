@@ -9,7 +9,7 @@ interface NoteReaderStore {
 }
 
 export const useNoteReaderStore = create<NoteReaderStore>((set, get) => ({
-    currentPage: 1,
+    currentPage: 0,
     pageCount: 1,
 
     setCurrentPage: (page: number) => {

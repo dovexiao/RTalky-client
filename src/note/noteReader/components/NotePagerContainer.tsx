@@ -89,6 +89,7 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
                     offset: screenWidth * index, // 累加偏移量
                     index,
                 })}
+                removeClippedSubviews={false}
             />
         );
     }
