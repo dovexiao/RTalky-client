@@ -3,11 +3,11 @@ import {
     View,
     StyleSheet,
     SafeAreaView,
-    StatusBar, ScrollView,
+    StatusBar,
 } from 'react-native';
 import { Divider } from '@ui-kitten/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import {NoteContentEditor, TagsEditor} from '../components';
+import { TagsEditor } from '../components';
 import { CreateNoteTagProps } from '../types';
 import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
@@ -63,7 +63,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
+            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF' }} />
             <TopNavigationOpe
                 title={'创建新笔记'}
                 navigation={navigation}

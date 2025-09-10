@@ -1,8 +1,7 @@
-// FilterDisplayController.tsx
 import React, { useState } from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Icon} from '@ui-kitten/components';
+import { Icon } from '@ui-kitten/components';
 
 interface FilterDisplayControllerProps {
     FilterContent: React.ComponentType;

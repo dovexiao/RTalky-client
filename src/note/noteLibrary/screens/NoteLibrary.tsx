@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
     FlatList,
     SafeAreaView, ScrollView,
@@ -9,11 +9,10 @@ import {
     BackHandler,
 } from 'react-native';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import {Divider, TopNavigationAction} from '@ui-kitten/components';
+import { Divider, TopNavigationAction } from '@ui-kitten/components';
 import * as CommonIcon from '@/icon';
-import { useNoteStore } from '../stores';
-import { FilterDisplayController, NoteCard } from '../components';
-import { Note, NoteLibraryProps } from '../types';
+import { FilterDisplayController, NoteList } from '../components';
+import { NoteLibraryProps } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
@@ -60,31 +59,13 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
             {/* 使用封装的筛选控制器组件 */}
             <FilterDisplayController
                 FilterContent={FilterContent}
-                MainContent={MainContent}
+                MainContent={NoteList}
                 containerStyle={styles.container}
             />
         </SafeAreaView>
     );
 };
 
-// 主内容
-const MainContent: React.FC = () => {
-    const notes = useNoteStore(state => state.notes);
-
-    const renderItem = ({ item }: { item: Note }) => (
-        <NoteCard note={item} />
-    );
-
-    return (
-        <FlatList
-            data={notes}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.noteId}
-            contentContainerStyle={styles.listContentContainer}
-            showsVerticalScrollIndicator={false}
-        />
-    );
-};
 
 // 筛选内容
 const FilterContent: React.FC = () => {
@@ -109,9 +90,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 16,
         // paddingHorizontal: 16,
-    },
-    listContentContainer: {
-        paddingBottom: 16,
     },
 });
 
