@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     SafeAreaView,
     ScrollView,
     StatusBar,
+    Alert,
 } from 'react-native';
 import { Button, Divider } from '@ui-kitten/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
@@ -13,6 +14,7 @@ import { useOpeNoteStore } from '../../createNote/stores';
 import { useNoteStore } from '../../noteLibrary/stores';
 import { NoteContentEditor, NoteIntroduceEditor, NoteTagsEditor, NoteTitleEditor } from '../../createNote/components';
 import { EditNoteProps } from '../types';
+import { NoteService } from '@/note/services';
 
 const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const { noteId } = route.params;
@@ -57,26 +59,56 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
 
 const SaveStepButton = ({ navigation }: { navigation: any }) => {
     const isSaveDisabled = useOpeNoteStore(state => state.isOpeDisabled);
-    const updateNote = useNoteStore(state => state.updateNote);
+    const [isSaving, setIsSaving] = useState(false);
 
     // 处理保存
-    const handleSave = () => {
-        const state = useOpeNoteStore.getState();
-        const newQuestion = {
-            noteId: state.noteId,
-            content: state.noteContent,
-            tags: state.noteTags,
-            lastModified: new Date().toISOString(),
-        };
+    const handleSave = async () => {
+        try {
+            setIsSaving(true);
+            const state = useOpeNoteStore.getState();
 
-        updateNote(newQuestion);
+            // 构建更新请求参数
+            const updateRequest = {
+                title: state.noteTitle,
+                description: state.noteIntroduce,
+                content: state.noteContent,
+                tags: state.noteTags,
+            };
 
-        navigation.goBack();
+            // 调用 API 修改笔记
+            const updatedNote = await NoteService.updateNote(state.noteId, updateRequest);
+
+            const updateNote = useNoteStore.getState().updateNote;
+
+            // 将 NoteResponse 转换为 Note 类型并更新本地 store
+            updateNote({
+                noteId: updatedNote.noteId,
+                title: updatedNote.title,
+                content: updatedNote.content,
+                introduce: updatedNote.description,
+                tags: updatedNote.tags,
+                createdAt: updatedNote.createdTime,
+                lastModified: updatedNote.updatedTime,
+            });
+
+            // 返回上一页
+            navigation.goBack();
+        } catch (error: any) {
+            console.error('保存笔记失败:', error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
-        <Button style={styles.endButton} onPress={() => handleSave()} disabled={isSaveDisabled}>
-            <Text style={styles.endButtonText}>保存</Text>
+        <Button
+            style={styles.endButton}
+            onPress={() => handleSave()}
+            disabled={isSaveDisabled || isSaving}
+        >
+            <Text style={styles.endButtonText}>
+                {isSaving ? '保存中...' : '保存'}
+            </Text>
         </Button>
     );
 };

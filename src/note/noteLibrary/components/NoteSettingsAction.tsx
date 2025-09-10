@@ -1,11 +1,12 @@
 import { Text } from '@ui-kitten/components';
 import React, { useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import DeleteNoteAction from './DeleteNoteAction.tsx';
 import EditIntroduceAction, { EditIntroduceActionAPI } from './EditIntroduceAction.tsx';
 import RenameNoteAction, { RenameNoteActionAPI } from './RenameNoteAction.tsx';
 import { useNoteStore } from '@/note/noteLibrary/stores';
+import { NoteService } from '@/note/services';
 
 type ColumnCount = 1 | 2 | 3 | 4;
 
@@ -18,8 +19,7 @@ export const NoteSettingsAction = ({
 }) => {
     const { actionDialogRef, bottomActionSheetRef } = useGlobal();
     const note = useNoteStore(state => state.notes.filter(n => n.noteId === cardId)[0]);
-    const updateNote = useNoteStore(state => state.updateNote);
-    const deleteNote = useNoteStore(state => state.deleteNote);
+
     const renameNoteActionRef = useRef<RenameNoteActionAPI>(null);
     const editIntroduceActionRef = useRef<EditIntroduceActionAPI>(null);
 
@@ -55,22 +55,87 @@ export const NoteSettingsAction = ({
         return placeholders;
     };
 
-    const renameNote = () => {
-        const title = renameNoteActionRef.current?.getTitle();
-        console.log(title);
-        updateNote({
-            ...note,
-            title: title?.trim() || note.title,
-        });
+    const renameNote = async () => {
+        try {
+            const title = renameNoteActionRef.current?.getTitle();
+            const newTitle = title?.trim();
+
+            if (!newTitle || newTitle === note.title) {
+                return; // 如果没有输入新标题或标题没有变化，直接返回
+            }
+
+            // 调用 API 重命名笔记
+            const updatedNote = await NoteService.renameNote(cardId, { title: newTitle });
+
+            // 将 NoteResponse 转换为 Note 类型并更新本地 store
+            const { updateNote } = useNoteStore.getState();
+            updateNote({
+                noteId: updatedNote.noteId,
+                title: updatedNote.title,
+                content: updatedNote.content,
+                introduce: updatedNote.description,
+                tags: updatedNote.tags,
+                createdAt: updatedNote.createdTime,
+                lastModified: updatedNote.updatedTime,
+            });
+
+            // 关闭对话框
+            actionDialogRef.current?.hide();
+        } catch (error: any) {
+            console.error('重命名笔记失败:', error);
+            Alert.alert('重命名失败', error.message || '重命名笔记失败，请稍后重试');
+        }
     };
 
-    const editIntroduce = () => {
-        const introduce = editIntroduceActionRef.current?.getIntroduce();
-        updateNote({
-            ...note,
-            introduce: introduce?.trim() || note.introduce,
-        });
+    const editIntroduce = async () => {
+        try {
+            const introduce = editIntroduceActionRef.current?.getIntroduce();
+            const newIntroduce = introduce?.trim();
+
+            if (!newIntroduce || newIntroduce === note.introduce) {
+                return; // 如果没有输入新简介或简介没有变化，直接返回
+            }
+
+            // 调用 API 修改笔记简介
+            const updatedNote = await NoteService.updateNoteDescription(cardId, { description: newIntroduce });
+
+            // 将 NoteResponse 转换为 Note 类型并更新本地 store
+            const { updateNote } = useNoteStore.getState();
+            updateNote({
+                noteId: updatedNote.noteId,
+                title: updatedNote.title,
+                content: updatedNote.content,
+                introduce: updatedNote.description,
+                tags: updatedNote.tags,
+                createdAt: updatedNote.createdTime,
+                lastModified: updatedNote.updatedTime,
+            });
+
+            // 关闭对话框
+            actionDialogRef.current?.hide();
+        } catch (error: any) {
+            console.error('修改笔记简介失败:', error);
+            Alert.alert('修改失败', error.message || '修改笔记简介失败，请稍后重试');
+        }
     };
+
+    const deleteNote = async () => {
+        try {
+            // 调用 API 删除笔记
+            await NoteService.deleteNote(cardId);
+
+            // 从本地 store 中删除笔记
+            const { deleteNote } = useNoteStore.getState();
+            deleteNote(cardId);
+
+            // 关闭对话框和底部操作表
+            actionDialogRef.current?.hide();
+            bottomActionSheetRef.current?.hide();
+        } catch (error: any) {
+            console.error('删除笔记失败:', error);
+            Alert.alert('删除失败', error.message || '删除笔记失败，请稍后重试');
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -108,26 +173,23 @@ export const NoteSettingsAction = ({
                     onPress={() => {
                         actionDialogRef.current?.show({
                             content: <DeleteNoteAction />,
-                            onConfirm: () => {
-                                deleteNote(cardId);
-                                bottomActionSheetRef.current?.hide();
-                            },
+                            onConfirm: deleteNote,
                         });
                     }}
                 >
                     <Text style={styles.actionText}>删除</Text>
                 </TouchableOpacity>
 
-                {/* 新增的第四个操作项示例 */}
-                <TouchableOpacity
-                    style={[styles.actionObject, { width: `${getWidthByColumn(columnCount)}%` }]}
-                    onPress={() => {
-                        // 新增操作逻辑
-                        console.log("新增操作触发");
-                    }}
-                >
-                    <Text style={styles.actionText}>新增操作</Text>
-                </TouchableOpacity>
+                {/*/!* 新增的第四个操作项示例 *!/*/}
+                {/*<TouchableOpacity*/}
+                {/*    style={[styles.actionObject, { width: `${getWidthByColumn(columnCount)}%` }]}*/}
+                {/*    onPress={() => {*/}
+                {/*        // 新增操作逻辑*/}
+                {/*        console.log("新增操作触发");*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    <Text style={styles.actionText}>新增操作</Text>*/}
+                {/*</TouchableOpacity>*/}
 
                 {/* 渲染空白占位元素 */}
                 {renderEmptyPlaceholders()}

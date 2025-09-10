@@ -70,6 +70,25 @@ export const put = async <T = any>(
 };
 
 /**
+ * 封装 DELETE 请求
+ * @param url 请求路径
+ * @param config 请求配置
+ * @returns 响应数据
+ */
+export const del = async <T = any>(
+    url: string,
+    config?: Record<string, any>
+): Promise<T> => {
+    try {
+        const response = await api.delete<T>(url, config);
+        return response.data;
+    } catch (error: any) {
+        // 统一错误处理逻辑
+        throw handleApiError(error);
+    }
+};
+
+/**
  * 统一处理 API 错误
  * @param error 原始错误对象
  * @returns 格式化后的错误响应
