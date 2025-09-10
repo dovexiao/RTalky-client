@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { Note } from '../types';
-import { notes } from '../assets';
 import { NoteService, NoteInfo } from '@/note/services';
 
 interface NoteStore {
@@ -29,7 +28,7 @@ const convertNoteInfoToNote = (noteInfo: NoteInfo): Note => ({
 });
 
 export const useNoteStore = create<NoteStore>((set, get) => ({
-    notes: notes as Note[],
+    notes: [],
     createNote: (note: Note) => {
         set((state) => ({
             notes: [...state.notes, { ...note }],

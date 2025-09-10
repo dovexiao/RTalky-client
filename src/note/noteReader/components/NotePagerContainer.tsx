@@ -30,7 +30,7 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
         const flatListRef = useAnimatedRef<Animated.FlatList<Note>>();
         const isScrollEnabled = useSharedValue(true);
 
-        const setCurrentPage = useNoteReaderStore((state) => state.setCurrentPage);
+        const setCurrentPage = useNoteReaderStore.getState().setCurrentPage;
 
         // 暴露API给控制层
         useImperativeHandle(ref, () => ({

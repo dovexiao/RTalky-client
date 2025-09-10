@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { usePagerController } from '../contexts/PagerController.tsx';
+import { usePagerController } from '@/note/noteReader/contexts';
 import { Button } from '@ui-kitten/components';
 import { useNoteReaderStore } from '../stores';
 

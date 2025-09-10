@@ -1,10 +1,12 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import Markdown from 'react-native-markdown-display';
-import {Divider} from '@ui-kitten/components';
+import { Divider } from '@ui-kitten/components';
 import { formatTime } from '@utils/formatTime.ts';
 import { getTagColor } from '@utils/getTagColor.ts';
-import { Note } from '../../noteLibrary/types';
+import { NoteService } from '@/note/services';
+import { useNoteStore } from '@/note/noteLibrary/stores';
+import { Note } from '@/note/noteLibrary/types';
 
 // 定义props类型
 interface NoteDetailContentProps {
@@ -12,34 +14,85 @@ interface NoteDetailContentProps {
 }
 
 const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentNote, setCurrentNote] = useState(note);
+    const updateNote = useNoteStore(state => state.updateNote);
+
+    // 检查是否需要获取笔记详情
+    useEffect(() => {
+        const fetchNoteDetail = async () => {
+            // 如果 content 为空或只有空白字符，则获取详情
+            if (!note.content || note.content.trim() === '') {
+                try {
+                    setIsLoading(true);
+                    const noteDetail = await NoteService.getNoteDetail(note.noteId);
+
+                    // 将 NoteResponse 转换为 Note 类型
+                    const updatedNote: Note = {
+                        noteId: noteDetail.noteId,
+                        title: noteDetail.title,
+                        content: noteDetail.content,
+                        introduce: noteDetail.description,
+                        tags: noteDetail.tags,
+                        createdAt: noteDetail.createdTime,
+                        lastModified: noteDetail.updatedTime,
+                    };
+
+                    // 更新本地状态
+                    setCurrentNote(updatedNote);
+
+                    // 更新 store 中的笔记数据
+                    updateNote(updatedNote);
+                } catch (error) {
+                    console.error('获取笔记详情失败:', error);
+                    // 如果获取失败，保持原有状态
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchNoteDetail();
+    }, [note.noteId, note.content, updateNote]);
+
+    // 如果正在加载，显示加载指示器
+    if (isLoading) {
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#666" />
+                <Text style={styles.loadingText}>加载笔记内容中...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title} ellipsizeMode={'tail'} numberOfLines={1}>
-                    {note.title}
+                    {currentNote.title}
                 </Text>
                 <Text style={styles.introduction} ellipsizeMode={'tail'} numberOfLines={3}>
-                    {note.introduce}
+                    {currentNote.introduce}
                 </Text>
             </View>
 
             <Text style={styles.creationInfo}>
-                {formatTime(note.createdAt, { format: 'datetime' })}
+                {formatTime(currentNote.createdAt, { format: 'datetime' })}
             </Text>
 
             <Divider style={{ marginBottom: 10 }} />
 
             <Markdown style={markdownStyles} rules={renderRules}>
-                {note.content.trim() || '暂无内容'}
+                {currentNote.content.trim() || '暂无内容'}
             </Markdown>
 
             <Divider style={{ marginVertical: 10 }} />
 
-            {note.tags.length > 0 && (
+            {currentNote.tags.length > 0 && (
                 <View style={styles.tagsContainer}>
                     <Text style={styles.sectionTitle}>标签</Text>
                     <View style={styles.tagsList}>
-                        {note.tags.map((tag: string, index: number) => (
+                        {currentNote.tags.map((tag: string, index: number) => (
                             <View
                                 key={index}
                                 style={[styles.tag, { backgroundColor: getTagColor() }]}
@@ -53,7 +106,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
 
             <View style={styles.footer}>
                 <Text style={styles.footerText}>
-                    最近修改: {formatTime(note.lastModified, { format: 'datetime' })}
+                    最近修改: {formatTime(currentNote.lastModified, { format: 'datetime' })}
                 </Text>
             </View>
             <View style={{ height: 40 }} />
@@ -202,6 +255,15 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: '#FFFFFF',
+    },
+    loadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 12,
+        fontSize: 14,
+        color: '#666',
     },
     header: {
         flexDirection: 'column',

@@ -88,10 +88,26 @@ export class NoteService {
     static async createNote(request: CreateNoteRequest): Promise<NoteResponse> {
         try {
             const response = await post<NoteResponse>('/notes', request);
-
+            
             return response;
         } catch (error) {
             console.error('创建笔记失败:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 获取笔记详情
+     * @param noteId 笔记ID
+     * @returns 笔记详情数据
+     */
+    static async getNoteDetail(noteId: string): Promise<NoteResponse> {
+        try {
+            const response = await get<NoteResponse>(`/notes/${noteId}`);
+            
+            return response;
+        } catch (error) {
+            console.error('获取笔记详情失败:', error);
             throw error;
         }
     }

@@ -32,8 +32,6 @@ export const PagerController: React.FC<PagerControllerProps> = ({
     const containerRef = useRef<ContainerAPI>(null);
 
     const currentPage = useNoteReaderStore((state) => state.currentPage);
-    const setCurrentPage = useNoteReaderStore((state) => state.setCurrentPage);
-    const setPageCount = useNoteReaderStore((state) => state.setPageCount);
 
     // 翻页控制方法
     const goNext = () => {
@@ -58,9 +56,10 @@ export const PagerController: React.FC<PagerControllerProps> = ({
     );
 
     useEffect(() => {
+        const { setCurrentPage, setPageCount } = useNoteReaderStore.getState();
         setCurrentPage(notes.findIndex((note) => note.noteId === currentNoteId) || 0);
         setPageCount(notes.length);
-    }, [currentNoteId, notes, setCurrentPage, setPageCount]);
+    }, [currentNoteId, notes]);
 
     return (
         <PagerContext.Provider value={contextValue}>
