@@ -130,7 +130,7 @@ export const NoteList: React.FC<NoteListProps> = ({
     if (isLoading) {
         return (
             <View style={[styles.centerContainer, style]}>
-                <ActivityIndicator size="large" color="#666" />
+                <ActivityIndicator size="large" color={themes['color-primary-500']} />
                 <Text style={styles.loadingText}>加载中...</Text>
             </View>
         );

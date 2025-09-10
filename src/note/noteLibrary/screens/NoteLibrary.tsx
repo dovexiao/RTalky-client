@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-    FlatList,
     SafeAreaView, ScrollView,
     StatusBar,
     StyleSheet,
@@ -48,7 +47,7 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             {/*<StatusBar barStyle="dark-content" backgroundColor={'#ffffff'} translucent={false} />*/}
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
+            <View style={styles.statusBar} />
             <TopNavigationOpe
                 title={'笔记库'}
                 navigation={navigation}
@@ -70,7 +69,7 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
 // 筛选内容
 const FilterContent: React.FC = () => {
     return (
-        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             <Text>题目名称搜索</Text>
             <Text>最近题目名称搜索</Text>
             <Text>题目介绍搜索</Text>
@@ -85,6 +84,13 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#F0F0F0',
+    },
+    statusBar: {
+        height: StatusBar.currentHeight,
+        backgroundColor: '#FFFFFF',
+    },
+    scrollView: {
+        flex: 1,
     },
     container: {
         flex: 1,

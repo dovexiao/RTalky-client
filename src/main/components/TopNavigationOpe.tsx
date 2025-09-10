@@ -45,7 +45,7 @@ const TopNavigationOpe: React.FC<TopNavigationOpeProps> = ({ title, renderItemAc
     );
 
     const renderTitleAction = (): React.ReactElement => (
-        <View style={{ width: '65%', alignItems: 'center', marginVertical: 10 }}>
+        <View style={styles.titleContainer}>
             <Text
                 style={styles.titleText}
                 numberOfLines={1}
@@ -65,6 +65,11 @@ const TopNavigationOpe: React.FC<TopNavigationOpeProps> = ({ title, renderItemAc
 };
 
 const styles = StyleSheet.create({
+    titleContainer: {
+        width: '65%',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
     titleText: {
         fontSize: 16,
         fontWeight: 'bold',

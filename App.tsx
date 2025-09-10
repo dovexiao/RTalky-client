@@ -84,6 +84,7 @@ function App(): JSX.Element {
         };
 
         init().finally(async () => {
+            console.log('BootSplash is ready to hide');
             await BootSplash.hide({ fade: true });
             console.log('BootSplash has been hidden successfully');
         });
