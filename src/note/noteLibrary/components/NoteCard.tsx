@@ -20,7 +20,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     return (
         <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('NoteReader', { noteId: note.noteId })}>
             <View style={styles.header}>
-                <Text style={styles.cardId}>{note.noteId}</Text>
+                <Text style={styles.cardId}>{note.displayId}</Text>
                 <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{note.title}</Text>
                 {/*<TopNavigationAction icon={MoreOpeIcon} onPress={() => {*/}
                 {/*    bottomActionSheetRef.current?.show(<SettingsActionModal />);*/}

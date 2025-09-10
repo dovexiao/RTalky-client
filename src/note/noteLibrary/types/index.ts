@@ -22,6 +22,7 @@ export type NoteLibraryProps = {
 
 export type Note = {
     noteId: string,
+    displayId: string;
     createdAt: string,
     lastModified: string,
     title: string,

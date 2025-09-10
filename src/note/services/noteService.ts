@@ -3,6 +3,7 @@ import { get, post, put, del } from '@services/fetch/request.ts';
 // 笔记信息
 export interface NoteInfo {
     noteId: string;
+    displayId: string;
     title: string;
     description: string;
     tags: string[];
@@ -39,6 +40,7 @@ export interface UpdateNoteRequest {
 // 笔记响应数据（包含内容）
 export interface NoteResponse {
     noteId: string;
+    displayId: string;
     title: string;
     description: string;
     content: string;
@@ -113,7 +115,7 @@ export class NoteService {
     static async createNote(request: CreateNoteRequest): Promise<NoteResponse> {
         try {
             const response = await post<NoteResponse>('/notes', request);
-            
+
             return response;
         } catch (error) {
             console.error('创建笔记失败:', error);
@@ -129,7 +131,7 @@ export class NoteService {
     static async getNoteDetail(noteId: string): Promise<NoteResponse> {
         try {
             const response = await get<NoteResponse>(`/notes/${noteId}`);
-            
+
             return response;
         } catch (error) {
             console.error('获取笔记详情失败:', error);
@@ -146,7 +148,7 @@ export class NoteService {
     static async renameNote(noteId: string, request: RenameNoteRequest): Promise<NoteResponse> {
         try {
             const response = await put<NoteResponse>(`/notes/${noteId}/title`, request);
-            
+
             return response;
         } catch (error) {
             console.error('重命名笔记失败:', error);
@@ -163,7 +165,7 @@ export class NoteService {
     static async updateNoteDescription(noteId: string, request: UpdateDescriptionRequest): Promise<NoteResponse> {
         try {
             const response = await put<NoteResponse>(`/notes/${noteId}/description`, request);
-            
+
             return response;
         } catch (error) {
             console.error('修改笔记简介失败:', error);
@@ -180,7 +182,7 @@ export class NoteService {
     static async updateNote(noteId: string, request: UpdateNoteRequest): Promise<NoteResponse> {
         try {
             const response = await put<NoteResponse>(`/notes/${noteId}`, request);
-            
+
             return response;
         } catch (error) {
             console.error('修改笔记失败:', error);
@@ -196,7 +198,7 @@ export class NoteService {
     static async deleteNote(noteId: string): Promise<DeleteResponse> {
         try {
             const response = await del<DeleteResponse>(`/notes/${noteId}`);
-            
+
             return response;
         } catch (error) {
             console.error('删除笔记失败:', error);
