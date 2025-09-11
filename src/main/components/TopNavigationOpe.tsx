@@ -8,7 +8,6 @@ import { RootStackParamList } from '@/types';
 
 interface TopNavigationOpeProps {
     title?: string;
-    navigation?: any;
     renderItemAccessory?: () => React.ReactElement;
     onBackPress?: () => void;
 }

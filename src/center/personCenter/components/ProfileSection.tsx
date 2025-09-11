@@ -1,11 +1,13 @@
-import React, { useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     StyleSheet,
     View,
     Text,
     Image,
     TouchableOpacity,
+    Dimensions,
 } from 'react-native';
+import { useTheme } from '@ui-kitten/components';
 import { useAuthStore } from '@/auth/stores';
 import { UserInfoService } from '@/auth/services';
 import RandomAvatar from '@/main/components/RandomAvatar.tsx';
@@ -23,6 +25,24 @@ export const ProfileSection = () => {
     const { avatarActionsModalRef, actionDialogRef } = useGlobal();
     const editNicknameActionRef = useRef<EditNicknameActionAPI>(null);
     const editBioActionRef = useRef<EditBioActionAPI>(null);
+
+    const themes = useTheme();
+
+    const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+    const isSmallScreen = screenWidth < 600; // Threshold for small screens (portrait phones)
+
+    // 监听屏幕尺寸变化
+    useEffect(() => {
+        const onChange = ({ window }: { window: { width: number, height: number } }) => {
+            setScreenWidth(window.width);
+        };
+
+        const subscription = Dimensions.addEventListener('change', onChange);
+
+        return () => {
+            subscription?.remove(); // 使用返回的 remove 方法
+        };
+    }, []);
 
     // 编辑昵称
     const handleEditNickname = () => {
@@ -69,73 +89,224 @@ export const ProfileSection = () => {
     };
 
     return (
-        <View style={styles.profileSection}>
-            {/* 头像区域 */}
-            <View style={styles.avatarWrapper}>
-                <View style={styles.avatarContainer}>
-                    {avatar ?
-                        <Image
-                            source={{ uri: `file://${avatar}` }}
-                            style={styles.avatar}
-                        /> :
-                        <RandomAvatar size={100} />
-                    }
-                </View>
-                {/* 头像编辑图标 */}
-                <TouchableOpacity
-                    style={styles.avatarEditButton}
-                    onPress={() => {
-                        avatarActionsModalRef.current?.show();
-                    }}
-                >
-                    <CameraIcon width={20} height={20} />
-                </TouchableOpacity>
-            </View>
+        <View style={[
+            styles.profileSection,
+            { backgroundColor: themes['color-primary-500'] },
+            isSmallScreen ? styles.profileSectionVertical : styles.profileSectionHorizontal
+        ]}>
+            {isSmallScreen ? (
+                // 小屏幕垂直布局 (参照第一张图片)
+                <>
+                     {/*头像区域 - 超出容器一点*/}
+                    <View style={styles.avatarWrapperVertical}>
+                        <View style={styles.avatarContainer}>
+                            {avatar ?
+                                <Image
+                                    source={{ uri: `file://${avatar}` }}
+                                    style={styles.avatar}
+                                /> :
+                                <RandomAvatar size={100} />
+                            }
+                        </View>
+                        {/* 头像编辑图标 */}
+                        <TouchableOpacity
+                            style={styles.avatarEditButton}
+                            onPress={() => {
+                                avatarActionsModalRef.current?.show();
+                            }}
+                        >
+                            <CameraIcon width={20} height={20} />
+                        </TouchableOpacity>
+                    </View>
 
-            {/* 昵称和编辑图标 */}
-            <View style={styles.nameRow}>
-                <Text style={styles.name} numberOfLines={1} ellipsizeMode={'tail'}>
-                    {nickname || '暂无昵称'}
-                </Text>
-                <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={handleEditNickname}
-                >
-                    <EditIcon width={28} height={28} />
-                </TouchableOpacity>
-            </View>
+                    {/* 用户信息区域 */}
+                    <View style={styles.userInfoVertical}>
+                        {/* 昵称和编辑图标 */}
+                        <View style={styles.nameRowVertical}>
+                            <Text style={[styles.nameVertical, { color: '#FFFFFF' }]} numberOfLines={1} ellipsizeMode={'tail'}>
+                                {nickname || '暂无昵称'}
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={handleEditNickname}
+                            >
+                                <EditIcon width={24} height={24} />
+                            </TouchableOpacity>
+                        </View>
 
-            {/* 简介和编辑图标 */}
-            <View style={styles.bioRow}>
-                <Text style={styles.bio} numberOfLines={2} ellipsizeMode={'tail'}>
-                    {bio || '这个很懒，还没有留下简介'}
-                </Text>
-                <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={handleEditBio}
-                >
-                    <EditIcon width={20} height={20} />
-                </TouchableOpacity>
-            </View>
+                        {/* 简介和编辑图标 */}
+                        <View style={styles.bioRowVertical}>
+                            <Text style={[styles.bioVertical, { color: '#FFFFFF' }]} numberOfLines={3} ellipsizeMode={'tail'}>
+                                {bio || '这个很懒，还没有留下简介'}
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={handleEditBio}
+                            >
+                                <EditIcon width={20} height={20} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </>
+            ) : (
+                // 大屏幕水平布局 (参照第二张图片)
+                <>
+                    {/* 头像区域 */}
+                    <View style={styles.avatarWrapperHorizontal}>
+                        <View style={styles.avatarContainer}>
+                            {avatar ?
+                                <Image
+                                    source={{ uri: `file://${avatar}` }}
+                                    style={styles.avatar}
+                                /> :
+                                <RandomAvatar size={100} />
+                            }
+                        </View>
+                        {/* 头像编辑图标 */}
+                        <TouchableOpacity
+                            style={styles.avatarEditButton}
+                            onPress={() => {
+                                avatarActionsModalRef.current?.show();
+                            }}
+                        >
+                            <CameraIcon width={20} height={20} />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* 用户信息区域 */}
+                    <View style={styles.userInfoHorizontal}>
+                        {/* 昵称和编辑图标 */}
+                        <View style={styles.nameRowHorizontal}>
+                            <Text style={[styles.nameHorizontal, { color: '#FFFFFF' }]} numberOfLines={1} ellipsizeMode={'tail'}>
+                                {nickname || '暂无昵称'}
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={handleEditNickname}
+                            >
+                                <EditIcon width={24} height={24} />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* 简介和编辑图标 */}
+                        <View style={styles.bioRowHorizontal}>
+                            <Text style={[styles.bioHorizontal, { color: '#FFFFFF' }]} numberOfLines={3} ellipsizeMode={'tail'}>
+                                {bio || '这个很懒，还没有留下简介'}
+                            </Text>
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={handleEditBio}
+                            >
+                                <EditIcon width={20} height={20} fill={'#FFFFFF'} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </>
+            )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    // 基础容器样式
     profileSection: {
+        borderRadius: 16,
+        marginHorizontal: 16,
+        marginVertical: 90,
+        marginBottom: 30,
+        paddingHorizontal: 40,
+        paddingVertical: 20,
+        // shadowColor: '#000',
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 8,
+        // elevation: 4,
+    },
+
+    // 小屏幕垂直布局样式
+    profileSectionVertical: {
         alignItems: 'center',
-        paddingVertical: 70,
+        paddingTop: 80, // 为头像留出空间
         paddingBottom: 30,
     },
-    // 头像包装器
-    avatarWrapper: {
-        position: 'relative',
-        marginBottom: 16,
+    avatarWrapperVertical: {
+        position: 'absolute',
+        top: -30,
+        left: 30,
+        zIndex: 1,
     },
+    userInfoVertical: {
+        alignItems: 'flex-start',
+        marginTop: 20,
+    },
+    nameRowVertical: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginBottom: 8,
+        // maxWidth: '90%',
+    },
+    nameVertical: {
+        fontSize: 24,
+        fontWeight: '700',
+        textAlign: 'center',
+        marginRight: 8,
+    },
+    bioRowVertical: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    bioVertical: {
+        fontSize: 16,
+        lineHeight: 28,
+        textAlign: 'left',
+        marginRight: 8,
+    },
+
+    // 大屏幕水平布局样式
+    profileSectionHorizontal: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 20,
+    },
+    avatarWrapperHorizontal: {
+        position: 'relative',
+        marginRight: 40,
+    },
+    userInfoHorizontal: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    nameRowHorizontal: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+        // marginLeft: 28,
+    },
+    nameHorizontal: {
+        fontSize: 24,
+        fontWeight: '700',
+        marginRight: 8,
+    },
+    bioRowHorizontal: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    bioHorizontal: {
+        fontSize: 16,
+        lineHeight: 28,
+        textAlign: 'left',
+        marginRight: 8,
+    },
+
+    // 通用头像样式
     avatarContainer: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 112,
+        height: 112,
+        borderRadius: 56,
         backgroundColor: '#E5E7EB',
         justifyContent: 'center',
         alignItems: 'center',
@@ -147,12 +318,15 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 4,
+        borderWidth: 2,
+        borderColor: '#FFFFFF',
     },
     avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 110,
+        height: 110,
+        borderRadius: 55,
     },
+
     // 头像编辑按钮
     avatarEditButton: {
         position: 'absolute',
@@ -172,41 +346,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowRadius: 4,
         elevation: 3,
-        // borderWidth: 2,
-        // borderColor: '#F3F4F6',
     },
-    // 昵称行
-    nameRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-        maxWidth: '80%',
-    },
-    name: {
-        fontSize: 24,
-        fontWeight: '700',
-        color: '#1F2937',
-        marginLeft: 32,
-        textAlign: 'center',
-    },
-    // 简介行
-    bioRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        maxWidth: '80%',
-    },
-    bio: {
-        fontSize: 16,
-        color: '#6B7280',
-        marginLeft: 24,
-        textAlign: 'left',
-    },
+
     // 编辑按钮
     editButton: {
-        padding: 4,
+        // padding: 4,
         borderRadius: 4,
-        backgroundColor: 'transparent',
-        // borderWidth: 1,
-        // borderColor: '#E5E7EB',
+        backgroundColor: 'rgba(255,255,255,0.8)',
     },
 });

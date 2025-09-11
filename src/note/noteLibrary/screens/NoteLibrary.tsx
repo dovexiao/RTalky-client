@@ -50,7 +50,6 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
             <View style={styles.statusBar} />
             <TopNavigationOpe
                 title={'笔记库'}
-                navigation={navigation}
                 renderItemAccessory={renderItemAccessory}
             />
             <Divider />

@@ -1,10 +1,9 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import {
     Dimensions,
     Pressable,
-    StatusBar,
     StyleSheet,
-    View
+    View,
 } from 'react-native';
 import Animated, {
     interpolate,
@@ -22,14 +21,27 @@ export type SwipeSidebarAPI = {
     getVisible: () => boolean;
 };
 
-// 计算侧边栏宽度（占屏幕90%，与原逻辑一致）
-const sidebarWidth = Dimensions.get('window').width * 0.9;
-
 // 通用滑动交互容器：从左侧滑出，支持手势滑动关闭
 const SwipeSidebar = forwardRef<SwipeSidebarAPI, { children: React.ReactNode }>(({ children }, ref) => {
+    const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+    const sidebarWidth = screenWidth * 0.9;
+
     // 动画相关共享值
     const positionX = useSharedValue<number>(-sidebarWidth); // 侧边栏X轴位置（-width为隐藏，0为显示）
     const visible = useSharedValue(false); // 控制显示/隐藏状态
+
+    // 监听屏幕尺寸变化
+    useEffect(() => {
+        const onChange = ({ window }: { window: { width: number, height: number } }) => {
+            setScreenWidth(window.width);
+        };
+
+        const subscription = Dimensions.addEventListener('change', onChange);
+
+        return () => {
+            subscription?.remove(); // 使用返回的 remove 方法
+        };
+    }, []);
 
     // 控制遮罩层显示逻辑（根据位置动态切换）
     const display = useDerivedValue(() => {
@@ -72,6 +84,7 @@ const SwipeSidebar = forwardRef<SwipeSidebarAPI, { children: React.ReactNode }>(
 
     // 侧边栏容器动画样式
     const containerAnimatedStyle = useAnimatedStyle(() => ({
+        width: sidebarWidth,
         transform: [{ translateX: positionX.value }],
     }));
 
@@ -117,7 +130,6 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         left: 0,
-        width: sidebarWidth,
         height: '100%',
         backgroundColor: '#F9FAFB',
         zIndex: 100,
