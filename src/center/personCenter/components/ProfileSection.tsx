@@ -7,7 +7,6 @@ import {
     TouchableOpacity,
     Dimensions,
 } from 'react-native';
-import { useTheme } from '@ui-kitten/components';
 import { useAuthStore } from '@/auth/stores';
 import { UserInfoService } from '@/auth/services';
 import RandomAvatar from '@/main/components/RandomAvatar.tsx';
@@ -15,6 +14,7 @@ import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { EditIcon, CameraIcon } from '@/icon';
 import EditNicknameAction, { EditNicknameActionAPI } from './EditNicknameAction';
 import EditBioAction, { EditBioActionAPI } from './EditBioAction';
+import { useSpecialTheme}  from '@contexts/SpecialThemeContext.tsx';
 
 export const ProfileSection = () => {
     const nickname = useAuthStore(state => state.nickname);
@@ -26,10 +26,10 @@ export const ProfileSection = () => {
     const editNicknameActionRef = useRef<EditNicknameActionAPI>(null);
     const editBioActionRef = useRef<EditBioActionAPI>(null);
 
-    const themes = useTheme();
-
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
     const isSmallScreen = screenWidth < 600; // Threshold for small screens (portrait phones)
+
+    const { specialThemeColors } = useSpecialTheme();
 
     // 监听屏幕尺寸变化
     useEffect(() => {
@@ -91,13 +91,13 @@ export const ProfileSection = () => {
     return (
         <View style={[
             styles.profileSection,
-            { backgroundColor: themes['color-primary-500'] },
-            isSmallScreen ? styles.profileSectionVertical : styles.profileSectionHorizontal
+            { backgroundColor: specialThemeColors['bg-200'] },
+            isSmallScreen ? styles.profileSectionVertical : styles.profileSectionHorizontal,
         ]}>
             {isSmallScreen ? (
                 // 小屏幕垂直布局 (参照第一张图片)
                 <>
-                     {/*头像区域 - 超出容器一点*/}
+                    {/*头像区域 - 超出容器一点*/}
                     <View style={styles.avatarWrapperVertical}>
                         <View style={styles.avatarContainer}>
                             {avatar ?
@@ -123,7 +123,14 @@ export const ProfileSection = () => {
                     <View style={styles.userInfoVertical}>
                         {/* 昵称和编辑图标 */}
                         <View style={styles.nameRowVertical}>
-                            <Text style={[styles.nameVertical, { color: '#FFFFFF' }]} numberOfLines={1} ellipsizeMode={'tail'}>
+                            <Text
+                                style={[
+                                    styles.nameVertical,
+                                    { color: specialThemeColors['text-100'] },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode={'tail'}
+                            >
                                 {nickname || '暂无昵称'}
                             </Text>
                             <TouchableOpacity
@@ -136,7 +143,14 @@ export const ProfileSection = () => {
 
                         {/* 简介和编辑图标 */}
                         <View style={styles.bioRowVertical}>
-                            <Text style={[styles.bioVertical, { color: '#FFFFFF' }]} numberOfLines={3} ellipsizeMode={'tail'}>
+                            <Text
+                                style={[
+                                    styles.bioVertical,
+                                    { color: specialThemeColors['text-200'] },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode={'tail'}
+                            >
                                 {bio || '这个很懒，还没有留下简介'}
                             </Text>
                             <TouchableOpacity
@@ -177,7 +191,14 @@ export const ProfileSection = () => {
                     <View style={styles.userInfoHorizontal}>
                         {/* 昵称和编辑图标 */}
                         <View style={styles.nameRowHorizontal}>
-                            <Text style={[styles.nameHorizontal, { color: '#FFFFFF' }]} numberOfLines={1} ellipsizeMode={'tail'}>
+                            <Text
+                                style={[
+                                    styles.nameHorizontal,
+                                    { color: specialThemeColors['text-100'] },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode={'tail'}
+                            >
                                 {nickname || '暂无昵称'}
                             </Text>
                             <TouchableOpacity
@@ -190,7 +211,14 @@ export const ProfileSection = () => {
 
                         {/* 简介和编辑图标 */}
                         <View style={styles.bioRowHorizontal}>
-                            <Text style={[styles.bioHorizontal, { color: '#FFFFFF' }]} numberOfLines={3} ellipsizeMode={'tail'}>
+                            <Text
+                                style={[
+                                    styles.bioHorizontal,
+                                    { color: specialThemeColors['text-200'] },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode={'tail'}
+                            >
                                 {bio || '这个很懒，还没有留下简介'}
                             </Text>
                             <TouchableOpacity
@@ -212,9 +240,9 @@ const styles = StyleSheet.create({
     profileSection: {
         borderRadius: 16,
         marginHorizontal: 16,
-        marginVertical: 90,
+        marginVertical: 80,
         marginBottom: 30,
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
         paddingVertical: 20,
         // shadowColor: '#000',
         // shadowOffset: {
@@ -228,14 +256,14 @@ const styles = StyleSheet.create({
 
     // 小屏幕垂直布局样式
     profileSectionVertical: {
-        alignItems: 'center',
-        paddingTop: 80, // 为头像留出空间
+        alignItems: 'flex-start',
+        paddingTop: 80,
         paddingBottom: 30,
     },
     avatarWrapperVertical: {
         position: 'absolute',
         top: -30,
-        left: 30,
+        left: 20,
         zIndex: 1,
     },
     userInfoVertical: {
@@ -247,10 +275,9 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         marginBottom: 8,
-        // maxWidth: '90%',
     },
     nameVertical: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: '700',
         textAlign: 'center',
         marginRight: 8,
@@ -284,7 +311,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
-        // marginLeft: 28,
     },
     nameHorizontal: {
         fontSize: 24,

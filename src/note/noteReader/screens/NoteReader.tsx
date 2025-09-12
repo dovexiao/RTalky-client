@@ -34,7 +34,6 @@ const NoteReader: React.FC<NoteReaderProps> = ({ navigation, route }) => {
             <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
             <TopNavigationOpe
                 title={'笔记详情'}
-                navigation={navigation}
                 renderItemAccessory={renderItemAccessory}
             />
             <Divider />

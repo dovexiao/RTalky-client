@@ -1,40 +1,65 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, Text } from '@ui-kitten/components';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { LearnBoxProps } from '@/main/types';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+    const { specialThemeColors } = useSpecialTheme();
+
     return (
         <TouchableOpacity
-            style={styles.card}
+            style={[
+                styles.card,
+                { backgroundColor: specialThemeColors['bg-200'] },
+            ]}
             key={learnBox.id || `module-${index}`}
             onPress={() => {
                 navigation.navigate(learnBox.screen as never);
             }}
         >
             <View style={styles.cardContainer}>
-                <View style={[styles.icon, { backgroundColor: learnBox.backgroundColor }]}>
+                <View style={[
+                    styles.icon,
+                    { backgroundColor: specialThemeColors['primary-100'],
+                }]}>
                     <Icon
                         name={learnBox.icon}
-                        fill="#FFFFFF"
+                        fill={specialThemeColors['primary-300']}
                         width={28} height={28}
                     />
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.title}>{learnBox.title}</Text>
+                        <Text style={[
+                            styles.title,
+                            { color: specialThemeColors['text-100'] },
+                        ]}>
+                            {learnBox.title}
+                        </Text>
                         <Text style={styles.time}>{learnBox.lastUpdated}</Text>
                     </View>
-                    <Text style={styles.description}>{learnBox.description}</Text>
+                    <Text style={[
+                        styles.description,
+                        { color: specialThemeColors['text-200'] },
+                    ]}>
+                        {learnBox.description}
+                    </Text>
                     <View style={styles.moduleStats}>
-                        <View style={[styles.countBadge, { backgroundColor: learnBox.countColor }]}>
-                            <Text style={[styles.countText, { color: learnBox.countTextColor }]}>
-                                {learnBox.count}
+                        <View style={[
+                            styles.countBadge,
+                            { backgroundColor: learnBox.countColor },
+                        ]}>
+                            <Text style={[
+                                styles.countText,
+                                { color: learnBox.countTextColor },
+                            ]}>
+                                {learnBox.count} notes
                             </Text>
                         </View>
                     </View>

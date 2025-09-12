@@ -1,0 +1,12 @@
+{
+  "primary-100": "#1F3A5F",
+  "primary-200": "#4D648D",
+  "primary-300": "#ACC2EF",
+  "accent-100": "#3D5A80",
+  "accent-200": "#CEE8FF",
+  "text-100": "#FFFFFF",
+  "text-200": "#E0E0E0",
+  "bg-100": "#0F1C2E",
+  "bg-200": "#1F2B3E",
+  "bg-300": "#374357"
+}

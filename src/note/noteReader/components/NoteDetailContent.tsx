@@ -7,6 +7,7 @@ import { getTagColor } from '@utils/getTagColor.ts';
 import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 // 定义props类型
 interface NoteDetailContentProps {
@@ -17,6 +18,8 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentNote, setCurrentNote] = useState(note);
     const updateNote = useNoteStore(state => state.updateNote);
+
+    const { specialThemeColors } = useSpecialTheme();
 
     // 检查是否需要获取笔记详情
     useEffect(() => {
@@ -60,8 +63,13 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     if (isLoading) {
         return (
             <View style={[styles.container, styles.loadingContainer]}>
-                <ActivityIndicator size="large" color="#666" />
-                <Text style={styles.loadingText}>加载笔记内容中...</Text>
+                <ActivityIndicator size="large" color={specialThemeColors['primary-200']} />
+                <Text style={[
+                    styles.loadingText,
+                    { color: specialThemeColors['primary-200'] },
+                ]}>
+                    加载笔记内容中...
+                </Text>
             </View>
         );
     }

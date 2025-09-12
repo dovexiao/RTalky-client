@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import {Dimensions, RefreshControl, StyleSheet} from 'react-native';
 import Animated, {
     useAnimatedScrollHandler,
     useSharedValue,
@@ -98,7 +98,6 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: '100%',
     },
 });
 

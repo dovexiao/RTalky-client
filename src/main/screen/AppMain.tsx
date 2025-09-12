@@ -23,28 +23,28 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
         avatarActionsModalRef,
     } = useGlobal();
 
-    const setNavigateRecycleBin = useMainStore(state => state.setNavigateRecycleBin);
+    // const setNavigateRecycleBin = useMainStore(state => state.setNavigateRecycleBin);
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout | null = null;
-        setNavigateRecycleBin(() => {
-            swipeSidebarRef.current?.hide();
-            timer = setTimeout(() => {
-                navigation.navigate('RecycleBin');
-                if (timer) {
-                    clearTimeout(timer);
-                }
-            }, 400);
-            // navigation.navigate('RecycleBin');
-        });
-
-        return () => {
-            setNavigateRecycleBin(() => {});
-            if (timer) {
-                clearTimeout(timer);
-            }
-        };
-    }, [navigation, setNavigateRecycleBin, swipeSidebarRef]);
+    // useEffect(() => {
+    //     let timer: NodeJS.Timeout | null = null;
+    //     setNavigateRecycleBin(() => {
+    //         swipeSidebarRef.current?.hide();
+    //         timer = setTimeout(() => {
+    //             navigation.navigate('RecycleBin');
+    //             if (timer) {
+    //                 clearTimeout(timer);
+    //             }
+    //         }, 400);
+    //         // navigation.navigate('RecycleBin');
+    //     });
+    //
+    //     return () => {
+    //         setNavigateRecycleBin(() => {});
+    //         if (timer) {
+    //             clearTimeout(timer);
+    //         }
+    //     };
+    // }, [navigation, setNavigateRecycleBin, swipeSidebarRef]);
 
     useBackHandler(() => {
         if (swipeSidebarRef.current?.getVisible()) {

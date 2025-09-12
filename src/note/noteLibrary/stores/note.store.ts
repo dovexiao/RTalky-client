@@ -4,6 +4,7 @@ import { NoteService, NoteInfo } from '@/note/services';
 
 interface NoteStore {
     notes: Note[],
+    lastUpdated: Date;
     createNote: (note: Note) => void;
     updateNote: (note: any) => void;
     deleteNote: (noteId: string) => void;
@@ -30,19 +31,23 @@ const convertNoteInfoToNote = (noteInfo: NoteInfo): Note => ({
 
 export const useNoteStore = create<NoteStore>((set, get) => ({
     notes: [],
+    lastUpdated: new Date(),
     createNote: (note: Note) => {
         set((state) => ({
             notes: [...state.notes, { ...note }],
+            // lastUpdated: new Date(),
         }));
     },
     updateNote: (note: any) => {
         set((state) => ({
             notes: state.notes.map((n) => (n.noteId === note.noteId ? {...n, ...note} : n)),
+            // lastUpdated: new Date(),
         }));
     },
     deleteNote: (noteId: string) => {
         set((state) => ({
             notes: state.notes.filter((n) => n.noteId !== noteId),
+            // lastUpdated: new Date(),
         }));
     },
 
@@ -94,7 +99,10 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     },
 
     clearNotes: () => {
-        set({ notes: [] });
+        set({
+            notes: [],
+            // lastUpdated: new Date(),
+        });
     },
 }));
 

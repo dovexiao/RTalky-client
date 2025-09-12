@@ -26,7 +26,7 @@ export type LearnBox = {
     id: string;
     title: string;
     description: string;
-    count: string;
+    count: number;
     lastUpdated: string;
     icon: string;
     backgroundColor: string;

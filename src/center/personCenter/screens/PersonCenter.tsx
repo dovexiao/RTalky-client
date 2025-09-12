@@ -18,20 +18,22 @@ import {
     GeneralSettingsSection,
     AboutRTalkySection,
 } from '@/center/personCenter/components';
-import { TopNavigation } from '@ui-kitten/components';
+import { Divider, TopNavigation } from '@ui-kitten/components';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 // 个人中心具体内容：仅包含UI和内容相关逻辑
 const PersonCenter = () => {
     const scrollY = useSharedValue(0);
     const profileSectionRef = useRef<View>(null);
     // 根据ProfileSection的实际高度调整，考虑到marginVertical: 90, marginBottom: 30
-    const profileSectionHeight: number = 280;
+    const profileSectionHeight: number = 200;
+
+    const { specialThemeColors } = useSpecialTheme();
 
     // 滚动事件处理
     const scrollHandler = useAnimatedScrollHandler({
         onScroll: (event) => {
             scrollY.value = event.contentOffset.y;
-            console.log(event.contentOffset.y);
         },
     });
 
@@ -39,7 +41,7 @@ const PersonCenter = () => {
     const profileSectionAnimatedStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             scrollY.value,
-            [profileSectionHeight * 0.5, profileSectionHeight],
+            [0, profileSectionHeight],
             [1, 0],
             'clamp'
         );
@@ -67,7 +69,12 @@ const PersonCenter = () => {
     });
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[
+            styles.safeArea,
+            {
+                backgroundColor: specialThemeColors['bg-100'],
+            },
+        ]}>
             {/* 顶部设置和StatusBar - 绝对定位，初始隐藏 */}
             <Animated.View
                 style={[
@@ -80,6 +87,7 @@ const PersonCenter = () => {
                     title={'设置'}
                     alignment="center"
                 />
+                <Divider/>
             </Animated.View>
 
             <LinearGradient
@@ -87,7 +95,12 @@ const PersonCenter = () => {
                 colors={['#F0F0F0', '#F2F2F2']}
             >
                 <Animated.ScrollView
-                    style={styles.innerContent}
+                    style={[
+                        styles.innerContent,
+                        {
+                            backgroundColor: specialThemeColors['bg-100'],
+                        },
+                    ]}
                     onScroll={scrollHandler}
                     scrollEventThrottle={16}
                 >
@@ -116,7 +129,6 @@ const PersonCenter = () => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
     },
     // 顶部设置和StatusBar容器 - 绝对定位
     topBarContainer: {
@@ -126,14 +138,6 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 1000,
         backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
     },
     statusBar: {
         height: StatusBar.currentHeight,

@@ -1,21 +1,28 @@
 import React, { useEffect } from 'react';
 import {
-    SafeAreaView, ScrollView,
+    SafeAreaView,
+    // ScrollView,
     StatusBar,
     StyleSheet,
-    Text,
+    // Text,
     View,
     BackHandler,
 } from 'react-native';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider, TopNavigationAction } from '@ui-kitten/components';
 import * as CommonIcon from '@/icon';
-import { FilterDisplayController, NoteList } from '../components';
+import {
+    // FilterDisplayController,
+    NoteList,
+} from '../components';
 import { NoteLibraryProps } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
     const { bottomActionSheetRef, actionDialogRef } = useGlobal();
+
+    const { specialThemeColors } = useSpecialTheme();
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -55,29 +62,38 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
             <Divider />
 
             {/* 使用封装的筛选控制器组件 */}
-            <FilterDisplayController
-                FilterContent={FilterContent}
-                MainContent={NoteList}
-                containerStyle={styles.container}
-            />
+            {/*<FilterDisplayController*/}
+            {/*    FilterContent={FilterContent}*/}
+            {/*    MainContent={NoteList}*/}
+            {/*    containerStyle={styles.container}*/}
+            {/*/>*/}
+
+            <View style={[
+                styles.container,
+                {
+                    backgroundColor: specialThemeColors['bg-100'],
+                },
+            ]}>
+                <NoteList />
+            </View>
         </SafeAreaView>
     );
 };
 
 
 // 筛选内容
-const FilterContent: React.FC = () => {
-    return (
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-            <Text>题目名称搜索</Text>
-            <Text>最近题目名称搜索</Text>
-            <Text>题目介绍搜索</Text>
-            <Text>最近题目介绍搜索</Text>
-            <Text>标签名称搜索</Text>
-            <Text>最近标签名称搜索</Text>
-        </ScrollView>
-    );
-};
+// const FilterContent: React.FC = () => {
+//     return (
+//         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+//             <Text>题目名称搜索</Text>
+//             <Text>最近题目名称搜索</Text>
+//             <Text>题目介绍搜索</Text>
+//             <Text>最近题目介绍搜索</Text>
+//             <Text>标签名称搜索</Text>
+//             <Text>最近标签名称搜索</Text>
+//         </ScrollView>
+//     );
+// };
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -91,10 +107,17 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
+    // container: {
+    //     flex: 1,
+    //     paddingTop: 16,
+    //     // paddingHorizontal: 16,
+    // },
     container: {
         flex: 1,
-        paddingTop: 16,
-        // paddingHorizontal: 16,
+        paddingTop: 30,
+        paddingHorizontal: 20,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
     },
 });
 

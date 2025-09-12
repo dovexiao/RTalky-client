@@ -6,6 +6,7 @@ import {
 } from '@ui-kitten/components';
 import RandomAvatar from './RandomAvatar.tsx';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
+import {useAuthStore} from "@/auth/stores";
 
 const TopAvatarColumn = () => {
     // const themes = useTheme();
@@ -44,7 +45,7 @@ const TopAvatarColumn = () => {
 };
 
 const RenderAvatar = () : React.ReactElement => {
-    const avatar = null;
+    const avatar = useAuthStore(state => state.avatar);
     const { swipeSidebarRef } = useGlobal();
 
     const handleToPersonCenter = () => {
@@ -56,10 +57,10 @@ const RenderAvatar = () : React.ReactElement => {
             <Pressable onPress={handleToPersonCenter}>
                 {avatar ?
                     <Image
-                        source={{uri: 'https://randomuser.me/api/portraits/men/47.jpg'}} // Placeholder for avatar
+                        source={{ uri: `file://${avatar}` }}
                         style={styles.avatar}
                     /> :
-                    <RandomAvatar size={45}/>
+                    <RandomAvatar size={60} />
                 }
             </Pressable>
             {/*<View style={styles.userInfo}>*/}
@@ -83,9 +84,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     avatar: {
-        width: 45,
-        height: 45,
-        borderRadius: 25, // Makes the image circular
+        width: 60,
+        height: 60,
+        borderRadius: 30, // Makes the image circular
     },
     userInfo: {
         flex: 1, // Takes available space

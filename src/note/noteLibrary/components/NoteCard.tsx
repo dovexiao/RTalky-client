@@ -8,6 +8,7 @@ import { Note } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import NoteSettingsAction from './NoteSettingsAction.tsx';
 import { MoreOpeIcon } from '@/icon';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 interface NoteCardProps {
     note: Note;
@@ -17,11 +18,33 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { bottomActionSheetRef } = useGlobal();
 
+    const { specialThemeColors } = useSpecialTheme();
+
     return (
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('NoteReader', { noteId: note.noteId })}>
+        <TouchableOpacity
+            style={[
+                styles.card,
+                { backgroundColor: specialThemeColors['bg-200'] },
+            ]}
+            onPress={() => navigation.navigate('NoteReader', { noteId: note.noteId })}
+        >
             <View style={styles.header}>
-                <Text style={styles.cardId}>{note.displayId}</Text>
-                <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{note.title}</Text>
+                <Text style={[
+                    styles.cardId,
+                    { color: specialThemeColors['text-100'] },
+                ]}>
+                    {note.displayId}
+                </Text>
+                <Text
+                    style={[
+                        styles.title,
+                        { color: specialThemeColors['text-200'] },
+                    ]}
+                    numberOfLines={1}
+                    ellipsizeMode={'tail'}
+                >
+                    {note.title}
+                </Text>
                 {/*<TopNavigationAction icon={MoreOpeIcon} onPress={() => {*/}
                 {/*    bottomActionSheetRef.current?.show(<SettingsActionModal />);*/}
                 {/*}} />*/}
@@ -32,7 +55,19 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
                 </TouchableOpacity>
             </View>
 
-            <Text style={styles.introduce} numberOfLines={2} ellipsizeMode={'tail'}>{note.introduce}</Text>
+            <Text
+                style={[
+                    styles.introduce,
+                    {
+                        backgroundColor: specialThemeColors['bg-100'],
+                        color: specialThemeColors['text-200'],
+                    },
+                ]}
+                numberOfLines={2}
+                ellipsizeMode={'tail'}
+            >
+                {note.introduce}
+            </Text>
 
             <View style={styles.tagsContainer}>
                 {note.tags.map((tag, index) => (
@@ -53,8 +88,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#ffffff',
-        borderRadius: 8,
+        borderRadius: 16,
         padding: 16,
         marginBottom: 16,
         shadowColor: '#000',
@@ -74,13 +108,11 @@ const styles = StyleSheet.create({
     cardId: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333333',
         marginRight: 16,
     },
     title: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#555555',
         marginBottom: 8,
         flex: 1,
     },

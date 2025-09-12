@@ -39,7 +39,7 @@ export const NoteList: React.FC<NoteListProps> = ({
         setRefreshing,
         setLoadingMore,
         setError,
-        updatePaginationInfo,
+        // updatePaginationInfo,
     } = usePaginationStore();
 
     // 初始化加载
@@ -94,7 +94,9 @@ export const NoteList: React.FC<NoteListProps> = ({
 
     // 渲染加载更多指示器
     const renderFooter = useCallback(() => {
-        if (!isLoadingMore) return null;
+        if (!isLoadingMore) {
+            return null;
+        }
 
         return (
             <View style={styles.footerLoader}>
