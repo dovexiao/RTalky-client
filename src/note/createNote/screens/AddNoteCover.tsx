@@ -12,8 +12,11 @@ import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { useOpeNoteStore } from '../stores';
 import { NoteIntroduceEditor, NoteTitleEditor } from '../components';
 import { AddNoteCoverProps } from '../types';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
+    const { specialThemeColors } = useSpecialTheme();
+
     useEffect(() => {
         const reset = useOpeNoteStore.getState().reset;
         reset();
@@ -24,17 +27,28 @@ const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
     }, []);
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
+        <SafeAreaView style={[
+            styles.safeArea,
+            { backgroundColor: specialThemeColors['bg-100'] },
+        ]}>
+            <View style={{
+                height: StatusBar.currentHeight,
+                backgroundColor: specialThemeColors['bg-100'],
+            }} />
             <TopNavigationOpe
                 title={'创建新笔记'}
-                navigation={navigation}
                 renderItemAccessory={() => <></>}
             />
             <Divider />
 
-            <View style={styles.container}>
-                <ScrollView style={{ flex: 1 }}>
+            <View style={[
+                styles.container,
+                { backgroundColor: specialThemeColors['bg-100'] },
+            ]}>
+                <ScrollView style={{
+                    flex: 1,
+                    backgroundColor: specialThemeColors['bg-100'],
+                }}>
                     <NoteTitleEditor />
 
                     <NoteIntroduceEditor />
@@ -69,14 +83,12 @@ const NextStepButton = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
     },
     container: {
         flex: 1,
         paddingHorizontal: 10,
         paddingVertical: 20,
         paddingBottom: 0,
-        backgroundColor: '#FFFFFF',
     },
     nextButton: {
         borderRadius: 4,

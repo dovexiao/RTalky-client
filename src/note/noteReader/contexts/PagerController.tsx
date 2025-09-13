@@ -2,7 +2,6 @@ import React, {
     createContext,
     useContext, useEffect,
     useRef,
-    useState,
 } from 'react';
 import { Dimensions, ScrollView } from 'react-native';
 import NotePagerContainer, { ContainerAPI } from '../components/NotePagerContainer.tsx';

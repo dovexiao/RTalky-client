@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import {Dimensions, RefreshControl, StyleSheet} from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import Animated, {
     useAnimatedScrollHandler,
     useSharedValue,

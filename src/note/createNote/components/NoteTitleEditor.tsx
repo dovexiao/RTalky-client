@@ -2,15 +2,26 @@ import React from 'react';
 import { useOpeNoteStore } from '../stores';
 import { StyleSheet, Text, View } from 'react-native';
 import { Input } from '@ui-kitten/components';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 export const NoteTitleEditor = () => {
     const title = useOpeNoteStore(state => state.noteTitle);
 
+    const { specialThemeColors } = useSpecialTheme();
+
     return (
-        <View style={styles.section}>
-            <Text style={styles.sectionTitle}>笔记标题</Text>
+        <View style={[
+            styles.section,
+            { backgroundColor: specialThemeColors['bg-100'] },
+        ]}>
+            <Text style={[
+                styles.sectionTitle,
+                { color: specialThemeColors['text-100'] },
+            ]}>
+                笔记标题
+            </Text>
             <Input
-                value={title.trim()}
+                value={title}
                 onChangeText={(value) => {
                     const setTitle = useOpeNoteStore.getState().setNoteTitle;
                     setTitle(value);
@@ -31,7 +42,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 12,
-        color: '#333',
     },
     contentInput: {
         // borderWidth: 1,

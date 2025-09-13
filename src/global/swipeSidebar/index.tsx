@@ -13,6 +13,7 @@ import Animated, {
     withSpring,
 } from 'react-native-reanimated';
 import PanSwipeResponder from '@/main/components/PanSwipeResponder.tsx';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 // 定义交互容器暴露的API
 export type SwipeSidebarAPI = {
@@ -25,10 +26,13 @@ export type SwipeSidebarAPI = {
 const SwipeSidebar = forwardRef<SwipeSidebarAPI, { children: React.ReactNode }>(({ children }, ref) => {
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
     const sidebarWidth = screenWidth * 0.9;
+    // const sidebarWidth = screenWidth;
 
     // 动画相关共享值
     const positionX = useSharedValue<number>(-sidebarWidth); // 侧边栏X轴位置（-width为隐藏，0为显示）
     const visible = useSharedValue(false); // 控制显示/隐藏状态
+
+    const { specialThemeColors } = useSpecialTheme();
 
     // 监听屏幕尺寸变化
     useEffect(() => {
@@ -103,7 +107,11 @@ const SwipeSidebar = forwardRef<SwipeSidebarAPI, { children: React.ReactNode }>(
             />
 
             {/* 侧边栏主体：包含手势处理和传入的内容 */}
-            <Animated.View style={[styles.container, containerAnimatedStyle]}>
+            <Animated.View style={[
+                styles.container,
+                containerAnimatedStyle,
+                { backgroundColor: specialThemeColors['bg-100'] },
+            ]}>
                 {/* 提升PanSwipeResponder层级：包裹所有内容，处理左滑关闭手势 */}
                 <PanSwipeResponder
                     onSwipeLeft={hide} // 向左滑动时关闭
@@ -131,7 +139,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         height: '100%',
-        backgroundColor: '#F9FAFB',
         zIndex: 100,
         // borderRightWidth: 1,
         // borderColor: '#ddd',

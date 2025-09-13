@@ -52,9 +52,19 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[
+            styles.safeArea,
+            {
+                backgroundColor: specialThemeColors['bg-100'],
+            },
+        ]}>
             {/*<StatusBar barStyle="dark-content" backgroundColor={'#ffffff'} translucent={false} />*/}
-            <View style={styles.statusBar} />
+            <View style={[
+                styles.statusBar,
+                {
+                    backgroundColor: specialThemeColors['bg-100'],
+                },
+            ]} />
             <TopNavigationOpe
                 title={'笔记库'}
                 renderItemAccessory={renderItemAccessory}
@@ -98,11 +108,10 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
     },
     statusBar: {
         height: StatusBar.currentHeight,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#FFFFFF',
     },
     scrollView: {
         flex: 1,

@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestHeaders, CancelTokenSource } from 'ax
 import Config from 'react-native-config';
 import UserAuthManager from '@/utils/UserAuthManager';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
+import { useNavigationStore } from '@navigation/stores';
 // import { useNavigationStore } from '@navigation/navigationStore.ts';
 
 // 401 处理并发锁
@@ -89,11 +90,12 @@ api.interceptors.response.use((response) => {
 
                 // 清理useAuthStore状态
                 const { setIsLoggedIn, setUserId } = useAuthStore.getState();
+
+                const { setInitialRouteName } = useNavigationStore();
+                setInitialRouteName('VerificationLogin');
+
                 setIsLoggedIn(false);
                 setUserId('');
-
-                // const { setInitialRouteName } = useNavigationStore();
-                // setInitialRouteName('VerificationLogin');
             } catch (cleanupError) {
                 console.error('清理认证信息失败:', cleanupError);
             } finally {

@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
+import React, { useMemo } from 'react';
 import {
     SafeAreaView,
     StatusBar,
     StyleSheet,
     View,
-    BackHandler,
+    // BackHandler,
 } from 'react-native';
 import TopAvatarColumn from '@/main/components/TopAvatarColumn.tsx';
 import LearnMain from '@/main/components/LearnMain.tsx';
@@ -13,8 +13,9 @@ import PanSwipeResponder from '@/main/components/PanSwipeResponder.tsx';
 import { useGlobal } from '@/contexts/GlobalContext.tsx';
 import { AppMainProps } from '@/main/types';
 import ConfirmExit from '@/main/components/ConfirmExit.tsx';
-import { useMainStore } from '@/main/stores/main.store.ts';
 import { useBackHandler } from '@/hooks/useBackHandler';
+import { useTheme } from '@contexts/ThemeContext.tsx';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
     const {
@@ -22,6 +23,8 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
         actionDialogRef,
         avatarActionsModalRef,
     } = useGlobal();
+
+    const { specialThemeColors } = useSpecialTheme();
 
     // const setNavigateRecycleBin = useMainStore(state => state.setNavigateRecycleBin);
 
@@ -68,10 +71,18 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
         swipeSidebarRef.current?.show();
     };
 
+    const { theme } = useTheme();
+
+    const barStyle = useMemo(() => {
+        return theme === 'light' ? 'dark-content' : 'light-content';
+    }, [theme]);
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
+            <StatusBar barStyle={barStyle} backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
+            <View style={{
+                height: StatusBar.currentHeight,
+                backgroundColor: specialThemeColors['bg-100'],
+            }} />
             <View style={{ flex: 1, position: 'relative' }}>
                 <TopAvatarColumn />
                 <Divider/>

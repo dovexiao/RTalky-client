@@ -5,7 +5,8 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
-import { Input, Button, Icon } from '@ui-kitten/components';
+import {Input, Button, Icon, useTheme} from '@ui-kitten/components';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 interface TagsEditorProps {
     title: string;
@@ -28,19 +29,46 @@ export const TagsEditor: React.FC<TagsEditorProps> = ({
     onSubmit,
     submitButtonText = '提交',
 }) => {
+    const { specialThemeColors } = useSpecialTheme();
+    const themes = useTheme();
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{title}</Text>
+        <View style={[
+            styles.container,
+            { backgroundColor: specialThemeColors['bg-100'] },
+        ]}>
+            <Text style={[
+                styles.title,
+                { color: specialThemeColors['text-100'] },
+            ]}>
+                {title}
+            </Text>
 
             {tags.length > 0 && (
-                <View style={styles.tagsContainer}>
+                <View style={[
+                    styles.tagsContainer,
+                    { backgroundColor: specialThemeColors['bg-100'] },
+                ]}>
                     {tags.map((tag, index) => (
-                        <View key={index} style={styles.tag}>
-                            <Text style={styles.tagText}>{tag}</Text>
+                        <View key={index} style={[
+                            styles.tag,
+                            { backgroundColor: specialThemeColors['bg-200'] },
+                        ]}>
+                            <Text style={[
+                                styles.tagText,
+                                { color: specialThemeColors['text-100'] },
+                            ]}>
+                                {tag}
+                            </Text>
                             <TouchableOpacity
                                 onPress={() => onRemoveTag(index)}
                             >
-                                <Text style={styles.removeTagButtonText}>×</Text>
+                                <Text style={[
+                                    styles.removeTagButtonText,
+                                    { color: specialThemeColors['text-200'] },
+                                ]}>
+                                    ×
+                                </Text>
                                 {/*<View style={styles.removeTagButton}>*/}
                                 {/*    <Text style={styles.removeTagButtonText}>×</Text>*/}
                                 {/*</View>*/}
@@ -50,8 +78,14 @@ export const TagsEditor: React.FC<TagsEditorProps> = ({
                 </View>
             )}
 
-            <View style={styles.inputContainer}>
-                <View style={{ flex: 1 }}>
+            <View style={[
+                styles.inputContainer,
+                { backgroundColor: specialThemeColors['bg-100'] },
+            ]}>
+                <View style={{
+                    flex: 1,
+                    backgroundColor: specialThemeColors['bg-100'],
+                }}>
                     <Input
                         value={tagInput}
                         onChangeText={setTagInput}
@@ -60,11 +94,20 @@ export const TagsEditor: React.FC<TagsEditorProps> = ({
                         placeholder="输入标签"
                     />
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={onAddTag}>
+                <TouchableOpacity
+                    style={[
+                        styles.addButton,
+                        {
+                            backgroundColor: themes['background-basic-color-2'],
+                            borderColor: themes['border-basic-color-4'],
+                        },
+                    ]}
+                    onPress={onAddTag}
+                >
                     <Icon
                         style={{ width: 20, height: 20 }}
                         name="plus-outline"
-                        fill="#8F9BB3"
+                        fill={themes['text-hint-color']}
                     />
                 </TouchableOpacity>
             </View>
@@ -80,7 +123,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         // padding: 16,
-        backgroundColor: '#FFFFFF',
     },
     title: {
         fontSize: 16,
@@ -136,7 +178,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'green',
     },
     removeTagButtonText: {
         marginLeft: 4,

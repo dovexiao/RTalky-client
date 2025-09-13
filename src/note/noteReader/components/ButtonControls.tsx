@@ -3,18 +3,24 @@ import { StyleSheet, View } from 'react-native';
 import { usePagerController } from '@/note/noteReader/contexts';
 import { Button } from '@ui-kitten/components';
 import { useNoteReaderStore } from '../stores';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const ButtonControls: React.FC = () => {
     const { goPrev, goNext } = usePagerController();
     const currentPage = useNoteReaderStore(state => state.currentPage);
     const pageCount = useNoteReaderStore(state => state.pageCount);
 
+    const { specialThemeColors } = useSpecialTheme();
+
     return (
         <View style={styles.container}>
             <Button
                 // style={styles.button}
                 appearance="ghost"
-                style={[styles.button, currentPage === 0 && styles.disabledButton]}
+                style={[
+                    styles.button, currentPage === 0 && styles.disabledButton,
+                    { backgroundColor: specialThemeColors['bg-100'] },
+                ]}
                 onPress={goPrev}
                 disabled={currentPage === 0}
             >
@@ -25,7 +31,10 @@ const ButtonControls: React.FC = () => {
             <Button
                 // style={styles.button}
                 appearance="ghost"
-                style={[styles.button, currentPage === pageCount - 1 && styles.disabledButton]}
+                style={[
+                    styles.button, currentPage === pageCount - 1 && styles.disabledButton,
+                    { backgroundColor: specialThemeColors['bg-100'] },
+                ]}
                 onPress={goNext}
                 disabled={currentPage === pageCount - 1}
             >
@@ -52,9 +61,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    disabledButton: {
-        backgroundColor: '#FFFFFF',
-    },
+    disabledButton: {},
 });
 
 export default ButtonControls;

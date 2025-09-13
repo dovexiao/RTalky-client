@@ -62,6 +62,7 @@ const MenuItemComponent: React.FC<{
         <TouchableOpacity
             style={[
                 styles.menuItem,
+                { backgroundColor: specialThemeColors['bg-100']},
                 // item.disabled && styles.disabledItem,
             ]}
             onPress={handlePress}
@@ -72,10 +73,20 @@ const MenuItemComponent: React.FC<{
                 <View style={[styles.iconContainer, { backgroundColor: specialThemeColors['primary-100'] }]}>
                     <Icon name={item.icon} size={20} color={specialThemeColors['primary-300']} />
                 </View>
-                <Text style={styles.menuItemText}>{item.title}</Text>
+                <Text style={[
+                    styles.menuItemText,
+                    { color: specialThemeColors['text-100'] },
+                ]}>
+                    {item.title}
+                </Text>
             </View>
             <View style={styles.menuItemRight}>
-                <Text style={styles.menuItemSubText}>{item.subtitle}</Text>
+                <Text style={[
+                    styles.menuItemSubText,
+                    { color: specialThemeColors['text-200'] },
+                ]}>
+                    {item.subtitle}
+                </Text>
                 <Icon name="chevron-right" size={20} color="#9CA3AF" />
             </View>
         </TouchableOpacity>
@@ -94,7 +105,7 @@ const styles = StyleSheet.create({
         marginBottom: 7,
     },
     menuContainer: {
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#FFFFFF',
         borderRadius: 12,
         // shadowColor: '#000',
         // shadowOffset: {
@@ -131,18 +142,18 @@ const styles = StyleSheet.create({
     },
     menuItemText: {
         fontSize: 16,
-        color: '#1F2937',
+        // color: '#1F2937',
     },
     menuItemSubText: {
         fontSize: 16,
-        color: '#787878',
+        // color: '#787878',
     },
     disabledItem: {
         opacity: 0.5,
     },
     divider: {
         height: 1,
-        backgroundColor: '#E5E7EB',
+        // backgroundColor: '#E5E7EB',
         marginLeft: 68, // 图标宽度 + 间距
     },
 });

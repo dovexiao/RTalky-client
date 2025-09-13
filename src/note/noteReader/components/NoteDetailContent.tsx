@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Dimensions } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { Divider } from '@ui-kitten/components';
 import { formatTime } from '@utils/formatTime.ts';
@@ -8,6 +8,8 @@ import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
 import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+
+const { height: screenHeight } = Dimensions.get('window');
 
 // 定义props类型
 interface NoteDetailContentProps {
@@ -75,27 +77,63 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            { backgroundColor: specialThemeColors['bg-100'] },
+        ]}>
             <View style={styles.header}>
-                <Text style={styles.title} ellipsizeMode={'tail'} numberOfLines={1}>
+                <Text
+                    style={[
+                        styles.title,
+                        { color: specialThemeColors['text-100'] },
+                    ]}
+                    ellipsizeMode={'tail'}
+                    numberOfLines={1}
+                >
                     {currentNote.title}
                 </Text>
-                <Text style={styles.introduction} ellipsizeMode={'tail'} numberOfLines={3}>
+                <Text
+                    style={[
+                        styles.introduction,
+                        { color: specialThemeColors['text-100'] },
+                    ]}
+                    ellipsizeMode={'tail'}
+                    numberOfLines={3}
+                >
                     {currentNote.introduce}
                 </Text>
             </View>
 
-            <Text style={styles.creationInfo}>
+            <Text style={[
+                styles.creationInfo,
+                { color: specialThemeColors['text-200'] },
+            ]}>
                 {formatTime(currentNote.createdAt, { format: 'datetime' })}
             </Text>
 
-            <Divider style={{ marginBottom: 10 }} />
+            <Divider style={{
+                marginBottom: 10,
+                backgroundColor: specialThemeColors['bg-300'],
+            }} />
 
-            <Markdown style={markdownStyles} rules={renderRules}>
+            <Markdown
+                style={{
+                    ...markdownStyles,
+                    body: {
+                        ...markdownStyles.body,
+                        backgroundColor: specialThemeColors['bg-100'],
+                        color: specialThemeColors['text-100'],
+                    },
+                }}
+                rules={renderRules}
+            >
                 {currentNote.content.trim() || '暂无内容'}
             </Markdown>
 
-            <Divider style={{ marginVertical: 10 }} />
+            <Divider style={{
+                marginVertical: 10,
+                backgroundColor: specialThemeColors['bg-300'],
+            }} />
 
             {currentNote.tags.length > 0 && (
                 <View style={styles.tagsContainer}>
@@ -114,7 +152,10 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
             )}
 
             <View style={styles.footer}>
-                <Text style={styles.footerText}>
+                <Text style={[
+                    styles.footerText,
+                    { color: specialThemeColors['text-200'] },
+                ]}>
                     最近修改: {formatTime(currentNote.lastModified, { format: 'datetime' })}
                 </Text>
             </View>
@@ -128,8 +169,6 @@ const markdownStyles = StyleSheet.create({
     body: {
         fontSize: 16,
         lineHeight: 30,
-        color: '#333',
-        backgroundColor: '#fff',
         fontFamily: 'System',
     },
 
@@ -263,16 +302,15 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#FFFFFF',
     },
     loadingContainer: {
+        marginTop: screenHeight / 3,
         justifyContent: 'center',
         alignItems: 'center',
     },
     loadingText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#666',
     },
     header: {
         flexDirection: 'column',

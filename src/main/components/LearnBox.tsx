@@ -53,11 +53,11 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
                     <View style={styles.moduleStats}>
                         <View style={[
                             styles.countBadge,
-                            { backgroundColor: learnBox.countColor },
+                            { backgroundColor: specialThemeColors['bg-300'] },
                         ]}>
                             <Text style={[
                                 styles.countText,
-                                { color: learnBox.countTextColor },
+                                { color: specialThemeColors['text-200'] },
                             ]}>
                                 {learnBox.count} notes
                             </Text>

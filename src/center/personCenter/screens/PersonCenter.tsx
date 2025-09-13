@@ -82,7 +82,12 @@ const PersonCenter = () => {
                     topBarAnimatedStyle,
                 ]}
             >
-                <View style={styles.statusBar} />
+                <View style={[
+                    styles.statusBar,
+                    {
+                        backgroundColor: specialThemeColors['bg-100'],
+                    },
+                ]} />
                 <TopNavigation
                     title={'设置'}
                     alignment="center"
@@ -90,9 +95,13 @@ const PersonCenter = () => {
                 <Divider/>
             </Animated.View>
 
-            <LinearGradient
-                style={styles.gradientContainer}
-                colors={['#F0F0F0', '#F2F2F2']}
+            {/*<LinearGradient*/}
+            {/*    style={styles.gradientContainer}*/}
+            {/*    colors={['#F0F0F0', '#F2F2F2']}*/}
+            {/*>*/}
+            <View
+                style={[styles.gradientContainer]}
+                // colors={['#F0F0F0', '#F2F2F2']}
             >
                 <Animated.ScrollView
                     style={[
@@ -121,7 +130,7 @@ const PersonCenter = () => {
                     {/*其他*/}
                     <OtherSection />
                 </Animated.ScrollView>
-            </LinearGradient>
+            </View>
         </SafeAreaView>
     );
 };
@@ -141,7 +150,7 @@ const styles = StyleSheet.create({
     },
     statusBar: {
         height: StatusBar.currentHeight,
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     gradientContainer: {
         flex: 1,

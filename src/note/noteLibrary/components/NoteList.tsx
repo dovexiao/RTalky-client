@@ -118,15 +118,15 @@ export const NoteList: React.FC<NoteListProps> = ({
     }, [isLoading]);
 
     // 渲染错误状态
-    const renderError = useCallback(() => {
-        if (!error) return null;
-
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }, [error]);
+    // const renderError = useCallback(() => {
+    //     if (!error) return null;
+    //
+    //     return (
+    //         <View style={styles.errorContainer}>
+    //             <Text style={styles.errorText}>{error}</Text>
+    //         </View>
+    //     );
+    // }, [error]);
 
     // 初始加载状态
     if (isLoading) {
@@ -140,7 +140,7 @@ export const NoteList: React.FC<NoteListProps> = ({
 
     return (
         <View style={[styles.container, style]}>
-            {renderError()}
+            {/*{renderError()}*/}
             <FlatList
                 data={notes}
                 renderItem={renderItem}

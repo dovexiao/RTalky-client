@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -14,6 +14,7 @@ import { useNoteStore } from '../../noteLibrary/stores';
 import { NoteContentEditor, NoteIntroduceEditor, NoteTagsEditor, NoteTitleEditor } from '../../createNote/components';
 import { EditNoteProps } from '../types';
 import { NoteService } from '@/note/services';
+import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
 
 const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const { noteId } = route.params;
@@ -21,6 +22,8 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const note = useNoteStore(state => state.notes.filter(q => q.noteId === noteId)[0]);
     const initialize = useOpeNoteStore(state => state.initialize);
     const reset = useOpeNoteStore(state => state.reset);
+
+    const { specialThemeColors } = useSpecialTheme();
 
     useEffect(() => {
         initialize(note);
@@ -30,16 +33,24 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     }, [initialize, note, reset]);
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
+        <SafeAreaView style={[
+            styles.safeArea,
+            { backgroundColor: specialThemeColors['bg-100'] },
+        ]}>
+            <View style={{
+                height: StatusBar.currentHeight,
+                backgroundColor: specialThemeColors['bg-100'],
+            }} />
             <TopNavigationOpe
-                title={'编辑 ' + note?.noteId + ' 笔记'}
-                navigation={navigation}
+                title={'编辑 ' + note?.displayId + ' 笔记'}
                 renderItemAccessory={() => <></>}
             />
             <Divider />
 
-            <ScrollView style={styles.container}>
+            <ScrollView style={[
+                styles.container,
+                { backgroundColor: specialThemeColors['bg-100'] },
+            ]}>
                 <NoteTitleEditor />
 
                 <NoteIntroduceEditor />
@@ -116,12 +127,10 @@ const SaveStepButton = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F0F0F0',
     },
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#FFFFFF',
     },
     endButton: {
         borderRadius: 4,

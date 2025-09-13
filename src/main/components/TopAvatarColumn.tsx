@@ -30,7 +30,9 @@ const TopAvatarColumn = () => {
                 style={styles.titleText}
                 numberOfLines={1}
                 ellipsizeMode={'tail'}
-            >{'工作台'}</Text>
+            >
+                {'工作台'}
+            </Text>
         </View>
     );
 
@@ -53,7 +55,9 @@ const RenderAvatar = () : React.ReactElement => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+        ]}>
             <Pressable onPress={handleToPersonCenter}>
                 {avatar ?
                     <Image
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 5,
         paddingHorizontal: 10,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'transparent',
     },
     titleText: {
         fontSize: 20,
