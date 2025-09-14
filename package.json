@@ -31,6 +31,7 @@
     "react-native-config": "^1.5.5",
     "react-native-confirmation-code-field": "^8.0.1",
     "react-native-device-info": "^14.0.4",
+    "react-native-exit-app": "^2.0.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-get-item-layout-section-list": "^0.1.0",

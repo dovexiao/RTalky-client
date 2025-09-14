@@ -20,8 +20,9 @@ import {
     SwipeSidebar,
     type SwipeSidebarAPI,
 } from '@/main/components';
+import RNExitApp from 'react-native-exit-app';
 
-const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
+const AppMain: React.FC<AppMainProps> = ({}) => {
     const {
         // swipeSidebarRef,
         actionDialogRef,
@@ -32,43 +33,29 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
 
     const { theme, themeColors } = useUnifiedTheme();
 
-    // const setNavigateRecycleBin = useMainStore(state => state.setNavigateRecycleBin);
-
-    // useEffect(() => {
-    //     let timer: NodeJS.Timeout | null = null;
-    //     setNavigateRecycleBin(() => {
-    //         swipeSidebarRef.current?.hide();
-    //         timer = setTimeout(() => {
-    //             navigation.navigate('RecycleBin');
-    //             if (timer) {
-    //                 clearTimeout(timer);
-    //             }
-    //         }, 400);
-    //         // navigation.navigate('RecycleBin');
-    //     });
-    //
-    //     return () => {
-    //         setNavigateRecycleBin(() => {});
-    //         if (timer) {
-    //             clearTimeout(timer);
-    //         }
-    //     };
-    // }, [navigation, setNavigateRecycleBin, swipeSidebarRef]);
-
     useBackHandler(() => {
         if (swipeSidebarRef.current?.getVisible()) {
             avatarActionsModalRef.current?.hide();
+
             let timer: NodeJS.Timeout | null = null;
             timer = avatarActionsModalRef.current?.getVisible() ? setTimeout(() => {
                 swipeSidebarRef.current?.hide();
                 timer && clearTimeout(timer);
             }, 400) : null;
+
             if (!timer) {
                 swipeSidebarRef.current?.hide();
             }
+
             return true; // 阻止默认行为
         } else {
-            actionDialogRef.current?.show({ content: <ConfirmExit /> });
+            actionDialogRef.current?.show({
+                content: <ConfirmExit />,
+                onConfirm: () => {
+                    RNExitApp.exitApp();
+                },
+            });
+
             return true; // 阻止默认行为
         }
     });
