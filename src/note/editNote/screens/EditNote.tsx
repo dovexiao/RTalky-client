@@ -14,7 +14,7 @@ import { useNoteStore } from '../../noteLibrary/stores';
 import { NoteContentEditor, NoteIntroduceEditor, NoteTagsEditor, NoteTitleEditor } from '../../createNote/components';
 import { EditNoteProps } from '../types';
 import { NoteService } from '@/note/services';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const { noteId } = route.params;
@@ -23,7 +23,7 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const initialize = useOpeNoteStore(state => state.initialize);
     const reset = useOpeNoteStore(state => state.reset);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     useEffect(() => {
         initialize(note);
@@ -35,11 +35,11 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     return (
         <SafeAreaView style={[
             styles.safeArea,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <View style={{
                 height: StatusBar.currentHeight,
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             }} />
             <TopNavigationOpe
                 title={'编辑 ' + note?.displayId + ' 笔记'}
@@ -49,7 +49,7 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
 
             <ScrollView style={[
                 styles.container,
-                { backgroundColor: specialThemeColors['bg-100'] },
+                { backgroundColor: themeColors['bg-100'] },
             ]}>
                 <NoteTitleEditor />
 

@@ -12,13 +12,13 @@ import { CreateNoteTagProps } from '../types';
 import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { NoteService, CreateNoteRequest } from '@/note/services';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     const [tagInput, setTagInput] = useState('');
     const tags = useOpeNoteStore(state => state.noteTags);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     const handleAddTag = () => {
         const addTag = useOpeNoteStore.getState().addTag;
@@ -68,11 +68,11 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     return (
         <SafeAreaView style={[
             styles.safeArea,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <View style={{
                 height: StatusBar.currentHeight,
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             }} />
             <TopNavigationOpe
                 title={'创建新笔记'}
@@ -81,7 +81,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
             <Divider />
             <View style={[
                 styles.container,
-                { backgroundColor: specialThemeColors['bg-100'] },
+                { backgroundColor: themeColors['bg-100'] },
             ]}>
                 <TagsEditor
                     title="添加标签"

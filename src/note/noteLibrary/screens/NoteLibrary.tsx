@@ -17,12 +17,12 @@ import {
 } from '../components';
 import { NoteLibraryProps } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
     const { bottomActionSheetRef, actionDialogRef } = useGlobal();
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -55,14 +55,14 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
         <SafeAreaView style={[
             styles.safeArea,
             {
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             },
         ]}>
             {/*<StatusBar barStyle="dark-content" backgroundColor={'#ffffff'} translucent={false} />*/}
             <View style={[
                 styles.statusBar,
                 {
-                    backgroundColor: specialThemeColors['bg-100'],
+                    backgroundColor: themeColors['bg-100'],
                 },
             ]} />
             <TopNavigationOpe
@@ -81,7 +81,7 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
             <View style={[
                 styles.container,
                 {
-                    backgroundColor: specialThemeColors['bg-100'],
+                    backgroundColor: themeColors['bg-100'],
                 },
             ]}>
                 <NoteList />

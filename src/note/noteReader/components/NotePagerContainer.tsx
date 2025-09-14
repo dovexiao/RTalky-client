@@ -7,8 +7,8 @@ import Animated, {
     runOnJS,
     useAnimatedProps,
 } from 'react-native-reanimated';
-import { Note } from '../../noteLibrary/types';
 import { useNoteReaderStore } from '../stores';
+import { Note } from '@/note/noteLibrary/types';
 
 const { width: screenWidth } = Dimensions.get('window');
 

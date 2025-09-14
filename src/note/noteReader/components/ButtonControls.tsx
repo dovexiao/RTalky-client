@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native';
 import { usePagerController } from '@/note/noteReader/contexts';
 import { Button } from '@ui-kitten/components';
 import { useNoteReaderStore } from '../stores';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const ButtonControls: React.FC = () => {
     const { goPrev, goNext } = usePagerController();
     const currentPage = useNoteReaderStore(state => state.currentPage);
     const pageCount = useNoteReaderStore(state => state.pageCount);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     return (
         <View style={styles.container}>
@@ -19,7 +19,7 @@ const ButtonControls: React.FC = () => {
                 appearance="ghost"
                 style={[
                     styles.button, currentPage === 0 && styles.disabledButton,
-                    { backgroundColor: specialThemeColors['bg-100'] },
+                    { backgroundColor: themeColors['bg-100'] },
                 ]}
                 onPress={goPrev}
                 disabled={currentPage === 0}
@@ -33,7 +33,7 @@ const ButtonControls: React.FC = () => {
                 appearance="ghost"
                 style={[
                     styles.button, currentPage === pageCount - 1 && styles.disabledButton,
-                    { backgroundColor: specialThemeColors['bg-100'] },
+                    { backgroundColor: themeColors['bg-100'] },
                 ]}
                 onPress={goNext}
                 disabled={currentPage === pageCount - 1}

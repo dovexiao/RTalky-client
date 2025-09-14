@@ -7,7 +7,7 @@ import { Dimensions, ScrollView } from 'react-native';
 import NotePagerContainer, { ContainerAPI } from '../components/NotePagerContainer.tsx';
 import ButtonControls from '../components/ButtonControls.tsx';
 import NoteDetailContent from '../components/NoteDetailContent.tsx';
-import { Note } from '../../noteLibrary/types';
+import { Note } from '@/note/noteLibrary/types';
 import { useNoteReaderStore } from '../stores';
 
 const { width: screenWidth } = Dimensions.get('window');

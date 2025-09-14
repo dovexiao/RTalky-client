@@ -31,7 +31,7 @@ export const NoteSettingsAction = ({
             1: 100,
             2: 45,
             3: 30,
-            4: 23
+            4: 23,
         };
         return widthMap[columns];
     };

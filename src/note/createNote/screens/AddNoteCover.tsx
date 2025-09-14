@@ -12,10 +12,10 @@ import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { useOpeNoteStore } from '../stores';
 import { NoteIntroduceEditor, NoteTitleEditor } from '../components';
 import { AddNoteCoverProps } from '../types';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     useEffect(() => {
         const reset = useOpeNoteStore.getState().reset;
@@ -29,11 +29,11 @@ const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
     return (
         <SafeAreaView style={[
             styles.safeArea,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <View style={{
                 height: StatusBar.currentHeight,
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             }} />
             <TopNavigationOpe
                 title={'创建新笔记'}
@@ -43,11 +43,11 @@ const AddNoteCover: React.FC<AddNoteCoverProps> = ({ navigation }) => {
 
             <View style={[
                 styles.container,
-                { backgroundColor: specialThemeColors['bg-100'] },
+                { backgroundColor: themeColors['bg-100'] },
             ]}>
                 <ScrollView style={{
                     flex: 1,
-                    backgroundColor: specialThemeColors['bg-100'],
+                    backgroundColor: themeColors['bg-100'],
                 }}>
                     <NoteTitleEditor />
 

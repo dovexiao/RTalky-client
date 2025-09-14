@@ -8,7 +8,7 @@ import { Note } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import NoteSettingsAction from './NoteSettingsAction.tsx';
 import { MoreOpeIcon } from '@/icon';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 interface NoteCardProps {
     note: Note;
@@ -18,27 +18,27 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { bottomActionSheetRef } = useGlobal();
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     return (
         <TouchableOpacity
             style={[
                 styles.card,
-                { backgroundColor: specialThemeColors['bg-200'] },
+                { backgroundColor: themeColors['bg-200'] },
             ]}
             onPress={() => navigation.navigate('NoteReader', { noteId: note.noteId })}
         >
             <View style={styles.header}>
                 <Text style={[
                     styles.cardId,
-                    { color: specialThemeColors['text-100'] },
+                    { color: themeColors['text-100'] },
                 ]}>
                     {note.displayId}
                 </Text>
                 <Text
                     style={[
                         styles.title,
-                        { color: specialThemeColors['text-200'] },
+                        { color: themeColors['text-200'] },
                     ]}
                     numberOfLines={1}
                     ellipsizeMode={'tail'}
@@ -59,8 +59,8 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
                 style={[
                     styles.introduce,
                     {
-                        backgroundColor: specialThemeColors['bg-100'],
-                        color: specialThemeColors['text-200'],
+                        backgroundColor: themeColors['bg-100'],
+                        color: themeColors['text-200'],
                     },
                 ]}
                 numberOfLines={2}

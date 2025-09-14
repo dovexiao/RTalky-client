@@ -7,7 +7,7 @@ import { getTagColor } from '@utils/getTagColor.ts';
 import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -21,7 +21,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     const [currentNote, setCurrentNote] = useState(note);
     const updateNote = useNoteStore(state => state.updateNote);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     // 检查是否需要获取笔记详情
     useEffect(() => {
@@ -65,10 +65,10 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     if (isLoading) {
         return (
             <View style={[styles.container, styles.loadingContainer]}>
-                <ActivityIndicator size="large" color={specialThemeColors['primary-200']} />
+                <ActivityIndicator size="large" color={themeColors['primary-200']} />
                 <Text style={[
                     styles.loadingText,
-                    { color: specialThemeColors['primary-200'] },
+                    { color: themeColors['primary-200'] },
                 ]}>
                     加载笔记内容中...
                 </Text>
@@ -79,13 +79,13 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     return (
         <View style={[
             styles.container,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <View style={styles.header}>
                 <Text
                     style={[
                         styles.title,
-                        { color: specialThemeColors['text-100'] },
+                        { color: themeColors['text-100'] },
                     ]}
                     ellipsizeMode={'tail'}
                     numberOfLines={1}
@@ -95,7 +95,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                 <Text
                     style={[
                         styles.introduction,
-                        { color: specialThemeColors['text-100'] },
+                        { color: themeColors['text-100'] },
                     ]}
                     ellipsizeMode={'tail'}
                     numberOfLines={3}
@@ -106,14 +106,14 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
 
             <Text style={[
                 styles.creationInfo,
-                { color: specialThemeColors['text-200'] },
+                { color: themeColors['text-200'] },
             ]}>
                 {formatTime(currentNote.createdAt, { format: 'datetime' })}
             </Text>
 
             <Divider style={{
                 marginBottom: 10,
-                backgroundColor: specialThemeColors['bg-300'],
+                backgroundColor: themeColors['bg-300'],
             }} />
 
             <Markdown
@@ -121,8 +121,8 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     ...markdownStyles,
                     body: {
                         ...markdownStyles.body,
-                        backgroundColor: specialThemeColors['bg-100'],
-                        color: specialThemeColors['text-100'],
+                        backgroundColor: themeColors['bg-100'],
+                        color: themeColors['text-100'],
                     },
                 }}
                 rules={renderRules}
@@ -132,7 +132,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
 
             <Divider style={{
                 marginVertical: 10,
-                backgroundColor: specialThemeColors['bg-300'],
+                backgroundColor: themeColors['bg-300'],
             }} />
 
             {currentNote.tags.length > 0 && (
@@ -154,7 +154,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
             <View style={styles.footer}>
                 <Text style={[
                     styles.footerText,
-                    { color: specialThemeColors['text-200'] },
+                    { color: themeColors['text-200'] },
                 ]}>
                     最近修改: {formatTime(currentNote.lastModified, { format: 'datetime' })}
                 </Text>

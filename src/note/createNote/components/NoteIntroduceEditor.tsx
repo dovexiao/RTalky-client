@@ -2,21 +2,21 @@ import React from 'react';
 import { useOpeNoteStore } from '../stores';
 import { StyleSheet, Text, View } from 'react-native';
 import { Input } from '@ui-kitten/components';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 export const NoteIntroduceEditor = () => {
     const introduce = useOpeNoteStore(state => state.noteIntroduce);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     return (
         <View style={[
             styles.section,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <Text style={[
                 styles.sectionTitle,
-                { color: specialThemeColors['text-100'] },
+                { color: themeColors['text-100'] },
             ]}>
                 笔记介绍
             </Text>
