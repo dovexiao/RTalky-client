@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, Image, Pressable } from 'react-native';
 import {
     Text,
     TopNavigation,
 } from '@ui-kitten/components';
 import RandomAvatar from './RandomAvatar.tsx';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
-import {useAuthStore} from "@/auth/stores";
+import { useAuthStore } from '@/auth/stores';
 
-const TopAvatarColumn = () => {
+interface TopAvatarColumnProps {
+    onAvatarPress: () => void;
+}
+
+export const TopAvatarColumn: React.FC<TopAvatarColumnProps> = ({ onAvatarPress }) => {
     // const themes = useTheme();
 
     // const systemNotificationsUnRead: number = 1;
@@ -25,7 +28,7 @@ const TopAvatarColumn = () => {
     // )
 
     const renderTitleAction = (): React.ReactElement => (
-        <View style={{ width: '65%', alignItems: 'center', marginVertical: 10 }}>
+        <View style={styles.titleContainer}>
             <Text
                 style={styles.titleText}
                 numberOfLines={1}
@@ -36,29 +39,30 @@ const TopAvatarColumn = () => {
         </View>
     );
 
+    const renderAccessoryLeft = useCallback(() => (
+        <RenderAvatar onAvatarPress={onAvatarPress} />
+    ), [onAvatarPress]);
+
     return (
         <TopNavigation
             title={renderTitleAction}
             alignment="center"
-            accessoryLeft={RenderAvatar}
+            accessoryLeft={renderAccessoryLeft}
             // accessoryRight={renderNotification}
         />
     );
 };
 
-const RenderAvatar = () : React.ReactElement => {
+const RenderAvatar: React.FC<{
+    onAvatarPress: () => void;
+}> = ({ onAvatarPress }) => {
     const avatar = useAuthStore(state => state.avatar);
-    const { swipeSidebarRef } = useGlobal();
-
-    const handleToPersonCenter = () => {
-        swipeSidebarRef.current?.show();
-    };
 
     return (
         <View style={[
             styles.container,
         ]}>
-            <Pressable onPress={handleToPersonCenter}>
+            <Pressable onPress={onAvatarPress}>
                 {avatar ?
                     <Image
                         source={{ uri: `file://${avatar}` }}
@@ -82,6 +86,11 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 10,
         backgroundColor: 'transparent',
+    },
+    titleContainer: {
+        width: '65%',
+        alignItems: 'center',
+        marginVertical: 10,
     },
     titleText: {
         fontSize: 20,
@@ -131,5 +140,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-export default TopAvatarColumn;

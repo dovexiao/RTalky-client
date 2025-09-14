@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import {
     AvatarActionsModal,
-    SwipeSidebar,
     SliderVerification,
     BottomActionSheet,
     ActionDialog,
@@ -9,17 +8,14 @@ import {
 } from '@/global';
 import type {
     AvatarActionsModalAPI,
-    SwipeSidebarAPI,
     SliderVerificationAPI,
     BottomActionSheetAPI,
     ActionDialogAPI,
     CountryCodeDialogAPI,
 } from '@/global';
-import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
 
 interface GlobalContextType {
     sliderVerificationRef: React.RefObject<SliderVerificationAPI>,
-    swipeSidebarRef: React.RefObject<SwipeSidebarAPI>,
     avatarActionsModalRef: React.RefObject<AvatarActionsModalAPI>,
     bottomActionSheetRef: React.RefObject<BottomActionSheetAPI>
     actionDialogRef: React.RefObject<ActionDialogAPI>
@@ -30,7 +26,6 @@ const GlobalContext = React.createContext<GlobalContextType | null>(null);
 
 export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const sliderVerificationRef = useRef<SliderVerificationAPI>(null);
-    const swipeSidebarRef = useRef<SwipeSidebarAPI>(null);
     const avatarActionsModalRef = useRef<AvatarActionsModalAPI>(null);
     const bottomActionSheetRef = useRef<BottomActionSheetAPI>(null);
     const actionDialogRef = useRef<ActionDialogAPI>(null);
@@ -39,7 +34,6 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
 
     const globalValue: GlobalContextType = {
         sliderVerificationRef,
-        swipeSidebarRef,
         avatarActionsModalRef,
         bottomActionSheetRef,
         actionDialogRef,
@@ -50,9 +44,6 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
         <GlobalContext.Provider value={globalValue}>
             {children}
             <SliderVerification ref={sliderVerificationRef} />
-            <SwipeSidebar ref={swipeSidebarRef}>
-                <PersonCenter />
-            </SwipeSidebar>
             <AvatarActionsModal ref={avatarActionsModalRef} />
             <BottomActionSheet ref={bottomActionSheetRef} />
             <ActionDialog ref={actionDialogRef} />

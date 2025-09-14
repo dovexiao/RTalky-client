@@ -2,7 +2,7 @@ import {StyleSheet, View } from 'react-native';
 import { Text } from '@ui-kitten/components';
 import React from 'react';
 
-const ConfirmExit = () => {
+export const ConfirmExit = () => {
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
@@ -37,5 +37,3 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
-
-export default ConfirmExit;

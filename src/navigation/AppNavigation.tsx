@@ -17,6 +17,7 @@ import AddNoteCover from '@/note/createNote/screens/AddNoteCover.tsx';
 import AddNoteContent from '@/note/createNote/screens/AddNoteContent.tsx';
 import RecycleBin from '@/center/recycleBin/screens/RecycleBin.tsx';
 import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
+import BackgroundSettings from '@/center/backgroundSettings/screens/BackgroundSettings.tsx';
 import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
@@ -53,6 +54,7 @@ const AppStackNavigator = () => {
             {/*个人中心*/}
             <Screen name="PersonCenter" component={PersonCenter} />
             <Screen name="RecycleBin" component={RecycleBin} />
+            <Screen name="BackgroundSettings" component={BackgroundSettings} />
             {/*/!* 测试页面 *!/*/}
             <Screen name="TestPage" component={TestPage} />
         </Navigator>

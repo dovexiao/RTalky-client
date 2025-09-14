@@ -36,6 +36,7 @@ export type RootStackParamList = {
     // 个人中心
     PersonCenter: undefined,
     RecycleBin: undefined;
+    BackgroundSettings: undefined;
     // 测试模块
     TestPage: undefined;
 };

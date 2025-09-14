@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, {useMemo, useRef} from 'react';
 import {
     SafeAreaView,
     StatusBar,
@@ -6,25 +6,31 @@ import {
     View,
     // BackHandler,
 } from 'react-native';
-import TopAvatarColumn from '@/main/components/TopAvatarColumn.tsx';
-import LearnMain from '@/main/components/LearnMain.tsx';
 import { Divider } from '@ui-kitten/components';
-import PanSwipeResponder from '@/main/components/PanSwipeResponder.tsx';
-import { useGlobal } from '@/contexts/GlobalContext.tsx';
+import { useGlobal } from '@/contexts';
 import { AppMainProps } from '@/main/types';
-import ConfirmExit from '@/main/components/ConfirmExit.tsx';
-import { useBackHandler } from '@/hooks/useBackHandler';
-import { useTheme } from '@contexts/ThemeContext.tsx';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useBackHandler } from '@/hooks';
+import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
+import { useUnifiedTheme } from '@/contexts';
+import {
+    ConfirmExit,
+    LearnMain,
+    PanSwipeResponder,
+    TopAvatarColumn,
+    SwipeSidebar,
+    type SwipeSidebarAPI,
+} from '@/main/components';
 
 const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
     const {
-        swipeSidebarRef,
+        // swipeSidebarRef,
         actionDialogRef,
         avatarActionsModalRef,
     } = useGlobal();
 
-    const { specialThemeColors } = useSpecialTheme();
+    const swipeSidebarRef = useRef<SwipeSidebarAPI>(null);
+
+    const { theme, themeColors } = useUnifiedTheme();
 
     // const setNavigateRecycleBin = useMainStore(state => state.setNavigateRecycleBin);
 
@@ -71,20 +77,30 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
         swipeSidebarRef.current?.show();
     };
 
-    const { theme } = useTheme();
+    const handleAvatarPress = () => {
+        swipeSidebarRef.current?.show();
+    };
 
     const barStyle = useMemo(() => {
         return theme === 'light' ? 'dark-content' : 'light-content';
     }, [theme]);
+
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[
+            styles.safeArea,
+            { backgroundColor: themeColors['bg-100'] },
+        ]}>
             <StatusBar barStyle={barStyle} backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
             <View style={{
                 height: StatusBar.currentHeight,
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             }} />
-            <View style={{ flex: 1, position: 'relative' }}>
-                <TopAvatarColumn />
+            <View style={{
+                flex: 1,
+                position: 'relative',
+                backgroundColor: themeColors['bg-100'],
+            }}>
+                <TopAvatarColumn onAvatarPress={handleAvatarPress} />
                 <Divider/>
                 <PanSwipeResponder
                     onSwipeRight={handleRightSwipe}
@@ -94,6 +110,9 @@ const AppMain: React.FC<AppMainProps> = ({ navigation }) => {
                     <LearnMain />
                 </PanSwipeResponder>
             </View>
+            <SwipeSidebar ref={swipeSidebarRef}>
+                <PersonCenter />
+            </SwipeSidebar>
         </SafeAreaView>
     );
 };

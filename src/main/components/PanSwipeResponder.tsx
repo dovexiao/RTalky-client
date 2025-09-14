@@ -10,7 +10,7 @@ interface PanSwipeResponderProps  {
     edgeThreshold?: number;
 }
 
-const PanSwipeResponder = ({
+export const PanSwipeResponder = ({
     children,
     onSwipeLeft = () => {},
     onSwipeRight = () => {},
@@ -78,5 +78,3 @@ const PanSwipeResponder = ({
         </View>
     );
 };
-
-export default PanSwipeResponder;

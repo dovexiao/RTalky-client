@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Text } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
-import {useAuthStore} from "@/auth/stores";
+import { useAuthStore } from '@/auth/stores';
 
 // 固定的颜色调色板 - 偏深但不太深，使用不太常用的颜色色谱
 const AVATAR_COLORS = [

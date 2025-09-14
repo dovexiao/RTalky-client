@@ -8,13 +8,13 @@ import type { LearnBox } from '@/main/types';
 import LearnBoxFC from '@/main/components/LearnBox.tsx';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { formatTime } from '@/utils';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
-const LearnMain = () => {
+export const LearnMain = () => {
     const notes = useNoteStore(state => state.notes);
     const lastUpdated = useNoteStore(state => state.lastUpdated);
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     const learnBoxes: LearnBox[] = [{
         id: '1',
@@ -43,7 +43,7 @@ const LearnMain = () => {
     return (
         <View style={[
             styles.container,
-            { backgroundColor: specialThemeColors['bg-100'] },
+            { backgroundColor: themeColors['bg-100'] },
         ]}>
             <ScrollView>
                 <View style={styles.boxesContainer}>
@@ -63,5 +63,3 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
 });
-
-export default LearnMain;
