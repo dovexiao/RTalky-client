@@ -4,7 +4,7 @@ import { Toggle } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
 
 const BackgroundSettingsFooter: React.FC<{}> = () => {
-    const { themeColors, autoSwitch, setAutoSwitch } = useUnifiedTheme();
+    const { themeColors, previewAutoSwitch, handleAutoSwitch } = useUnifiedTheme();
 
     return (
         <View style={styles.container}>
@@ -13,9 +13,9 @@ const BackgroundSettingsFooter: React.FC<{}> = () => {
                     跟随系统
                 </Text>
                 <Toggle
-                    checked={autoSwitch}
+                    checked={previewAutoSwitch}
                     onChange={(enabled) => {
-                        setAutoSwitch(enabled);
+                        handleAutoSwitch(enabled);
                     }}
                 />
             </View>

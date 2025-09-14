@@ -3,12 +3,11 @@ import { View, StyleSheet, TouchableOpacity, Text, Dimensions, StatusBar } from 
 import { Radio } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
 import { ThemePreviewProps } from '../types';
-import { useBackgroundSettingsStore } from '@/center/backgroundSettings/stores';
-
 const { width, height } = Dimensions.get('window');
 
 const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
     const {
+        theme: currentTheme,
         themeColors,
         isPreviewMode,
         setPreviewMode,
@@ -18,8 +17,6 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
     const bgColor = isLight ? '#FFFFFF' : '#1F2B3E';
     const cardBgColor = isLight ? '#F5F5F5' : '#0F1C2E';
 
-    const selectedTheme = useBackgroundSettingsStore(state => state.selectedTheme);
-
     const handleThemeChange = (checked: boolean) => {
         // 启用预览模式并设置预览主题
         if (!isPreviewMode) {
@@ -27,9 +24,6 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
         }
         if (checked) {
             setPreviewTheme(theme);
-            // 同时更新背景设置存储
-            const { setSelectedTheme } = useBackgroundSettingsStore.getState();
-            setSelectedTheme(theme);
         }
     };
 
@@ -86,9 +80,9 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
             {/* 选择指示器 */}
             <View style={styles.selectionArea}>
                 <Radio
-                    checked={selectedTheme === theme}
+                    checked={currentTheme === theme}
                     onChange={handleThemeChange}
-                    status={selectedTheme === theme ? 'primary' : 'basic'}
+                    status={currentTheme === theme ? 'primary' : 'basic'}
                 />
                 <Text style={[
                     styles.themeLabel,

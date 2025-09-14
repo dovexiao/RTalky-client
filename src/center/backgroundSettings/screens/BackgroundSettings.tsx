@@ -7,12 +7,10 @@ import {
 } from '../components';
 import { BackgroundSettingsProps } from '@/center/backgroundSettings/types';
 import { useUnifiedTheme } from '@/contexts';
-import { useBackgroundSettingsStore } from '@/center/backgroundSettings/stores';
 
 const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) => {
     const {
         themeColors,
-        theme,
         setPreviewMode,
         applyPreviewTheme,
         cancelPreviewTheme,
@@ -22,8 +20,6 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
     const handleCancel = () => {
         // 取消预览模式，恢复原主题
         cancelPreviewTheme();
-        const { reset } = useBackgroundSettingsStore.getState();
-        reset();
         navigation.goBack();
     };
 
@@ -35,9 +31,6 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
     };
 
     useEffect(() => {
-        const initialize = useBackgroundSettingsStore.getState().initialize;
-        initialize(theme);
-
         // 进入页面时启用预览模式
         setPreviewMode(true);
 

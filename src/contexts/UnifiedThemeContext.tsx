@@ -5,6 +5,7 @@ import lightSpecialTheme from '../../light-special-theme.json';
 import darkSpecialTheme from '../../dark-special-theme.json';
 import lightTheme from '../../light-theme.json';
 import darkTheme from '../../dark-theme.json';
+import { Appearance,  ColorSchemeName } from 'react-native';
 
 export type ThemeType = 'light' | 'dark';
 
@@ -65,6 +66,12 @@ interface UnifiedThemeContextType {
     /** 取消预览主题（恢复原主题） */
     cancelPreviewTheme: () => void;
 
+    /** 是否自动切换主题（预览版） */
+    previewAutoSwitch: boolean;
+
+    /** 选择是否跟随系统 */
+    handleAutoSwitch: (enabled: boolean) => void;
+
     // 向后兼容属性
     specialTheme: ThemeType;
     specialThemeColors: SpecialThemeColors;
@@ -77,12 +84,10 @@ const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(u
 
 export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [currentTheme, setCurrentTheme] = useState<ThemeType>('dark');
-    const [autoSwitch, setAutoSwitch] = useState(false);
+    const [autoSwitch, setAutoSwitch] = useState(true);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [previewTheme, setPreviewTheme] = useState<ThemeType>(currentTheme);
-
-    // 轮询器引用
-    const pollIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+    const [previewAutoSwitch, setPreviewAutoSwitch] =  useState(autoSwitch);
 
     // 计算有效主题（预览模式时使用预览主题，否则使用当前主题）
     const effectiveTheme = useMemo(() => {
@@ -118,67 +123,48 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
     // 预览模式操作
     const setPreviewMode = (enabled: boolean) => {
         setIsPreviewMode(enabled);
-        // console.log('setPreviewMode', enabled, currentTheme, previewTheme);
         if (enabled) {
             setPreviewTheme(currentTheme);
+            setPreviewAutoSwitch(autoSwitch);
         }
     };
 
     const setPreviewThemeHandler = (theme: ThemeType) => {
-        // console.log('setPreviewThemeHandler', theme);
         setPreviewTheme(theme);
+        setPreviewAutoSwitch(false);
     };
 
     const applyPreviewTheme = () => {
-        // 如果当前主题等于预览主题，直接执行完成回调
-        console.log('applyPreviewTheme', currentTheme, previewTheme);
-        // if (currentTheme === previewTheme) {
-        //     onComplete?.();
-        //     return;
-        // }
-        //
-        // // 清除之前的轮询器
-        // if (pollIntervalRef.current) {
-        //     clearInterval(pollIntervalRef.current);
-        //     pollIntervalRef.current = null;
-        // }
-
-        // 应用主题
         setCurrentTheme(previewTheme);
-        // setIsPreviewMode(false);
-        //
-        // // 开始轮询，等待主题真正应用
-        // const targetTheme = previewTheme;
-        // pollIntervalRef.current = setInterval(() => {
-        //     console.log('polling...', previewTheme, currentTheme);
-        //     if (currentTheme === targetTheme) {
-        //         // 主题已应用，清除轮询器并执行完成回调
-        //         if (pollIntervalRef.current) {
-        //             clearInterval(pollIntervalRef.current);
-        //             pollIntervalRef.current = null;
-        //         }
-        //         onComplete?.();
-        //     }
-        // }, 50); // 每50ms检查一次
+        setAutoSwitch(previewAutoSwitch);
     };
 
     const cancelPreviewTheme = () => {
-        // // 清除轮询器
-        // if (pollIntervalRef.current) {
-        //     clearInterval(pollIntervalRef.current);
-        //     pollIntervalRef.current = null;
-        // }
-        // console.log('取消预览模式', previewTheme, currentTheme);
         setIsPreviewMode(false);
+    };
+
+    const handleAutoSwitch = (enabled: boolean) => {
+        setPreviewAutoSwitch(enabled);
+        if (enabled) {
+            const colorScheme: ColorSchemeName = Appearance.getColorScheme();
+            if (colorScheme) {
+                setPreviewTheme(colorScheme);
+            }
+        }
     };
 
     // 组件卸载时清理轮询器
     React.useEffect(() => {
-        return () => {
-            if (pollIntervalRef.current) {
-                clearInterval(pollIntervalRef.current);
-                pollIntervalRef.current = null;
+        // 监听主题变化
+        const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+            if (autoSwitch && colorScheme) {
+                setCurrentTheme(colorScheme);
             }
+        });
+
+        return () => {
+            // 清理监听器
+            subscription.remove();
         };
     }, []);
 
@@ -192,7 +178,7 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
     };
 
     const value: UnifiedThemeContextType = {
-        theme: currentTheme,
+        theme: effectiveTheme,
         themeColors,
         setTheme,
         toggleTheme,
@@ -204,6 +190,8 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         setPreviewTheme: setPreviewThemeHandler,
         applyPreviewTheme,
         cancelPreviewTheme,
+        previewAutoSwitch,
+        handleAutoSwitch,
         // 向后兼容
         specialTheme: currentTheme,
         specialThemeColors,
