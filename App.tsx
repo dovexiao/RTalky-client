@@ -9,10 +9,7 @@ import React, {JSX, useEffect} from 'react';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
-import { ThemeContext } from '@contexts/ThemeContext';
-import { SpecialThemeProvider } from '@contexts/SpecialThemeContext';
-import { default as lightTheme } from './light-theme.json';
-import { default as darkTheme } from './dark-theme.json';
+import { UnifiedThemeProvider, useUnifiedTheme } from '@contexts/UnifiedThemeContext';
 import { AppNavigator } from '@navigation/AppNavigation.tsx';
 import { GlobalProvider } from '@contexts/GlobalContext.tsx';
 import BootSplash from 'react-native-bootsplash';
@@ -21,25 +18,25 @@ import { SessionService, UserInfoService } from '@/auth/services';
 import { useAuthStore, UserProfile } from '@/auth/stores';
 import { ImageCache } from '@/utils';
 
-type Theme = 'light' | 'dark';
-
 function App(): JSX.Element {
-    const [theme, setTheme] = React.useState<Theme>('light');
-    const [customTheme, setCustomTheme] = React.useState(lightTheme);
+    return (
+        <>
+            <IconRegistry icons={EvaIconsPack}/>
+            <UnifiedThemeProvider>
+                <AppContent />
+            </UnifiedThemeProvider>
+        </>
+    );
+}
 
-    const setInitialRouteName = useNavigationStore(state => state.setInitialRouteName);
-    const resetInitialRouteName = useNavigationStore(state => state.resetInitialRouteName);
-
-    const toggleTheme = () => {
-        const nextTheme = theme === 'light' ? 'dark' : 'light';
-        const nextCustomTheme = theme === 'light' ? darkTheme : lightTheme;
-        setTheme(nextTheme);
-        // @ts-ignore
-        setCustomTheme(nextCustomTheme);
-    };
+// 分离的 App 内容组件
+const AppContent: React.FC = () => {
+    const { themeColors } = useUnifiedTheme();
 
     useEffect(() => {
         const init = async () => {
+            const { setInitialRouteName } = useNavigationStore.getState();
+
             try {
                 // 并行执行会话验证和用户信息获取
                 const [sessionResponse, userInfoResponse] = await Promise.allSettled([
@@ -75,12 +72,10 @@ function App(): JSX.Element {
                     }
                 } else {
                     console.log('会话无效，设置初始路由为VerificationLogin');
-                    setInitialRouteName('VerificationLogin');
                 }
             } catch (error) {
                 console.error('初始化失败:', error);
                 // 初始化失败时，默认设置为登录页面
-                resetInitialRouteName();
             }
         };
 
@@ -92,19 +87,11 @@ function App(): JSX.Element {
     }, []);
 
     return (
-        <>
-            <IconRegistry icons={EvaIconsPack}/>
-            <ThemeContext.Provider value={{ theme, toggleTheme }}>
-                <ApplicationProvider {...eva} theme={{...eva[theme], ...customTheme}}>
-                    <SpecialThemeProvider>
-                        <GlobalProvider>
-                            <AppNavigator />
-                        </GlobalProvider>
-                    </SpecialThemeProvider>
-                </ApplicationProvider>
-            </ThemeContext.Provider>
-        </>
-
+        <ApplicationProvider {...eva} theme={themeColors}>
+            <GlobalProvider>
+                <AppNavigator />
+            </GlobalProvider>
+        </ApplicationProvider>
     );
 }
 
