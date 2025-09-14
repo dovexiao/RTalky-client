@@ -5,18 +5,18 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { LearnBoxProps } from '@/main/types';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     return (
         <TouchableOpacity
             style={[
                 styles.card,
-                { backgroundColor: specialThemeColors['bg-200'] },
+                { backgroundColor: themeColors['bg-200'] },
             ]}
             key={learnBox.id || `module-${index}`}
             onPress={() => {
@@ -26,11 +26,11 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
             <View style={styles.cardContainer}>
                 <View style={[
                     styles.icon,
-                    { backgroundColor: specialThemeColors['primary-100'],
+                    { backgroundColor: themeColors['primary-100'],
                 }]}>
                     <Icon
                         name={learnBox.icon}
-                        fill={specialThemeColors['primary-300']}
+                        fill={themeColors['primary-300']}
                         width={28} height={28}
                     />
                 </View>
@@ -38,7 +38,7 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
                     <View style={styles.titleContainer}>
                         <Text style={[
                             styles.title,
-                            { color: specialThemeColors['text-100'] },
+                            { color: themeColors['text-100'] },
                         ]}>
                             {learnBox.title}
                         </Text>
@@ -46,18 +46,18 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
                     </View>
                     <Text style={[
                         styles.description,
-                        { color: specialThemeColors['text-200'] },
+                        { color: themeColors['text-200'] },
                     ]}>
                         {learnBox.description}
                     </Text>
                     <View style={styles.moduleStats}>
                         <View style={[
                             styles.countBadge,
-                            { backgroundColor: specialThemeColors['bg-300'] },
+                            { backgroundColor: themeColors['bg-300'] },
                         ]}>
                             <Text style={[
                                 styles.countText,
-                                { color: specialThemeColors['text-200'] },
+                                { color: themeColors['text-200'] },
                             ]}>
                                 {learnBox.count} notes
                             </Text>

@@ -4,7 +4,7 @@ import {
     StatusBar,
     StyleSheet, View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
     useAnimatedScrollHandler,
     useAnimatedStyle,
@@ -19,7 +19,7 @@ import {
     AboutRTalkySection,
 } from '@/center/personCenter/components';
 import { Divider, TopNavigation } from '@ui-kitten/components';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 // 个人中心具体内容：仅包含UI和内容相关逻辑
 const PersonCenter = () => {
@@ -28,7 +28,7 @@ const PersonCenter = () => {
     // 根据ProfileSection的实际高度调整，考虑到marginVertical: 90, marginBottom: 30
     const profileSectionHeight: number = 200;
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     // 滚动事件处理
     const scrollHandler = useAnimatedScrollHandler({
@@ -72,7 +72,7 @@ const PersonCenter = () => {
         <SafeAreaView style={[
             styles.safeArea,
             {
-                backgroundColor: specialThemeColors['bg-100'],
+                backgroundColor: themeColors['bg-100'],
             },
         ]}>
             {/* 顶部设置和StatusBar - 绝对定位，初始隐藏 */}
@@ -85,7 +85,7 @@ const PersonCenter = () => {
                 <View style={[
                     styles.statusBar,
                     {
-                        backgroundColor: specialThemeColors['bg-100'],
+                        backgroundColor: themeColors['bg-100'],
                     },
                 ]} />
                 <TopNavigation
@@ -107,7 +107,7 @@ const PersonCenter = () => {
                     style={[
                         styles.innerContent,
                         {
-                            backgroundColor: specialThemeColors['bg-100'],
+                            backgroundColor: themeColors['bg-100'],
                         },
                     ]}
                     onScroll={scrollHandler}

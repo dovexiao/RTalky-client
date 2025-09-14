@@ -14,7 +14,7 @@ import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { EditIcon, CameraIcon } from '@/icon';
 import EditNicknameAction, { EditNicknameActionAPI } from './EditNicknameAction';
 import EditBioAction, { EditBioActionAPI } from './EditBioAction';
-import { useSpecialTheme}  from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 export const ProfileSection = () => {
     const nickname = useAuthStore(state => state.nickname);
@@ -29,7 +29,7 @@ export const ProfileSection = () => {
     const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
     const isSmallScreen = screenWidth < 600; // Threshold for small screens (portrait phones)
 
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     // 监听屏幕尺寸变化
     useEffect(() => {
@@ -91,7 +91,7 @@ export const ProfileSection = () => {
     return (
         <View style={[
             styles.profileSection,
-            { backgroundColor: specialThemeColors['bg-200'] },
+            { backgroundColor: themeColors['bg-200'] },
             isSmallScreen ? styles.profileSectionVertical : styles.profileSectionHorizontal,
         ]}>
             {isSmallScreen ? (
@@ -126,7 +126,7 @@ export const ProfileSection = () => {
                             <Text
                                 style={[
                                     styles.nameVertical,
-                                    { color: specialThemeColors['text-100'] },
+                                    { color: themeColors['text-100'] },
                                 ]}
                                 numberOfLines={1}
                                 ellipsizeMode={'tail'}
@@ -146,7 +146,7 @@ export const ProfileSection = () => {
                             <Text
                                 style={[
                                     styles.bioVertical,
-                                    { color: specialThemeColors['text-200'] },
+                                    { color: themeColors['text-200'] },
                                 ]}
                                 numberOfLines={1}
                                 ellipsizeMode={'tail'}
@@ -194,7 +194,7 @@ export const ProfileSection = () => {
                             <Text
                                 style={[
                                     styles.nameHorizontal,
-                                    { color: specialThemeColors['text-100'] },
+                                    { color: themeColors['text-100'] },
                                 ]}
                                 numberOfLines={1}
                                 ellipsizeMode={'tail'}
@@ -214,7 +214,7 @@ export const ProfileSection = () => {
                             <Text
                                 style={[
                                     styles.bioHorizontal,
-                                    { color: specialThemeColors['text-200'] },
+                                    { color: themeColors['text-200'] },
                                 ]}
                                 numberOfLines={1}
                                 ellipsizeMode={'tail'}

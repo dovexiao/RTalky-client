@@ -1,6 +1,6 @@
 import React from 'react';
 import SectionContainer from '@/center/personCenter/components/SectionContainer.tsx';
-import {MenuItem} from '@/center/personCenter/types';
+import { MenuItem } from '@/center/personCenter/types';
 
 export const AccountSecuritySection = () => {
     const menuItems: MenuItem[] = [{

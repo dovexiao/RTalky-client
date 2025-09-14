@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MenuItem } from '@/center/personCenter/types';
-import { useSpecialTheme } from '@contexts/SpecialThemeContext.tsx';
+import { useUnifiedTheme } from '@/contexts';
 
 // 容器属性
 export interface SectionContainerProps {
@@ -46,7 +46,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
 const MenuItemComponent: React.FC<{
     item: MenuItem;
 }> = ({ item }) => {
-    const { specialThemeColors } = useSpecialTheme();
+    const { themeColors } = useUnifiedTheme();
 
     const handlePress = () => {
         if (item.disabled) {
@@ -62,7 +62,7 @@ const MenuItemComponent: React.FC<{
         <TouchableOpacity
             style={[
                 styles.menuItem,
-                { backgroundColor: specialThemeColors['bg-100']},
+                { backgroundColor: themeColors['bg-100']},
                 // item.disabled && styles.disabledItem,
             ]}
             onPress={handlePress}
@@ -70,12 +70,12 @@ const MenuItemComponent: React.FC<{
             // activeOpacity={0.7}
         >
             <View style={styles.menuItemLeft}>
-                <View style={[styles.iconContainer, { backgroundColor: specialThemeColors['primary-100'] }]}>
-                    <Icon name={item.icon} size={20} color={specialThemeColors['primary-300']} />
+                <View style={[styles.iconContainer, { backgroundColor: themeColors['primary-100'] }]}>
+                    <Icon name={item.icon} size={20} color={themeColors['primary-300']} />
                 </View>
                 <Text style={[
                     styles.menuItemText,
-                    { color: specialThemeColors['text-100'] },
+                    { color: themeColors['text-100'] },
                 ]}>
                     {item.title}
                 </Text>
@@ -83,7 +83,7 @@ const MenuItemComponent: React.FC<{
             <View style={styles.menuItemRight}>
                 <Text style={[
                     styles.menuItemSubText,
-                    { color: specialThemeColors['text-200'] },
+                    { color: themeColors['text-200'] },
                 ]}>
                     {item.subtitle}
                 </Text>
