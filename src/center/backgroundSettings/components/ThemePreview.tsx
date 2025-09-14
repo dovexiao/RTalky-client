@@ -8,12 +8,30 @@ import { useBackgroundSettingsStore } from '@/center/backgroundSettings/stores';
 const { width, height } = Dimensions.get('window');
 
 const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
-    const { themeColors } = useUnifiedTheme();
+    const {
+        themeColors,
+        isPreviewMode,
+        setPreviewMode,
+        setPreviewTheme,
+    } = useUnifiedTheme();
     const isLight = theme === 'light';
     const bgColor = isLight ? '#FFFFFF' : '#1F2B3E';
     const cardBgColor = isLight ? '#F5F5F5' : '#0F1C2E';
 
     const selectedTheme = useBackgroundSettingsStore(state => state.selectedTheme);
+
+    const handleThemeChange = (checked: boolean) => {
+        // 启用预览模式并设置预览主题
+        if (!isPreviewMode) {
+            setPreviewMode(true);
+        }
+        if (checked) {
+            setPreviewTheme(theme);
+            // 同时更新背景设置存储
+            const { setSelectedTheme } = useBackgroundSettingsStore.getState();
+            setSelectedTheme(theme);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -23,8 +41,7 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
                     { backgroundColor: bgColor, aspectRatio: width / (height + (StatusBar.currentHeight ?? 0)) },
                 ]}
                 onPress={() => {
-                    const { setSelectedTheme } = useBackgroundSettingsStore.getState();
-                    setSelectedTheme(theme);
+                    handleThemeChange(true);
                 }}
                 activeOpacity={0.8}
             >
@@ -70,10 +87,7 @@ const ThemePreview: React.FC<ThemePreviewProps> = ({ theme }) => {
             <View style={styles.selectionArea}>
                 <Radio
                     checked={selectedTheme === theme}
-                    onChange={() => {
-                        const { setSelectedTheme } = useBackgroundSettingsStore.getState();
-                        setSelectedTheme(theme);
-                    }}
+                    onChange={handleThemeChange}
                     status={selectedTheme === theme ? 'primary' : 'basic'}
                 />
                 <Text style={[

@@ -19,6 +19,7 @@ import Animated, {
     useDerivedValue,
     runOnJS,
 } from 'react-native-reanimated';
+import { useUnifiedTheme } from '@/contexts';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -53,6 +54,8 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
 
     const dialogWidthRatio = useSharedValue(0.8);
     const contentMinHeightRatio = useSharedValue(0.4);
+
+    const { themeColors } = useUnifiedTheme();
 
     // 显示弹窗
     const show = useCallback((newConfig: ActionDialogConfig) => {
@@ -151,6 +154,7 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
                 style={[
                     styles.container,
                     containerStyle,
+                    { backgroundColor: themeColors['bg-200'] },
                 ]}
             >
                 {config?.scrollable ?
@@ -159,6 +163,7 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
                             styles.content,
                             contentStyle,
                             scrollContentStyle,
+                            { backgroundColor: themeColors['bg-200'] },
                         ]}
                     >
                         {config?.content}
@@ -167,6 +172,7 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
                         style={[
                             styles.content,
                             contentStyle,
+                            { backgroundColor: themeColors['bg-200'] },
                         ]}
                     >
                         {config?.content}
@@ -178,12 +184,20 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
                     style={[
                         styles.footer,
                         contentStyle,
+                        { backgroundColor: themeColors['bg-200'] },
                     ]}
                 >
-                    <Button appearance={'ghost'} style={styles.button} onPress={handleCancel}>
+                    <Button
+                        appearance={'ghost'}
+                        style={styles.button}
+                        onPress={handleCancel}
+                    >
                         <Text style={styles.buttonText}>取消</Text>
                     </Button>
-                    <Button style={[styles.button, styles.confirmButton]} onPress={handleConfirm}>
+                    <Button
+                        style={[styles.button, styles.confirmButton]}
+                        onPress={handleConfirm}
+                    >
                         <Text style={[styles.buttonText, styles.confirmText]}>确定</Text>
                     </Button>
                 </Animated.View>

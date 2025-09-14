@@ -47,6 +47,24 @@ interface UnifiedThemeContextType {
     /** 设置自动切换主题 */
     setAutoSwitch: (enabled: boolean) => void;
 
+    /** 是否处于预览模式 */
+    isPreviewMode: boolean;
+
+    /** 预览主题类型 */
+    previewTheme: ThemeType;
+
+    /** 设置预览模式 */
+    setPreviewMode: (enabled: boolean) => void;
+
+    /** 设置预览主题 */
+    setPreviewTheme: (theme: ThemeType) => void;
+
+    /** 应用预览主题（确认选择） */
+    applyPreviewTheme: () => void;
+
+    /** 取消预览主题（恢复原主题） */
+    cancelPreviewTheme: () => void;
+
     // 向后兼容属性
     specialTheme: ThemeType;
     specialThemeColors: SpecialThemeColors;
@@ -60,18 +78,28 @@ const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(u
 export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [currentTheme, setCurrentTheme] = useState<ThemeType>('dark');
     const [autoSwitch, setAutoSwitch] = useState(false);
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
+    const [previewTheme, setPreviewTheme] = useState<ThemeType>(currentTheme);
+
+    // 轮询器引用
+    const pollIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    // 计算有效主题（预览模式时使用预览主题，否则使用当前主题）
+    const effectiveTheme = useMemo(() => {
+        return isPreviewMode ? previewTheme : currentTheme;
+    }, [currentTheme, isPreviewMode, previewTheme]);
 
     // 计算特殊主题颜色
     const specialThemeColors = useMemo(() => {
-        return currentTheme === 'light' ? lightSpecialTheme : darkSpecialTheme;
-    }, [currentTheme]);
+        return effectiveTheme === 'light' ? lightSpecialTheme : darkSpecialTheme;
+    }, [effectiveTheme]);
 
     // 计算 UI Kitten 主题
     const uiKittenTheme = useMemo(() => {
-        const baseTheme = eva[currentTheme];
-        const customTheme = currentTheme === 'light' ? lightTheme : darkTheme;
+        const baseTheme = eva[effectiveTheme];
+        const customTheme = effectiveTheme === 'light' ? lightTheme : darkTheme;
         return {...baseTheme, ...customTheme};
-    }, [currentTheme]);
+    }, [effectiveTheme]);
 
     // 计算统一主题颜色，自定义主题优先
     const themeColors = useMemo(() => {
@@ -86,6 +114,73 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
     const toggleTheme = () => {
         setCurrentTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
+
+    // 预览模式操作
+    const setPreviewMode = (enabled: boolean) => {
+        setIsPreviewMode(enabled);
+        // console.log('setPreviewMode', enabled, currentTheme, previewTheme);
+        if (enabled) {
+            setPreviewTheme(currentTheme);
+        }
+    };
+
+    const setPreviewThemeHandler = (theme: ThemeType) => {
+        // console.log('setPreviewThemeHandler', theme);
+        setPreviewTheme(theme);
+    };
+
+    const applyPreviewTheme = () => {
+        // 如果当前主题等于预览主题，直接执行完成回调
+        console.log('applyPreviewTheme', currentTheme, previewTheme);
+        // if (currentTheme === previewTheme) {
+        //     onComplete?.();
+        //     return;
+        // }
+        //
+        // // 清除之前的轮询器
+        // if (pollIntervalRef.current) {
+        //     clearInterval(pollIntervalRef.current);
+        //     pollIntervalRef.current = null;
+        // }
+
+        // 应用主题
+        setCurrentTheme(previewTheme);
+        // setIsPreviewMode(false);
+        //
+        // // 开始轮询，等待主题真正应用
+        // const targetTheme = previewTheme;
+        // pollIntervalRef.current = setInterval(() => {
+        //     console.log('polling...', previewTheme, currentTheme);
+        //     if (currentTheme === targetTheme) {
+        //         // 主题已应用，清除轮询器并执行完成回调
+        //         if (pollIntervalRef.current) {
+        //             clearInterval(pollIntervalRef.current);
+        //             pollIntervalRef.current = null;
+        //         }
+        //         onComplete?.();
+        //     }
+        // }, 50); // 每50ms检查一次
+    };
+
+    const cancelPreviewTheme = () => {
+        // // 清除轮询器
+        // if (pollIntervalRef.current) {
+        //     clearInterval(pollIntervalRef.current);
+        //     pollIntervalRef.current = null;
+        // }
+        // console.log('取消预览模式', previewTheme, currentTheme);
+        setIsPreviewMode(false);
+    };
+
+    // 组件卸载时清理轮询器
+    React.useEffect(() => {
+        return () => {
+            if (pollIntervalRef.current) {
+                clearInterval(pollIntervalRef.current);
+                pollIntervalRef.current = null;
+            }
+        };
+    }, []);
 
     // 向后兼容的方法
     const toggleSpecialTheme = () => {
@@ -103,6 +198,12 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         toggleTheme,
         autoSwitch,
         setAutoSwitch,
+        isPreviewMode,
+        previewTheme,
+        setPreviewMode,
+        setPreviewTheme: setPreviewThemeHandler,
+        applyPreviewTheme,
+        cancelPreviewTheme,
         // 向后兼容
         specialTheme: currentTheme,
         specialThemeColors,
@@ -188,6 +289,50 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
  onValueChange={setAutoSwitch}
  *         title="跟随系统"
  *       />
+ *     </View>
+ *   );
+ * };
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // 主题预览功能
+ * const ThemePreview = () => {
+ *   const {
+ *     isPreviewMode,
+ *     previewTheme,
+ *     setPreviewMode,
+ *     setPreviewTheme,
+ *     applyPreviewTheme,
+ *     cancelPreviewTheme
+ *   } = useUnifiedTheme();
+ *
+ *   const handleThemeSelect = (theme: 'light' | 'dark') => {
+ *     if (!isPreviewMode) {
+ *       setPreviewMode(true);
+ *     }
+ *     setPreviewTheme(theme);
+ *   };
+ *
+ *   const handleConfirm = () => {
+ *     applyPreviewTheme(() => {
+ *       // 主题应用完成后的回调
+ *       console.log('主题已应用');
+ *     });
+ *   };
+ *
+ *   const handleCancel = () => {
+ *     cancelPreviewTheme();
+ *   };
+ *
+ *   return (
+ *     <View>
+ *       <Text>预览模式: {isPreviewMode ? '开启' : '关闭'}</Text>
+ *       <Text>预览主题: {previewTheme}</Text>
+ *       <Button onPress={() => handleThemeSelect('light')}>预览浅色</Button>
+ *       <Button onPress={() => handleThemeSelect('dark')}>预览深色</Button>
+ *       <Button onPress={handleConfirm}>确认应用</Button>
+ *       <Button onPress={handleCancel}>取消预览</Button>
  *     </View>
  *   );
  * };

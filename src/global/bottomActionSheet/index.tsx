@@ -161,11 +161,9 @@ const styles = StyleSheet.create({
         // paddingBottom: 24,
     },
     content: {
-        backgroundColor: '#FFF',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         overflow: 'hidden',
-        paddingTop: 8,
     },
 });
 

@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import {Input, Text} from '@ui-kitten/components';
-import React, {forwardRef, useImperativeHandle} from 'react';
-import {useNoteStore} from '@/note/noteLibrary/stores';
+import { Input, Text } from '@ui-kitten/components';
+import React, { forwardRef, useImperativeHandle } from 'react';
+import { useNoteStore } from '@/note/noteLibrary/stores';
+import { useUnifiedTheme } from '@/contexts';
 
 // 定义暴露给父组件的 API 接口
 export type EditIntroduceActionAPI = {
@@ -13,6 +14,8 @@ const EditIntroduceAction = forwardRef<EditIntroduceActionAPI, { cardId: string 
     const note = useNoteStore(state => state.notes.filter(q => q.noteId === cardId)[0]);
     const [introduce, setIntroduce] = React.useState(note.introduce);
 
+    const { themeColors } = useUnifiedTheme();
+
     // 使用 useImperativeHandle 暴露方法给父组件
     useImperativeHandle(ref, () => ({
         getIntroduce: () => introduce,
@@ -20,7 +23,10 @@ const EditIntroduceAction = forwardRef<EditIntroduceActionAPI, { cardId: string 
     }), [introduce]);
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            { backgroundColor: themeColors['bg-200'] },
+        ]}>
             <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>简介修改</Text>
             </View>

@@ -7,6 +7,7 @@ import EditIntroduceAction, { EditIntroduceActionAPI } from './EditIntroduceActi
 import RenameNoteAction, { RenameNoteActionAPI } from './RenameNoteAction.tsx';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { NoteService } from '@/note/services';
+import { useUnifiedTheme } from '@/contexts';
 
 type ColumnCount = 1 | 2 | 3 | 4;
 
@@ -24,6 +25,8 @@ export const NoteSettingsAction = ({
     const editIntroduceActionRef = useRef<EditIntroduceActionAPI>(null);
 
     const columnCount: ColumnCount = 3;
+
+    const { themeColors } = useUnifiedTheme();
 
     // 根据列数计算宽度（%）
     const getWidthByColumn = (columns: ColumnCount): number => {
@@ -55,7 +58,7 @@ export const NoteSettingsAction = ({
         return placeholders;
     };
 
-    const renameNote = async () => {
+    const renameNoteDialog = async () => {
         try {
             const title = renameNoteActionRef.current?.getTitle();
             const newTitle = title?.trim();
@@ -87,7 +90,7 @@ export const NoteSettingsAction = ({
         }
     };
 
-    const editIntroduce = async () => {
+    const editIntroduceDialog = async () => {
         try {
             const introduce = editIntroduceActionRef.current?.getIntroduce();
             const newIntroduce = introduce?.trim();
@@ -119,7 +122,7 @@ export const NoteSettingsAction = ({
         }
     };
 
-    const deleteNote = async () => {
+    const deleteNoteDialog = async () => {
         try {
             // 调用 API 删除笔记
             await NoteService.deleteNote(cardId);
@@ -138,46 +141,96 @@ export const NoteSettingsAction = ({
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>设置</Text>
+        <View style={[
+            styles.container,
+            { backgroundColor: themeColors['bg-200'] },
+        ]}>
+            <View style={[
+                styles.titleContainer,
+                { backgroundColor: themeColors['bg-200'] },
+            ]}>
+                <Text style={[
+                    styles.titleText,
+                    { color: themeColors['text-100'] },
+                ]}>
+                    设置
+                </Text>
             </View>
-            <View style={styles.actionContent}>
+            <View style={[
+                styles.actionContent,
+                { backgroundColor: themeColors['bg-200'] },
+            ]}>
                 {/* 操作项列表 */}
                 <TouchableOpacity
-                    style={[styles.actionObject, { width: `${getWidthByColumn(columnCount)}%` }]}
+                    style={[
+                        styles.actionObject,
+                        {
+                            width: `${getWidthByColumn(columnCount)}%`,
+                            borderTopColor: themeColors['primary-200'],
+                            // backgroundColor: themeColors['primary-200'],
+                        },
+                    ]}
                     onPress={() => {
                         actionDialogRef.current?.show({
                             content: <RenameNoteAction ref={renameNoteActionRef} cardId={cardId} />,
-                            onConfirm: renameNote,
+                            onConfirm: renameNoteDialog,
                         });
                     }}
                 >
-                    <Text style={styles.actionText}>重命名</Text>
+                    <Text style={[
+                        styles.actionText,
+                        // { color: themeColors['accent-200'] },
+                    ]}>
+                        重命名
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.actionObject, { width: `${getWidthByColumn(columnCount)}%` }]}
+                    style={[
+                        styles.actionObject,
+                        {
+                            width: `${getWidthByColumn(columnCount)}%`,
+                            borderTopColor: themeColors['primary-200'],
+                            // backgroundColor: themeColors['primary-200'],
+                        },
+                    ]}
                     onPress={() => {
                         actionDialogRef.current?.show({
                             content: <EditIntroduceAction ref={editIntroduceActionRef} cardId={cardId} />,
-                            onConfirm: editIntroduce,
+                            onConfirm: editIntroduceDialog,
                         });
                     }}
                 >
-                    <Text style={styles.actionText}>修改简介</Text>
+                    <Text style={[
+                        styles.actionText,
+                        // { color: themeColors['accent-200'] },
+                    ]}>
+                        修改简介
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.actionObject, { width: `${getWidthByColumn(columnCount)}%` }]}
+                    style={[
+                        styles.actionObject,
+                        {
+                            width: `${getWidthByColumn(columnCount)}%`,
+                            borderTopColor: themeColors['primary-200'],
+                            // backgroundColor: themeColors['primary-200'],
+                        },
+                    ]}
                     onPress={() => {
                         actionDialogRef.current?.show({
                             content: <DeleteNoteAction />,
-                            onConfirm: deleteNote,
+                            onConfirm: deleteNoteDialog,
                         });
                     }}
                 >
-                    <Text style={styles.actionText}>删除</Text>
+                    <Text style={[
+                        styles.actionText,
+                        // { color: themeColors['accent-200'] },
+                    ]}>
+                        删除
+                    </Text>
                 </TouchableOpacity>
 
                 {/*/!* 新增的第四个操作项示例 *!/*/}
@@ -205,6 +258,7 @@ const styles = StyleSheet.create({
     titleContainer: {
         width: '100%',
         padding: 6,
+        paddingTop: 14,
     },
     titleText: {
         fontSize: 18,
@@ -218,17 +272,15 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         padding: 12,
         paddingBottom: 20,
-        backgroundColor: '#FFF',
     },
     actionObject: {
         // 宽度由动态计算传入，此处不固定
         height: 100,
-        backgroundColor: '#FFF',
+        backgroundColor: '#FFFFFF',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        borderTopWidth: 4,
-        borderTopColor: '#FD9B37',
+        borderTopWidth: 8,
         marginBottom: 10,
         shadowColor: '#000',
         shadowOffset: {
@@ -242,6 +294,7 @@ const styles = StyleSheet.create({
     actionText: {
         fontSize: 14,
         textAlign: 'center',
+        color: '#000000',
     },
 });
 

@@ -2,6 +2,7 @@ import {StyleSheet, View} from 'react-native';
 import {Input, Text} from '@ui-kitten/components';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { useNoteStore } from '@/note/noteLibrary/stores';
+import { useUnifiedTheme } from '@/contexts';
 
 // 定义暴露给父组件的 API 接口
 export type RenameNoteActionAPI = {
@@ -13,6 +14,8 @@ const RenameNoteAction = forwardRef<RenameNoteActionAPI, { cardId: string }>(({ 
     const note = useNoteStore(state => state.notes.filter(q => q.noteId === cardId)[0]);
     const [title, setTitle] = React.useState(note.title);
 
+    const { themeColors } = useUnifiedTheme();
+
     // 使用 useImperativeHandle 暴露方法给父组件
     useImperativeHandle(ref, () => ({
         getTitle: () => title,
@@ -20,7 +23,10 @@ const RenameNoteAction = forwardRef<RenameNoteActionAPI, { cardId: string }>(({ 
     }), [title]);
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            { backgroundColor: themeColors['bg-200'] },
+        ]}>
             <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>重命名</Text>
             </View>
