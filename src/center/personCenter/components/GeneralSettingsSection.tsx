@@ -20,11 +20,11 @@ export const GeneralSettingsSection = () => {
         title: '字体大小',
         color: '#4285F4',
         onPress: () => {},
-    }, {
-        icon: 'delete-sweep',
-        title: '清理缓存',
-        color: '#4285F4',
-        onPress: () => {},
+    // }, {
+    //     icon: 'delete-sweep',
+    //     title: '清理缓存',
+    //     color: '#4285F4',
+    //     onPress: () => {},
     }];
 
     return (
