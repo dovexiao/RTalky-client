@@ -12,7 +12,7 @@ import { Button, CheckBox, Divider, Input, useTheme } from '@ui-kitten/component
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 
 const PasswordLogin = () => {
     const [phoneNumber, setPhoneNumber] = useState('');

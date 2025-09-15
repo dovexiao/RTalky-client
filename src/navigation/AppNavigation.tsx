@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 // import BootSplash from 'react-native-bootsplash';
 import AppMain from '@/main/screen/AppMain.tsx';
 import TestPage from '@/test/TestPage.tsx';
@@ -18,6 +18,7 @@ import AddNoteContent from '@/note/createNote/screens/AddNoteContent.tsx';
 import RecycleBin from '@/center/recycleBin/screens/RecycleBin.tsx';
 import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
 import BackgroundSettings from '@/center/backgroundSettings/screens/BackgroundSettings.tsx';
+import { UserAgreement, PrivacyPolicy, OpenSourceLicense } from '@/center/about';
 import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
@@ -55,6 +56,10 @@ const AppStackNavigator = () => {
             <Screen name="PersonCenter" component={PersonCenter} />
             <Screen name="RecycleBin" component={RecycleBin} />
             <Screen name="BackgroundSettings" component={BackgroundSettings} />
+            {/*关于模块*/}
+            <Screen name="UserAgreement" component={UserAgreement} />
+            <Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+            <Screen name="OpenSourceLicense" component={OpenSourceLicense} />
             {/*/!* 测试页面 *!/*/}
             <Screen name="TestPage" component={TestPage} />
         </Navigator>

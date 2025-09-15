@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, Text } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 import { LearnBoxProps } from '@/main/types';
 import { useUnifiedTheme } from '@/contexts';
 

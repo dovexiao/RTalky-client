@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 
 export type RouteName = keyof RootStackParamList;
 

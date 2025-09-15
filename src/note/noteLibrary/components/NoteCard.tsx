@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getTagColor } from '@utils/getTagColor.ts';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 import { Note } from '../types';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import NoteSettingsAction from './NoteSettingsAction.tsx';

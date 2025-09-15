@@ -3,7 +3,7 @@ import { Text, StyleSheet } from 'react-native';
 import { Button, Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/types';
+import { RootStackParamList } from '@navigation/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { SmsService } from '@/auth/services';
 
