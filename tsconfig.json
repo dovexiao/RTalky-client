@@ -2,6 +2,8 @@
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "types": ["jest", "react-jsx","react-native", "react-test-renderer", "node"],
+    "module": "esnext",
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
@@ -18,6 +20,7 @@
       "@contexts/*": ["src/contexts/*"],
       "@global/*": ["src/global/*"],
       "@/*": ["src/*"],
-    }
+      "@root/*": ["./*"]
+    },
   }
 }

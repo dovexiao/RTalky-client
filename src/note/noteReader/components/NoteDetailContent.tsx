@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator, Dimensions } from 'react-native';
-import Markdown from 'react-native-markdown-display';
+import { View, Text, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { Divider } from '@ui-kitten/components';
 import { formatTime } from '@utils/formatTime.ts';
 import { getTagColor } from '@utils/getTagColor.ts';
@@ -8,6 +7,7 @@ import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
 import { useUnifiedTheme } from '@/contexts';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -116,19 +116,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                 backgroundColor: themeColors['bg-300'],
             }} />
 
-            <Markdown
-                style={{
-                    ...markdownStyles,
-                    body: {
-                        ...markdownStyles.body,
-                        backgroundColor: themeColors['bg-100'],
-                        color: themeColors['text-100'],
-                    },
-                }}
-                rules={renderRules}
-            >
-                {currentNote.content.trim() || '暂无内容'}
-            </Markdown>
+            <MarkdownRenderer content={currentNote.content} />
 
             <Divider style={{
                 marginVertical: 10,
@@ -162,139 +150,6 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
             <View style={{ height: 40 }} />
         </View>
     );
-};
-
-const markdownStyles = StyleSheet.create({
-    // 全局基础样式
-    body: {
-        fontSize: 16,
-        lineHeight: 30,
-        fontFamily: 'System',
-    },
-
-    // 标题优化
-    heading1: {
-        fontSize: 22,
-        fontWeight: '800',
-        // marginVertical: 10,
-        color: '#1a1a1a',
-        // borderBottomWidth: 1,
-        // borderBottomColor: '#cbcbcb',
-        // paddingBottom: 8,
-    },
-    heading2: {
-        fontSize: 20,
-        fontWeight: '800',
-        marginVertical: 5,
-        color: '#222',
-    },
-    heading3: {
-        fontSize: 18,
-        fontWeight: '800',
-        marginVertical: 5,
-        color: '#333',
-    },
-
-    // 段落与引用
-    paragraph: {
-        marginVertical: 5,
-    },
-    blockquote: {
-        backgroundColor: '#f2f2f2',
-        borderLeftWidth: 4,
-        borderColor: '#CCC',
-        borderRadius: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        marginVertical: 10,
-        marginHorizontal: 8,
-    },
-
-    // 列表样式
-    list_item: {
-        flexDirection: 'row',
-        marginVertical: 0,
-    },
-    bullet_list_icon: {
-        marginRight: 10,
-        fontSize: 16,
-        color: '#222',
-    },
-    ordered_list_icon: {
-        marginRight: 10,
-        fontSize: 16,
-        // fontWeight: 'bold',
-        color: '#222',
-    },
-
-    // 代码块
-    code_inline: {
-        backgroundColor: '#f2f2f2',
-        // color: '#ffffff',
-        padding: 15,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: '#cccccc',
-    },
-    code_block: {
-        backgroundColor: '#2d2d2d',
-        color: '#ffffff',
-        padding: 15,
-        borderRadius: 6,
-        marginVertical: 14,
-    },
-    fence: {
-        backgroundColor: '#2d2d2d',
-        color: '#ffffff',
-        padding: 15,
-        borderRadius: 6,
-        marginVertical: 14,
-    },
-
-    // 链接与图片
-    link: {
-        color: '#2980b9',
-        textDecorationLine: 'underline',
-    },
-    image: {
-        resizeMode: 'contain',
-        height: 200,
-        marginVertical: 10,
-        borderRadius: 4,
-    },
-
-    // 表格优化
-    table: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 4,
-        marginVertical: 12,
-        marginHorizontal: 8,
-    },
-    th: {
-        backgroundColor: '#f8f8f8',
-        fontWeight: '700',
-        padding: 10,
-    },
-    tr: {
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderColor: '#eee',
-    },
-    td: {
-        flex: 1,
-        padding: 10,
-    },
-});
-
-const renderRules = {
-    image: (node: any, children: any, parent: any, styles:  any) => (
-        <Image
-            key={node.key}
-            style={styles.image}
-            source={{ uri: node.attributes.src }}
-        />
-    ),
 };
 
 const styles = StyleSheet.create({

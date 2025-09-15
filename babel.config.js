@@ -8,7 +8,7 @@ module.exports = {
             'module-resolver',
             {
                 root: ['./src'],
-                extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                extensions: ['.js', '.jsx', '.ts', '.tsx', '.md'],
                 alias: {
                     '@contexts': './src/contexts',
                     '@global': './src/global',
@@ -22,6 +22,7 @@ module.exports = {
                     '@types': './src/types',
                     '@navigation': './src/navigation',
                     '@': './src',
+                    '@root': '.',
                 },
             },
         ],

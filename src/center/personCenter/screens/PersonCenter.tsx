@@ -129,6 +129,8 @@ const PersonCenter = () => {
                     <AboutRTalkySection />
                     {/*其他*/}
                     <OtherSection />
+
+                    <View style={{ height: 30 }}></View>
                 </Animated.ScrollView>
             </View>
         </SafeAreaView>
