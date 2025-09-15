@@ -1,252 +1,212 @@
-# RTalky - 智能学习助手应用
+# RTalky
 
-[![React Native](https://img.shields.io/badge/React%20Native-0.76.5-blue.svg)](https://reactnative.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.4-blue.svg)](https://www.typescriptlang.org/)
-[![UI Kitten](https://img.shields.io/badge/UI%20Kitten-5.3.1-purple.svg)](https://akveo.github.io/react-native-ui-kitten/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+一个基于 React Native 开发的现代化笔记应用，提供优雅的用户体验和强大的功能特性。
 
-## 📱 项目概述
+## 📱 项目简介
 
-**RTalky** 是一款基于React Native开发的智能学习助手应用，专注于提供高效的知识管理和学习体验。应用集成了笔记管理、题目练习、智能验证等核心功能，采用现代化的技术架构和用户体验设计。
+RTalky 是一款功能丰富的笔记管理应用，采用 React Native 0.76.5 开发，支持 iOS 和 Android 平台。应用集成了笔记创建、编辑、阅读、个人中心管理等功能，为用户提供流畅的笔记记录和管理体验。
 
-## 🎯 项目定位
+## ✨ 核心功能
 
-- **目标用户**: 学生、教师、知识工作者
-- **核心价值**: 提供一体化的学习内容管理和知识积累平台
-- **应用场景**: 课堂笔记、知识整理、题目练习、学习进度跟踪
-- **技术特色**: 高性能、流畅交互、安全可靠
+### 📝 笔记模块
 
-## 🚀 主要功能
+**笔记库管理**
+- 支持创建、编辑、删除笔记
+- 笔记列表展示，支持搜索和筛选
+- 笔记标签系统，便于分类管理
 
-### 📚 核心学习模块
+**笔记阅读器**
+- 内置 Markdown 渲染，支持代码高亮、表格、图片等
+- 自适应主题的阅读界面
+- 笔记元信息展示（创建时间、修改时间、标签等）
+- 支持按键和滑动翻页功能
 
-#### 1. **智能笔记系统**
-- **笔记创建**: 支持标题、简介、内容的多层次编辑
-- **笔记管理**: 标签分类、搜索过滤、批量操作
-- **笔记阅读**: 流畅的翻页体验、内容预览
-- **笔记编辑**: 实时保存、版本管理
+**笔记创建流程**
+- 分步骤的笔记创建向导
+- 支持添加封面、标题、内容、标签
 
-#### 2. **题目练习系统**
-- **题目库管理**: 题目分类、难度分级、标签系统
-- **练习模式**: 多种练习方式、进度跟踪
-- **题目创建**: 可视化编辑器、模板系统
-- **学习分析**: 练习统计、错题分析
+### 👤 个人中心模块
 
-#### 3. **个人中心**
-- **用户管理**: 个人资料、学习统计
-- **回收站**: 数据恢复、永久删除
-- **设置中心**: 主题切换、通知设置
+**用户资料管理**
+- 头像上传和编辑（支持拍照和相册选择）
+- 昵称和简介编辑
+- 权限管理和用户友好的错误提示
 
-### 🔐 安全认证系统
+**主题设置**
+- 支持浅色/深色主题切换
+- 实时主题预览功能
+- 跟随系统主题设置
+- 主题设置页面提供直观的预览界面
 
-- **短信验证码登录**: 安全便捷的身份验证
-- **Token管理**: 24小时自动过期、安全存储
-- **设备信息收集**: 智能风控、安全防护
-- **权限管理**: 细粒度访问控制
+## 🎨 优秀的 UI/UX 设计
 
-### 🎨 用户体验特性
+### 📖 笔记阅读器设计
 
-- **主题系统**: 支持明暗主题切换、自定义主题
-- **手势操作**: 滑动侧边栏、手势验证、翻页控制
-- **动画效果**: 流畅的过渡动画、交互反馈
-- **响应式设计**: 适配不同屏幕尺寸
+RTalky 的笔记阅读器采用了精心设计的 Markdown 渲染系统：
+
+- **主题适配**：阅读器会根据当前主题自动调整文字颜色、背景色等样式
+- **代码高亮**：支持代码块的语法高亮，提供良好的代码阅读体验
+
+### 🖼️ 头像修改操作栏
+
+个人中心的头像修改功能展现了优秀的交互设计：
+
+- **权限管理**：集成了智能的权限请求系统，支持相机和相册权限
+- **动画效果**：使用 React Native Reanimated 实现流畅的弹窗动画
+- **用户引导**：提供清晰的权限说明和设置引导
+- **多种选择**：支持从相册选择、拍照、保存图片等多种操作
+
+### 🎭 全局弹窗动画设计
+
+应用中的各种弹窗组件都采用了统一的动画设计语言：
+
+**ActionDialog（操作对话框）**
+- 居中弹出动画，配合缩放效果
+- 半透明遮罩层，提供良好的视觉层次
+- 支持自定义内容高度和宽度比例
+- 流畅的进入和退出动画
+
+**BottomActionSheet（底部操作栏）**
+- 从底部滑入的动画效果
+- 圆角设计，符合现代移动应用设计规范
+- 支持自定义内容容器样式
+- 优雅的关闭动画
+
+### 🌈 主题切换功能设计
+
+RTalky 的主题系统展现了出色的设计理念：
+
+**统一主题管理**
+- 基于 Context API 的全局主题状态管理
+- 支持浅色、深色主题，以及自定义主题
+- 实时主题预览功能，用户可以在应用前预览效果
+- 自动跟随系统主题设置
+
+**主题预览界面**
+- 直观的主题对比界面
+- 模拟真实应用界面的预览效果
+- 支持实时切换和预览
+- 确认/取消机制，避免误操作
+
+### 🌍 多国家区号选择设计
+
+针对国际化需求，RTalky 实现了优雅的区号选择功能：
+
+**CountryManager 国家管理**
+- 基于 `world-countries` 和 `libphonenumber-js` 的权威数据
+- 支持 200+ 个国家和地区的区号信息
+- 支持多国家手机号格式验证
+- 支持中英文国家名称搜索
+
+**CountryCodeSelector 选择器**
+- 分组列表展示，按字母顺序排列
+- 侧边字母导航，快速定位
+- 字母弹窗提示，提升用户体验
+- 支持模糊搜索功能
 
 ## 🛠️ 技术架构
 
-### **前端技术栈**
+### 核心技术栈
 
-#### 核心框架
-- **React Native 0.76.5**: 跨平台移动应用开发框架
-- **TypeScript 5.0.4**: 类型安全的JavaScript超集
-- **React 18.3.1**: 现代化的用户界面库
+- **React Native 0.76.5** - 跨平台移动应用开发框架
+- **TypeScript** - 类型安全的 JavaScript 超集
+- **UI Kitten** - 基于 Eva Design 的 React Native UI 组件库
+- **Zustand** - 轻量级状态管理库
+- **React Navigation** - 导航管理
+- **React Native Reanimated** - 高性能动画库
 
-#### UI组件库
-- **UI Kitten 5.3.1**: 基于Eva Design System的组件库
-- **Eva Icons**: 丰富的图标系统
-- **自定义组件**: 高度定制化的业务组件
+### 网络请求架构
 
-#### 状态管理
-- **Zustand 5.0.6**: 轻量级状态管理库
-- **React Context**: 全局状态共享
-- **本地存储**: 数据持久化
+**Axios 封装**
+- 统一的请求/响应拦截器
+- 自动 Token 管理和刷新
+- 请求取消机制，避免重复请求
+- 完善的错误处理和用户提示
 
-#### 网络通信
-- **Axios 1.10.0**: HTTP客户端库
-- **拦截器系统**: 请求/响应统一处理
-- **错误处理**: 完善的错误处理机制
+**请求工具函数**
+- 类型安全的 API 调用封装
+- 统一的错误处理逻辑
+- 支持 GET、POST、PUT、DELETE 等 HTTP 方法
+- 自动处理网络错误和服务器错误
 
-### **移动端特性**
+### 权限管理
 
-#### 原生功能集成
-- **设备信息**: 获取设备硬件信息
-- **权限管理**: 相机、存储、网络权限
-- **本地存储**: 安全的数据存储方案
+**usePermission Hook**
+- 统一的权限请求和管理
+- 支持相机、相册、麦克风、位置等权限
+- 智能的权限状态检测
+- 用户友好的权限说明和引导
 
-#### 性能优化
-- **懒加载**: 按需加载组件和资源
-- **内存管理**: 优化组件生命周期
-- **渲染优化**: 减少不必要的重渲染
+## 📦 项目结构
 
-## 🎨 设计亮点
-
-### **1. 手势交互系统**
-
-#### 滑动侧边栏
-```typescript
-// 支持手势滑动的侧边栏组件
-const SwipeSidebar = forwardRef<SwipeSidebarAPI, { children: React.ReactNode }>(({ children }, ref) => {
-    const positionX = useSharedValue<number>(-sidebarWidth);
-    const visible = useSharedValue(false);
-    
-    // 流畅的弹簧动画
-    const show = () => {
-        positionX.value = withSpring(0, {
-            mass: 1,
-            stiffness: 100,
-            damping: 20,
-        });
-    };
-});
 ```
-
-#### 手势验证组件
-- **滑块拼图验证**: 创新的验证方式
-- **手势识别**: 精确的手势检测算法
-- **动画反馈**: 流畅的交互体验
-
-### **2. 高性能翻页系统**
-
-#### 笔记阅读器
-```typescript
-// 基于FlatList的高性能翻页容器
-const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
-    ({ notes, initialScrollIndex, renderItem }, ref) => {
-        const scrollX = useSharedValue(0);
-        
-        // 优化渲染性能
-        const getItemLayout = (data, index) => ({
-            length: screenWidth,
-            offset: screenWidth * index,
-            index,
-        });
-        
-        return (
-            <Animated.FlatList
-                horizontal
-                pagingEnabled
-                getItemLayout={getItemLayout}
-                scrollEventThrottle={16}
-                onScroll={scrollHandler}
-            />
-        );
-    }
-);
+src/
+├── auth/                    # 认证模块
+│   ├── login/              # 登录相关
+│   ├── oneTapLogin/        # 一键登录
+│   ├── passwordLogin/      # 密码登录
+│   ├── verificationLogin/  # 验证码登录
+│   └── services/           # 认证服务
+├── center/                 # 个人中心
+│   ├── about/              # 关于页面
+│   ├── backgroundSettings/ # 背景设置
+│   ├── personCenter/       # 个人中心主页
+│   └── recycleBin/         # 回收站
+├── contexts/               # 全局上下文
+│   ├── GlobalContext.tsx   # 全局状态
+│   └── UnifiedThemeContext.tsx # 主题管理
+├── global/                 # 全局组件
+│   ├── actionDialog/       # 操作对话框
+│   ├── avatarActionsModal/ # 头像操作弹窗
+│   ├── bottomActionSheet/  # 底部操作栏
+│   └── sliderVerification/ # 滑动验证
+├── hooks/                  # 自定义 Hooks
+├── icon/                   # 图标组件
+├── main/                   # 主页面
+├── navigation/             # 导航配置
+├── note/                   # 笔记模块
+│   ├── createNote/         # 创建笔记
+│   ├── editNote/           # 编辑笔记
+│   ├── noteLibrary/        # 笔记库
+│   ├── noteReader/         # 笔记阅读器
+│   └── services/           # 笔记服务
+├── question/               # 问题模块
+├── services/               # 服务层
+│   └── fetch/              # 网络请求
+└── utils/                  # 工具函数
 ```
-
-### **3. 智能状态管理**
-
-#### Zustand Store设计
-```typescript
-// 模块化的状态管理
-export const useAuthStore = create<AuthStore>((set, get) => ({
-    // 认证状态
-    isAuthenticated: false,
-    userProfile: undefined,
-    
-    // 异步操作
-    login: async (phoneNumber: string, smsCode: string) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await AuthService.smsLogin(phoneNumber, smsCode);
-            // 状态更新逻辑
-        } catch (error) {
-            set({ error: error.message });
-        }
-    },
-}));
-```
-
-## 🔧 技术难点与解决方案
-
-### **1. 手势冲突处理**
-
-**问题**: 多个手势组件之间的冲突，如滑动翻页与侧边栏手势的干扰。
-
-**解决方案**:
-```typescript
-// 手势优先级管理
-const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-        // 只响应水平滑动，避免与垂直滚动冲突
-        const isHorizontal = Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
-        const isSignificant = Math.abs(gestureState.dx) > threshold;
-        return isHorizontal && isSignificant;
-    },
-});
-```
-
-### **2. 动画性能优化**
-
-**问题**: 复杂动画场景下的性能问题，如侧边栏滑动、翻页动画等。
-
-**解决方案**:
-- 使用`react-native-reanimated`的`useSharedValue`和`useAnimatedStyle`
-- 实现手势驱动的动画，减少JS线程负担
-- 优化动画参数，使用合适的缓动函数
-
-### **3. 内存管理优化**
-
-**问题**: 大量笔记和题目数据的内存占用问题。
-
-**解决方案**:
-- 实现虚拟化列表渲染
-- 使用`getItemLayout`优化FlatList性能
-- 及时清理不需要的组件引用
-
-### **4. 跨平台兼容性**
-
-**问题**: iOS和Android平台的差异，如手势识别、动画表现等。
-
-**解决方案**:
-- 使用平台特定的代码分支
-- 统一的手势处理逻辑
-- 平台适配的动画参数
-
-## 📱 应用截图
-
-> 应用界面截图展示（需要实际截图）
 
 ## 🚀 快速开始
 
-### **环境要求**
+### 环境要求
 
 - Node.js >= 18
 - React Native CLI
-- Android Studio / Xcode
-- 模拟器或真机设备
+- Android Studio (Android 开发)
+- Xcode (iOS 开发)
 
-### **安装步骤**
+### 安装依赖
 
 ```bash
-# 克隆项目
-git clone https://github.com/dovexiao/RTalky.git
-cd RTalky
-
-# 安装依赖
 npm install
-
-# iOS额外步骤
-cd ios && bundle install && bundle exec pod install && cd ..
-
-# 启动开发服务器
-npm start
-
-# 运行应用
-npm run android  # Android
-npm run ios      # iOS
 ```
 
-### **环境配置**
+### 运行项目
+
+```bash
+# Android
+npm run android
+
+# iOS
+npm run ios
+
+# 启动 Metro
+npm start
+```
+
+### 环境配置
+
+项目支持多环境配置：
 
 ```bash
 # 开发环境
@@ -259,100 +219,69 @@ npm run start:staging
 npm run start:prod
 ```
 
-## 🏗️ 项目结构
+## 📱 功能特性
 
-```
-RTalky/
-├── src/                          # 源代码目录
-│   ├── auth/                     # 认证模块
-│   │   ├── types/               # 类型定义
-│   │   ├── stores/              # 状态管理
-│   │   ├── verificationLogin/   # 短信验证码登录
-│   │   └── examples/            # 使用示例
-│   ├── main/                    # 主界面模块
-│   │   ├── components/          # 主界面组件
-│   │   ├── screen/              # 主界面屏幕
-│   │   └── stores/              # 主界面状态
-│   ├── note/                    # 笔记模块
-│   │   ├── createNote/          # 创建笔记
-│   │   ├── noteLibrary/         # 笔记库
-│   │   ├── noteReader/          # 笔记阅读器
-│   │   └── editNote/            # 编辑笔记
-│   ├── question/                # 题目模块
-│   │   ├── questionBank/        # 题目库
-│   │   ├── questionPaginator/   # 题目分页器
-│   │   └── opeQuestion/         # 题目操作
-│   ├── center/                  # 个人中心
-│   │   ├── personCenter/        # 个人中心
-│   │   └── recycleBin/          # 回收站
-│   ├── navigation/              # 导航模块
-│   ├── contexts/                # 全局上下文
-│   ├── global/                  # 全局组件
-│   ├── services/                # 服务层
-│   ├── hooks/                   # 自定义Hooks
-│   ├── icon/                    # 图标组件
-│   ├── types/                   # 全局类型
-│   └── utils/                   # 工具函数
-├── android/                      # Android原生代码
-├── ios/                         # iOS原生代码
-├── assets/                      # 静态资源
-└── docs/                        # 项目文档
-```
+### 笔记管理
+- ✅ Markdown 格式支持
+- ✅ 标签分类系统
+- ✅ 搜索和筛选
+- ✅ 笔记导入导出
+- ✅ 回收站功能
 
-## 🧪 测试
+### 用户系统
+- ✅ 多种登录方式
+- ✅ 用户资料管理
+- ✅ 头像上传编辑
+- ✅ 主题个性化
 
-```bash
-# 运行测试
-npm test
+### 国际化支持
+- ✅ 多国家区号选择
+- ✅ 手机号格式验证
+- ✅ 中英文界面支持
 
-# 运行测试并生成覆盖率报告
-npm run test:coverage
-```
+### 主题系统
+- ✅ 浅色/深色主题
+- ✅ 实时预览
+- ✅ 跟随系统设置
+- ✅ 自定义主题支持
 
-## 📦 构建与部署
+## 🔧 开发指南
 
-### **Android构建**
+### 代码规范
 
-```bash
-# 生成APK
-cd android && ./gradlew assembleRelease
+- 使用 TypeScript 进行类型检查
+- 遵循 ESLint 代码规范
+- 使用 Prettier 进行代码格式化
+- 组件采用函数式组件和 Hooks
 
-# 生成AAB
-cd android && ./gradlew bundleRelease
-```
+### 状态管理
 
-### **iOS构建**
+- 使用 Zustand 进行全局状态管理
+- 按模块划分 Store
+- 支持持久化存储
 
-```bash
-# 使用Xcode构建
-open ios/RTalky.xcworkspace
-```
+### 样式规范
 
-## 🤝 贡献指南
-
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+- 使用 StyleSheet 创建样式
+- 支持主题系统
+- 响应式设计原则
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 MIT 许可证，详情请参阅 [LICENSE.md](LICENSE.md) 文件。
 
-## 🙏 致谢
+## 🤝 贡献指南
 
-- [React Native](https://reactnative.dev/) - 跨平台移动应用开发框架
-- [UI Kitten](https://akveo.github.io/react-native-ui-kitten/) - 优秀的UI组件库
-- [Zustand](https://github.com/pmndrs/zustand) - 轻量级状态管理
-- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/) - 高性能动画库
+欢迎提交 Issue 和 Pull Request 来帮助改进项目。
 
 ## 📞 联系我们
 
-- 项目地址: [https://github.com/dovexiao/RTalky](https://github.com/dovexiao/RTalky)
-- 问题反馈: [Issues](https://github.com/dovexiao/RTalky/issues)
-- 功能建议: [Discussions](https://github.com/dovexiao/RTalky/discussions)
+如有问题或建议，请通过以下方式联系：
+
+- 提交 Issue
+- 发送邮件
+- 项目讨论区
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给我们一个星标！
+**RTalky** - 让笔记记录变得更加优雅和高效 🚀
