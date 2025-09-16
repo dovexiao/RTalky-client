@@ -1,10 +1,10 @@
 // src/contexts/UnifiedThemeContext.tsx
 import React, { createContext, useContext, useState, useMemo } from 'react';
 import * as eva from '@eva-design/eva';
-import lightSpecialTheme from '../../light-special-theme.json';
-import darkSpecialTheme from '../../dark-special-theme.json';
-import lightTheme from '../../light-theme.json';
-import darkTheme from '../../dark-theme.json';
+import lightSpecialTheme from '@root/light-special-theme.json';
+import darkSpecialTheme from '@root/dark-special-theme.json';
+import lightTheme from '@root/light-theme.json';
+import darkTheme from '@root/dark-theme.json';
 import { Appearance,  ColorSchemeName } from 'react-native';
 
 export type ThemeType = 'light' | 'dark';
@@ -83,7 +83,7 @@ interface UnifiedThemeContextType {
 const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(undefined);
 
 export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    const [currentTheme, setCurrentTheme] = useState<ThemeType>('dark');
+    const [currentTheme, setCurrentTheme] = useState<ThemeType>('light');
     const [autoSwitch, setAutoSwitch] = useState(true);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [previewTheme, setPreviewTheme] = useState<ThemeType>(currentTheme);
@@ -153,8 +153,12 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         }
     };
 
-    // 组件卸载时清理轮询器
     React.useEffect(() => {
+        const colorScheme: ColorSchemeName = Appearance.getColorScheme();
+        if (colorScheme) {
+            setCurrentTheme(colorScheme);
+        }
+
         // 监听主题变化
         const subscription = Appearance.addChangeListener(({ colorScheme }) => {
             if (autoSwitch && colorScheme) {
