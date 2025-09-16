@@ -1,3 +1,8 @@
+export interface DocumentViewerProps {
+    title: string;
+    content: string;
+}
+
 export interface PermissionItem {
     id: string;
     title: string;

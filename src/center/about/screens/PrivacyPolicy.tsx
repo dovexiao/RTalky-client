@@ -1,51 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, StatusBar } from 'react-native';
-import { Divider } from '@ui-kitten/components';
-import { useUnifiedTheme } from '@/contexts';
-import { MarkdownRenderer } from '@/note/noteReader/components';
-import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-// import { getMarkdownContent } from '@/utils';
 import { privacyContent } from '@/center/about/assets';
+import { DocumentViewer } from '@/center/about/components';
 
-const PrivacyPolicy: React.FC<{}> = () => {
-    const { themeColors } = useUnifiedTheme();
-    // const privacyContent = getMarkdownContent('PRIVACY.md');
-
+const OpenSourceLicense: React.FC<{}> = () => {
     return (
-        <View style={[styles.container, { backgroundColor: themeColors['bg-100'] }]}>
-            <View style={[
-                styles.statusBar,
-                { backgroundColor: themeColors['bg-100'] },
-            ]} />
-            <TopNavigationOpe
-                title={'隐私政策'}
-            />
-            <Divider />
-            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                <View style={styles.content}>
-                    <MarkdownRenderer content={privacyContent} />
-                </View>
-            </ScrollView>
-        </View>
+        <DocumentViewer title={'隐私政策'} content={privacyContent} />
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    statusBar: {
-        height: StatusBar.currentHeight,
-    },
-    topNavigation: {
-        paddingHorizontal: 16,
-    },
-    scrollView: {
-        flex: 1,
-    },
-    content: {
-        padding: 16,
-    },
-});
-
-export default PrivacyPolicy;
+export default OpenSourceLicense;

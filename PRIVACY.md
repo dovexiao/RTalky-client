@@ -44,7 +44,7 @@
     *   **服务提供商：** 阿里巴巴云计算（北京）有限公司]
     *   **使用目的：** 发送短信验证码，完成用户登录和身份验证
     *   **收集个人信息类型：** 手机号码
-    *   **服务协议链接：** ** https://terms.alicdn.com/legal-agreement/terms/suit_bu1_alibaba_communication/suit_bu1_alibaba_communication201802011702_87839.html?spm=a2c4g.11186623.0.0.6286b618hQHQAZ
+    *   **服务协议链接：** [通信能力技术服务协议](https://terms.alicdn.com/legal-agreement/terms/suit_bu1_alibaba_communication/suit_bu1_alibaba_communication201802011702_87839.html?spm=a2c4g.11186623.0.0.6286b618hQHQAZ)
 
 *   **react-native-image-picker / @react-native-camera-roll/camera-roll**
     *   **服务提供商：** React Native Community
