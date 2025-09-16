@@ -122,7 +122,7 @@ const AppPermissions: React.FC<{}> = () => {
                                         {PermissionStatusText[permissionStatus]}
                                     </Text>
                                 ) : (
-                                    <Spinner />
+                                    <Spinner size={'small'} />
                                 )}
                                 {!isGranted && !isUnavailable && (
                                     <TouchableOpacity onPress={() => refreshPermissionStatus(item.permissionType as 'camera' | 'photos')}>
