@@ -210,7 +210,7 @@ export const usePermission = (config: PermissionConfig) => {
         actionDialogRef.current?.show({
             content: PermissionSettingsDialog({title: config.settings.title, message: config.settings.message}),
             confirmButtonText: config.settings.positiveButton,
-                onConfirm: async () => {
+            onConfirm: async () => {
                 await openSettings().catch(() => console.log('无法打开设置'));
 
                 // 设置应用状态监听
@@ -235,7 +235,7 @@ export const usePermission = (config: PermissionConfig) => {
                 );
             },
         });
-    }, [config, actionDialogRef, checkPermission]);
+    }, [config]);
 
     return {
         ...permissionState,
