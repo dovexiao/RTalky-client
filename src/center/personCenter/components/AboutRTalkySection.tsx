@@ -31,7 +31,9 @@ export const AboutRTalkySection = () => {
         icon: 'vpn-key',
         title: '应用权限',
         color: '#4285F4',
-        onPress: () => {},
+        onPress: () => {
+            navigation.navigate('AppPermissions');
+        },
     }, {
         icon: 'list',
         title: '个人信息收集清单',

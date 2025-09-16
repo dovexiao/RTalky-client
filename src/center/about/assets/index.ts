@@ -1,3 +1,5 @@
+import { PermissionItem } from '@/center/about/types';
+
 export const licenseContent = 'Apache License\n' +
     'Version 2.0, January 2004\n' +
     'http://www.apache.org/licenses/\n' +
@@ -246,7 +248,7 @@ export const privacyContent = '# RTalky 隐私政策\n' +
     '    *   **服务提供商：** 阿里巴巴云计算（北京）有限公司]\n' +
     '    *   **使用目的：** 发送短信验证码，完成用户登录和身份验证\n' +
     '    *   **收集个人信息类型：** 手机号码\n' +
-    '    *   **服务协议链接：** ** https://terms.alicdn.com/legal-agreement/terms/suit_bu1_alibaba_communication/suit_bu1_alibaba_communication201802011702_87839.html?spm=a2c4g.11186623.0.0.6286b618hQHQAZ\n' +
+    '    *   **服务协议链接：** [通信能力技术服务协议](https://terms.alicdn.com/legal-agreement/terms/suit_bu1_alibaba_communication/suit_bu1_alibaba_communication201802011702_87839.html?spm=a2c4g.11186623.0.0.6286b618hQHQAZ)\n' +
     '\n' +
     '*   **react-native-image-picker / @react-native-camera-roll/camera-roll**\n' +
     '    *   **服务提供商：** React Native Community\n' +
@@ -370,3 +372,27 @@ export const userAgreementContent = '# RTalky 用户协议\n' +
     '*   **电子邮箱：** dovexiao728@gmail.com\n' +
     '\n' +
     '我们会尽最大努力在合理时间内予以回复。\n';
+
+export const permissionList: PermissionItem[] = [
+    {
+        id: 'internet',
+        title: '网络访问权限',
+        description: '用于同步数据、下载内容等网络功能',
+        icon: 'wifi',
+        permissionType: 'internet',
+    },
+    {
+        id: 'camera',
+        title: '相机权限',
+        description: '用于拍摄照片更新用户头像',
+        icon: 'camera-alt',
+        permissionType: 'camera',
+    },
+    {
+        id: 'photos',
+        title: '媒体文件访问权限',
+        description: '用于选择图片更新用户头像',
+        icon: 'photo-library',
+        permissionType: 'photos',
+    },
+];

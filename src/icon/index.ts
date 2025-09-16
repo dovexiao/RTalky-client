@@ -24,3 +24,4 @@ export * from './CameraIcon';
 export * from './PeopleIcon';
 export * from './ATIcon';
 export * from './CheckmarkIcon';
+export * from './RefreshIcon';
