@@ -34,11 +34,11 @@ export const AboutRTalkySection = () => {
         onPress: () => {
             navigation.navigate('AppPermissions');
         },
-    }, {
-        icon: 'list',
-        title: '个人信息收集清单',
-        color: '#4285F4',
-        onPress: () => {},
+    // }, {
+    //     icon: 'list',
+    //     title: '个人信息收集清单',
+    //     color: '#4285F4',
+    //     onPress: () => {},
     }, {
         icon: 'description',
         title: '开源软件声明',
