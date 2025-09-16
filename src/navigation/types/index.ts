@@ -40,6 +40,7 @@ export type RootStackParamList = {
     // 关于模块
     UserAgreement: undefined;
     PrivacyPolicy: undefined;
+    AppPermissions: undefined;
     OpenSourceLicense: undefined;
     // 测试模块
     TestPage: undefined;
