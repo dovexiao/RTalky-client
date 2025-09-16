@@ -18,7 +18,7 @@ import AddNoteContent from '@/note/createNote/screens/AddNoteContent.tsx';
 import RecycleBin from '@/center/recycleBin/screens/RecycleBin.tsx';
 import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
 import BackgroundSettings from '@/center/backgroundSettings/screens/BackgroundSettings.tsx';
-import { UserAgreement, PrivacyPolicy, OpenSourceLicense, AppPermissions } from '@/center/about';
+import { UserAgreement, PrivacyPolicy, OpenSourceLicense, AppPermissions, AboutRTalky } from '@/center/about';
 import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
@@ -61,6 +61,7 @@ const AppStackNavigator = () => {
             <Screen name="PrivacyPolicy" component={PrivacyPolicy} />
             <Screen name="AppPermissions" component={AppPermissions} />
             <Screen name="OpenSourceLicense" component={OpenSourceLicense} />
+            <Screen name="AboutRTalky" component={AboutRTalky} />
             {/*/!* 测试页面 *!/*/}
             <Screen name="TestPage" component={TestPage} />
         </Navigator>

@@ -12,7 +12,9 @@ export const AboutRTalkySection = () => {
         icon: 'info-outline',
         title: '关于RTalky',
         color: '#4285F4',
-        onPress: () => {},
+        onPress: () => {
+            navigation.navigate('AboutRTalky');
+        },
     }, {
         icon: 'assignment',
         title: '用户协议',

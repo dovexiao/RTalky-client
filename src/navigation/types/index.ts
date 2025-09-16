@@ -42,6 +42,7 @@ export type RootStackParamList = {
     PrivacyPolicy: undefined;
     AppPermissions: undefined;
     OpenSourceLicense: undefined;
+    AboutRTalky: undefined;
     // 测试模块
     TestPage: undefined;
 };
