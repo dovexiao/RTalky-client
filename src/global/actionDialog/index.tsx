@@ -29,6 +29,7 @@ export type ActionDialogConfig = {
     dialogWidthRatio?: number;
     contentMinHeightRatio?: number;
     scrollable?: boolean;
+    confirmButtonText?: string;
     onConfirm?: () => void;
     onCancel?: () => void;
 };
@@ -59,31 +60,40 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
 
     // 显示弹窗
     const show = useCallback((newConfig: ActionDialogConfig) => {
-        setConfig(newConfig);
+        hide().then(() => {
+            setConfig(newConfig);
 
-        dialogWidthRatio.value = newConfig.dialogWidthRatio ?? 0.8;
-        contentMinHeightRatio.value = newConfig.contentMinHeightRatio ?? 0.4;
+            dialogWidthRatio.value = newConfig.dialogWidthRatio ?? 0.8;
+            contentMinHeightRatio.value = newConfig.contentMinHeightRatio ?? 0.4;
 
-        transitionValue.value = withTiming(1, {
-            duration: animationDuration,
-            easing: Easing.out(Easing.cubic),
+            transitionValue.value = withTiming(1, {
+                duration: animationDuration,
+                easing: Easing.out(Easing.cubic),
+            });
         });
     }, []);
 
     // 隐藏弹窗
-    const hide = useCallback(() => {
-        transitionValue.value = withTiming(
-            0,
-            {
-                duration: animationDuration,
-                easing: Easing.in(Easing.cubic),
-            },
-            (finished) => {
-                if (finished) {
-                    runOnJS(setConfig)(null);
+    const hide = useCallback(async () => {
+        if (transitionValue.value === 0) {
+            return;
+        }
+
+        return new Promise<void>((resolve) => {
+            transitionValue.value = withTiming(
+                0,
+                {
+                    duration: animationDuration,
+                    easing: Easing.in(Easing.cubic),
+                },
+                (finished) => {
+                    if (finished) {
+                        runOnJS(setConfig)(null);
+                        runOnJS(resolve)();
+                    }
                 }
-            }
-        );
+            );
+        });
     }, []);
 
     // 处理确认操作
@@ -198,7 +208,9 @@ const ActionDialog = forwardRef<ActionDialogAPI>((_, ref) => {
                         style={[styles.button, styles.confirmButton]}
                         onPress={handleConfirm}
                     >
-                        <Text style={[styles.buttonText, styles.confirmText]}>确定</Text>
+                        <Text style={[styles.buttonText, styles.confirmText]}>
+                            {config?.confirmButtonText || '确定'}
+                        </Text>
                     </Button>
                 </Animated.View>
             </Animated.View>
@@ -214,7 +226,7 @@ const styles = StyleSheet.create({
     backdrop: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: '#000',
-        zIndex: 103,
+        zIndex: 203,
     },
     container: {
         width: SCREEN_WIDTH * 0.8,
@@ -223,7 +235,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 15,
         overflow: 'hidden',
-        zIndex: 104,
+        zIndex: 204,
         backgroundColor: '#FFF',
     },
     content: {

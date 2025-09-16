@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert, AppState, AppStateStatus, Platform } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
     check,
     openSettings,
@@ -7,8 +7,10 @@ import {
     request,
     RESULTS,
     PermissionStatus,
-    Permission
+    Permission,
 } from 'react-native-permissions';
+import { PermissionRationaleDialog, PermissionSettingsDialog } from './components';
+import { useGlobal } from '@/contexts';
 
 type PermissionType = 'camera' | 'photos' | 'microphone' | 'location'; // 扩展支持更多权限类型
 
@@ -102,31 +104,37 @@ export const usePermission = (config: PermissionConfig) => {
     const [permissionState, setPermissionState] = useState<PermissionState>({
         status: RESULTS.UNAVAILABLE,
         isLoading: false,
-        isGranted: false
+        isGranted: false,
     });
 
     const appStateSubscription = useRef<{ remove: () => void } | null>(null);
-    const permissionConstant = getPermissionConstant(config.permission);
+    const [permissionConstant, setPermissionConstant] = useState<Permission | null>(getPermissionConstant(config.permission));
+
+    const { actionDialogRef } = useGlobal();
 
     // 检查权限状态
     const checkPermission = useCallback(async (): Promise<PermissionStatus> => {
         try {
+            if (!permissionConstant) {
+                return RESULTS.UNAVAILABLE;
+            }
+
             setPermissionState(prev => ({ ...prev, isLoading: true }));
             const status = await check(permissionConstant);
 
             setPermissionState({
                 status,
                 isLoading: false,
-                isGranted: status === RESULTS.GRANTED
+                isGranted: status === RESULTS.GRANTED,
             });
-
+            console.log(`${config.permission} 权限状态:`, status);
             return status;
         } catch (error) {
             console.error(`${config.permission} 权限检查失败:`, error);
             setPermissionState({
                 status: RESULTS.UNAVAILABLE,
                 isLoading: false,
-                isGranted: false
+                isGranted: false,
             });
             return RESULTS.UNAVAILABLE;
         }
@@ -141,13 +149,17 @@ export const usePermission = (config: PermissionConfig) => {
                 appStateSubscription.current.remove();
             }
         };
-    }, [checkPermission]);
+    }, []);
 
     // 请求权限
     const requestPermission = useCallback(async (): Promise<boolean> => {
+        if (!permissionConstant) {
+            return false;
+        }
+
         setPermissionState( prev =>({
             ...prev,
-            isLoading: true
+            isLoading: true,
         }));
 
         const currentStatus = await checkPermission();
@@ -160,6 +172,7 @@ export const usePermission = (config: PermissionConfig) => {
 
         // 被永久拒绝时直接引导去设置
         if (currentStatus === RESULTS.BLOCKED) {
+            actionDialogRef.current?.hide();
             showSettingsAlert();
             return false;
             // return RESULTS.BLOCKED;
@@ -167,84 +180,67 @@ export const usePermission = (config: PermissionConfig) => {
 
         // 显示权限请求弹窗
         return new Promise<boolean>((resolve) => {
-            Alert.alert(
-                config.rationale.title,
-                config.rationale.message,
-                [
-                    {
-                        text: '取消',
-                        style: 'cancel',
-                        // onPress: () => resolve(RESULTS.DENIED)
-                        onPress: () => resolve(false)
-                    },
-                    {
-                        text: config.rationale.positiveButton,
-                        onPress: async () => {
-                            const requestResult = await request(permissionConstant);
-                            setPermissionState({
-                                status: requestResult,
-                                isLoading: false,
-                                isGranted: requestResult === RESULTS.GRANTED
-                            });
+            actionDialogRef.current?.show({
+                content: PermissionRationaleDialog({title: config.settings.title, message: config.settings.message}),
+                confirmButtonText: config.rationale.positiveButton,
+                onConfirm: async () => {
+                    const requestResult = await request(permissionConstant);
+                    setPermissionState({
+                        status: requestResult,
+                        isLoading: false,
+                        isGranted: requestResult === RESULTS.GRANTED,
+                    });
 
-                            // 处理永久拒绝情况
-                            if (requestResult === RESULTS.BLOCKED) {
-                                showSettingsAlert();
-                            }
-
-                            resolve(requestResult === RESULTS.GRANTED);
-                        }
+                    // 处理永久拒绝情况
+                    if (requestResult === RESULTS.BLOCKED) {
+                        showSettingsAlert();
                     }
-                ]
-            );
+
+                    resolve(requestResult === RESULTS.GRANTED);
+                },
+                onCancel: () => {
+                    resolve(false);
+                },
+            });
         });
-    }, [checkPermission, permissionConstant, config]);
+    }, [config, permissionConstant]);
 
     // 显示设置引导弹窗
     const showSettingsAlert = useCallback(() => {
-        Alert.alert(
-            config.settings.title,
-            config.settings.message,
-            [
-                {
-                    text: '取消',
-                    style: 'cancel',
-                },
-                {
-                    text: config.settings.positiveButton,
-                    onPress: async () => {
-                        await openSettings().catch(() => Alert.alert("无法打开设置"));
+        actionDialogRef.current?.show({
+            content: PermissionSettingsDialog({title: config.settings.title, message: config.settings.message}),
+            confirmButtonText: config.settings.positiveButton,
+                onConfirm: async () => {
+                await openSettings().catch(() => console.log('无法打开设置'));
 
-                        // 设置应用状态监听
-                        if (appStateSubscription.current) {
-                            appStateSubscription.current.remove();
-                        }
-
-                        appStateSubscription.current = AppState.addEventListener(
-                            'change',
-                            async (nextAppState: AppStateStatus) => {
-                                if (nextAppState === 'active') {
-                                    // 用户从设置返回，重新检查权限
-                                    await checkPermission();
-
-                                    // 移除监听
-                                    if (appStateSubscription.current) {
-                                        appStateSubscription.current.remove();
-                                        appStateSubscription.current = null;
-                                    }
-                                }
-                            }
-                        );
-                    }
+                // 设置应用状态监听
+                if (appStateSubscription.current) {
+                    appStateSubscription.current.remove();
                 }
-            ]
-        );
-    }, [checkPermission, config]);
+
+                appStateSubscription.current = AppState.addEventListener(
+                    'change',
+                    async (nextAppState: AppStateStatus) => {
+                        if (nextAppState === 'active') {
+                            // 用户从设置返回，重新检查权限
+                            await checkPermission();
+
+                            // 移除监听
+                            if (appStateSubscription.current) {
+                                appStateSubscription.current.remove();
+                                appStateSubscription.current = null;
+                            }
+                        }
+                    }
+                );
+            },
+        });
+    }, [config, actionDialogRef, checkPermission]);
 
     return {
         ...permissionState,
         requestPermission,
         checkPermission,
-        permissionType: config.permission
+        permissionType: config.permission,
     };
 };
