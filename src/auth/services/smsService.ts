@@ -51,7 +51,6 @@ export class SmsService {
 
             return response;
         } catch (error: any) {
-            console.error('发送短信验证码失败:', error);
             throw error;
         }
     }

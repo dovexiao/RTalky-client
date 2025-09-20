@@ -21,11 +21,9 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(async (config) => {
     try {
-        // 优先从UserAuthManager获取当前用户ID，如果为空则从useAuthStore获取
-        let userId = await UserAuthManager.getCurrentUserId() || '';
-        console.log('当前用户ID:', userId);
-        const token = await UserAuthManager.getSessionToken(userId);
+        const token = await UserAuthManager.getCurrentSessionToken();
         console.log('当前用户Token:', token);
+
         if (config.headers) {
             (config.headers as AxiosRequestHeaders).set('Authorization', `Bearer ${token ?? ''}`);
         }
@@ -50,7 +48,7 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use((response) => {
     // 请求完成，移除取消令牌
-    const requestId = response.config.requestId;
+    const requestId = response.config?.requestId;
     if (requestId) {
         pendingRequests.delete(requestId);
     }
@@ -61,6 +59,14 @@ api.interceptors.response.use((response) => {
     return response;
 }, async (resError) => {
     try {
+        // 请求完成，移除取消令牌
+        const requestId = resError.config?.requestId;
+        if (requestId) {
+            pendingRequests.delete(requestId);
+        }
+        // 输出错误响应信息的 JSON
+        console.log('错误响应信息 JSON:', resError);
+
         if (resError.response?.status === 401) {
             // 401 幂等处理：如果已经在处理中，直接返回
             if (isHandling401) {
@@ -80,38 +86,25 @@ api.interceptors.response.use((response) => {
                     pendingRequests.delete(requestId);
                 });
 
-                // 优先从UserAuthManager获取当前用户ID
-                const userId = await UserAuthManager.getCurrentUserId() || '';
-
-                if (userId) {
-                    // 使用完整删除方法，包含当前用户ID的清理
-                    await UserAuthManager.deleteUserAuthComplete(userId);
-                }
+                // 使用完整删除方法，包含当前用户ID的清理
+                await UserAuthManager.deleteCurrentUserComplete();
 
                 // 清理useAuthStore状态
                 const { setIsLoggedIn, setUserId } = useAuthStore.getState();
 
-                const { setInitialRouteName } = useNavigationStore();
+                const { setInitialRouteName } = useNavigationStore.getState();
                 setInitialRouteName('VerificationLogin');
 
                 setIsLoggedIn(false);
                 setUserId('');
             } catch (cleanupError) {
-                console.error('清理认证信息失败:', cleanupError);
+                console.log('清理认证信息失败:', cleanupError);
             } finally {
                 // 处理完成，释放锁
                 isHandling401 = false;
             }
         }
-        // 请求完成，移除取消令牌
-        const requestId = resError.config?.requestId;
-        if (requestId) {
-            pendingRequests.delete(requestId);
-        }
 
-        // 输出错误响应信息的 JSON
-        // console.log('错误响应信息 JSON:', JSON.stringify(resError));
-        console.log('错误响应信息 JSON:', resError);
         return Promise.reject(resError);
     } catch (error) {
         throw error;

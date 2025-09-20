@@ -2,11 +2,13 @@ import React, {
     forwardRef,
     useImperativeHandle,
     useCallback,
+    useState,
 } from 'react';
 import {
     Dimensions,
     Pressable,
     StyleSheet,
+    View,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -14,8 +16,10 @@ import Animated, {
     withTiming,
     Easing,
     useDerivedValue,
+    runOnJS,
 } from 'react-native-reanimated';
-import CountryCodeSelector from '../../auth/verificationLogin/components/CountryCodeSelector.tsx';
+import { CountryCodeSelector } from '@/auth/verificationLogin/components';
+import { Spinner } from '@ui-kitten/components';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -25,20 +29,28 @@ export type CountryCodeDialogAPI = {
     getVisible: () => boolean;
 };
 
-export const Index = forwardRef<CountryCodeDialogAPI>((_, ref) => {
+export const CountryCodeDialog = forwardRef<CountryCodeDialogAPI>((_, ref) => {
     const transitionValue = useSharedValue(0);
     const animationDuration: number = 300;
 
     const dialogWidthRatio = useSharedValue(0.9);
     const dialogHeightRatio = useSharedValue(0.9);
 
+    const [isReady, setIsReady] = useState(false);
+
     // 显示弹窗
     const show = useCallback(() => {
+        // setIsReady(true);
         transitionValue.value = withTiming(
             1,
             {
                 duration: animationDuration,
                 easing: Easing.out(Easing.cubic),
+            },
+            (finished) => {
+                if (finished) {
+                    runOnJS(setIsReady)(true);
+                }
             }
         );
     }, []);
@@ -52,7 +64,9 @@ export const Index = forwardRef<CountryCodeDialogAPI>((_, ref) => {
                 easing: Easing.in(Easing.cubic),
             },
             (finished) => {
-                if (finished) {}
+                if (finished) {
+                    runOnJS(setIsReady)(false);
+                }
             }
         );
     }, []);
@@ -76,7 +90,7 @@ export const Index = forwardRef<CountryCodeDialogAPI>((_, ref) => {
 
     // 内容容器动画（居中弹出+缩放）
     const containerStyle = useAnimatedStyle(() => ({
-        opacity: transitionValue.value,
+        // opacity: transitionValue.value,
         transform: [
             { scale: 0.9 + 0.1 * transitionValue.value },
             { translateY: '-50%' },
@@ -85,10 +99,11 @@ export const Index = forwardRef<CountryCodeDialogAPI>((_, ref) => {
         width: SCREEN_WIDTH * (dialogWidthRatio.value ?? 0.9),
         height: SCREEN_HEIGHT * (dialogHeightRatio.value ?? 0.8),
         display: display.value,
+        // zIndex: interpolate(transitionValue.value, [0, 1], [-1, 105], 'clamp'),
     }));
 
     const contentStyle = useAnimatedStyle(() => ({
-        display: display.value,
+        // display: display.value,
     }));
 
     return (
@@ -113,7 +128,13 @@ export const Index = forwardRef<CountryCodeDialogAPI>((_, ref) => {
                         contentStyle,
                     ]}
                 >
-                    <CountryCodeSelector />
+                    {isReady ? (
+                        <CountryCodeSelector/>
+                    ) : (
+                        <View style={styles.spinnerContainer}>
+                            <Spinner />
+                        </View>
+                    )}
                 </Animated.View>
             </Animated.View>
         </>
@@ -145,6 +166,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF',
     },
+    spinnerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
-
-export default Index;

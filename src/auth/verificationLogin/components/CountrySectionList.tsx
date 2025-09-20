@@ -4,7 +4,6 @@ import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useTheme } from '@ui-kitten/components';
 import { useCountryCodeSelectorStore, useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { CountryListItem } from '@/auth/verificationLogin/types';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
 
 const ITEM_HEIGHT: number = 60;
 const HEADER_HEIGHT: number = 45;
@@ -16,16 +15,14 @@ export interface CountrySectionListAPI {
 const CountrySectionList = forwardRef<CountrySectionListAPI>((_, ref) => {
     const flashListRef = useRef<FlashListRef<CountryListItem>>(null);
     const themes = useTheme();
-    const { countryCodeDialogRef } = useGlobal();
 
     const flashListData = useCountryCodeSelectorStore(state => state.flashListData);
     const sectionIndexMap = useCountryCodeSelectorStore(state => state.sectionIndexMap);
-    const setActiveLetter = useCountryCodeSelectorStore(state => state.setActiveLetter);
-    const setSelectedCallingCode = useVerificationLoginStore(state => state.setSelectedCallingCode);
-    const setSelectedCCA2 = useVerificationLoginStore(state => state.setSelectedCCA2);
     const selectedCallingCode = useVerificationLoginStore(state => state.selectedCallingCode);
     const selectedCCA2 = useVerificationLoginStore(state => state.selectedCCA2);
-    const setSelectedSectionLetter = useVerificationLoginStore(state => state.setSelectedSectionLetter);
+    const { setActiveLetter } = useCountryCodeSelectorStore.getState();
+    const { onSelectedCallingCode } = useVerificationLoginStore.getState();
+
 
     // 暴露给父组件的API方法
     useImperativeHandle(ref, () => ({
@@ -66,10 +63,7 @@ const CountrySectionList = forwardRef<CountrySectionListAPI>((_, ref) => {
                         isSelected && { backgroundColor: themes['color-primary-100'] },
                     ]}
                     onPress={() => {
-                        setSelectedCallingCode(item.callingCode);
-                        setSelectedCCA2(item.cca2);
-                        setSelectedSectionLetter(item.sectionLetters);
-                        countryCodeDialogRef.current?.hide();
+                        onSelectedCallingCode(item.callingCode, item.cca2, item.sectionLetters);
                     }}
                 >
                     <View style={styles.flagContainer}>

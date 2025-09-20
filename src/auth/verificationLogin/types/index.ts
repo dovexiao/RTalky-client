@@ -47,3 +47,7 @@ export type CountryListItem = Country | string;
 export type SectionIndexMap = {
     [letter: string]: number;
 }
+
+export type CellCount = 4 | 5 | 6 | 7;
+
+export type MessageType = 'danger' | 'success' | 'info' | 'warning' | 'none' | 'loading';

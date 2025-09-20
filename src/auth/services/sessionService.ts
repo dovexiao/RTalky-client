@@ -19,7 +19,6 @@ export class SessionService {
             const response = await get<SessionValidationResponse>('/auth/validate');
             return response;
         } catch (error) {
-            console.error('会话验证失败:', error);
             throw error;
         }
     }

@@ -84,7 +84,7 @@ const UnifiedThemeContext = createContext<UnifiedThemeContextType | undefined>(u
 
 export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const [currentTheme, setCurrentTheme] = useState<ThemeType>('light');
-    const [autoSwitch, setAutoSwitch] = useState(true);
+    const [autoSwitch, setAutoSwitch] = useState(false);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [previewTheme, setPreviewTheme] = useState<ThemeType>(currentTheme);
     const [previewAutoSwitch, setPreviewAutoSwitch] =  useState(autoSwitch);
@@ -155,7 +155,7 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
 
     React.useEffect(() => {
         const colorScheme: ColorSchemeName = Appearance.getColorScheme();
-        if (colorScheme) {
+        if (autoSwitch && colorScheme) {
             setCurrentTheme(colorScheme);
         }
 

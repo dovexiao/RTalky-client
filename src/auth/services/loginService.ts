@@ -77,7 +77,7 @@ export class LoginService {
 
             return response;
         } catch (error) {
-            console.error('短信验证码登录失败:', error);
+            console.log('短信验证码登录失败:', error);
             throw error;
         }
     }

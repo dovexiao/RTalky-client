@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap', // 允许换行
         justifyContent: 'space-between',
-        backgroundColor: 'transform',
+        backgroundColor: 'transparent',
     },
     menuItem: {
         width: '30%',

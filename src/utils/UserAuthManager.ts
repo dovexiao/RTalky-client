@@ -56,7 +56,7 @@ class UserAuthManager {
             // 保存手机号
             promises.push(
                 Keychain.setInternetCredentials(
-                    this.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
+                    UserAuthManager.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
                     AUTH_KEYS.PHONE_NUMBER,
                     authData.phoneNumber
                 )
@@ -65,7 +65,7 @@ class UserAuthManager {
             // 保存会话token
             promises.push(
                 Keychain.setInternetCredentials(
-                    this.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
+                    UserAuthManager.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
                     AUTH_KEYS.SESSION_TOKEN,
                     authData.sessionToken
                 )
@@ -74,7 +74,7 @@ class UserAuthManager {
             await Promise.all(promises);
             return true;
         } catch (error) {
-            console.error('保存用户认证数据失败:', error);
+            console.log('保存用户认证数据失败:', error);
             return false;
         }
     }
@@ -89,10 +89,10 @@ class UserAuthManager {
             // 并行获取所有认证信息
             const [phoneResult, tokenResult] = await Promise.all([
                 Keychain.getInternetCredentials(
-                    this.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER)
+                    UserAuthManager.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER)
                 ),
                 Keychain.getInternetCredentials(
-                    this.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN)
+                    UserAuthManager.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN)
                 ),
             ]);
 
@@ -106,7 +106,7 @@ class UserAuthManager {
                 sessionToken: tokenResult.password,
             };
         } catch (error) {
-            console.error('获取用户认证数据失败:', error);
+            console.log('获取用户认证数据失败:', error);
             return null;
         }
     }
@@ -119,11 +119,11 @@ class UserAuthManager {
     static async getPhoneNumber(userId: string): Promise<string | null> {
         try {
             const result = await Keychain.getInternetCredentials(
-                this.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER)
+                UserAuthManager.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER)
             );
             return (result && result.password) || null;
         } catch (error) {
-            console.error('获取手机号失败:', error);
+            console.log('获取手机号失败:', error);
             return null;
         }
     }
@@ -136,11 +136,11 @@ class UserAuthManager {
     static async getSessionToken(userId: string): Promise<string | null> {
         try {
             const result = await Keychain.getInternetCredentials(
-                this.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN)
+                UserAuthManager.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN)
             );
             return (result && result.password) || null;
         } catch (error) {
-            console.error('获取会话token失败:', error);
+            console.log('获取会话token失败:', error);
             return null;
         }
     }
@@ -154,13 +154,13 @@ class UserAuthManager {
     static async updatePhoneNumber(userId: string, newPhoneNumber: string): Promise<boolean> {
         try {
             await Keychain.setInternetCredentials(
-                this.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
+                UserAuthManager.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
                 AUTH_KEYS.PHONE_NUMBER,
                 newPhoneNumber
             );
             return true;
         } catch (error) {
-            console.error('更新手机号失败:', error);
+            console.log('更新手机号失败:', error);
             return false;
         }
     }
@@ -174,13 +174,13 @@ class UserAuthManager {
     static async updateSessionToken(userId: string, newSessionToken: string): Promise<boolean> {
         try {
             await Keychain.setInternetCredentials(
-                this.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
+                UserAuthManager.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
                 AUTH_KEYS.SESSION_TOKEN,
                 newSessionToken
             );
             return true;
         } catch (error) {
-            console.error('更新会话token失败:', error);
+            console.log('更新会话token失败:', error);
             return false;
         }
     }
@@ -192,18 +192,27 @@ class UserAuthManager {
      */
     static async deleteUserAuth(userId: string): Promise<boolean> {
         try {
-            await Promise.all([
+            const [phoneResult, tokenResult] = await Promise.allSettled([
                 Keychain.resetInternetCredentials({
-                    service: this.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
+                    service: UserAuthManager.generateServiceKey(userId, AUTH_KEYS.PHONE_NUMBER),
                 }),
                 Keychain.resetInternetCredentials({
-                    service: this.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
+                    service: UserAuthManager.generateServiceKey(userId, AUTH_KEYS.SESSION_TOKEN),
                 }),
             ]);
+
+            const phoneSuccess = phoneResult.status === 'fulfilled';
+            const tokenSuccess = tokenResult.status === 'fulfilled';
+
+            if (!phoneSuccess || !tokenSuccess) {
+                throw new Error(`删除用户认证数据失败: 手机号删除${phoneSuccess ? '成功' : '失败'}, token删除${tokenSuccess ? '成功' : '失败'}`);
+            }
+
+            console.log('删除用户认证数据成功');
             return true;
         } catch (error) {
-            console.error('删除用户认证数据失败:', error);
-            return false;
+            console.log('删除用户认证数据失败:', error);
+            throw error; // 重新抛出错误
         }
     }
 
@@ -214,7 +223,7 @@ class UserAuthManager {
      */
     static async userExists(userId: string): Promise<boolean> {
         try {
-            const authData = await this.getUserAuth(userId);
+            const authData = await getUserAuth(userId);
             return authData !== null;
         } catch (error) {
             return false;
@@ -228,7 +237,7 @@ class UserAuthManager {
      */
     static async getAuthStatus(userId: string): Promise<AuthStatus> {
         try {
-            const authData = await this.getUserAuth(userId);
+            const authData = await getUserAuth(userId);
 
             if (!authData) {
                 return {isAuthenticated: false};
@@ -239,7 +248,7 @@ class UserAuthManager {
                 authData,
             };
         } catch (error) {
-            console.error('获取认证状态失败:', error);
+            console.log('获取认证状态失败:', error);
             return {isAuthenticated: false, error: '获取认证状态失败'};
         }
     }
@@ -259,7 +268,7 @@ class UserAuthManager {
             }
             return [];
         } catch (error) {
-            console.error('获取所有用户ID失败:', error);
+            console.log('获取所有用户ID失败:', error);
             return [];
         }
     }
@@ -270,7 +279,7 @@ class UserAuthManager {
      */
     static async addUserToList(userId: string): Promise<void> {
         try {
-            const userList = await this.getAllUserIds();
+            const userList = await getAllUserIds();
             if (!userList.includes(userId)) {
                 userList.push(userId);
                 await Keychain.setInternetCredentials(
@@ -280,7 +289,7 @@ class UserAuthManager {
                 );
             }
         } catch (error) {
-            console.error('添加用户到列表失败:', error);
+            console.log('添加用户到列表失败:', error);
         }
     }
 
@@ -290,15 +299,17 @@ class UserAuthManager {
      */
     static async removeUserFromList(userId: string): Promise<void> {
         try {
-            const userList = await this.getAllUserIds();
+            const userList = await getAllUserIds();
             const updatedList = userList.filter(id => id !== userId);
             await Keychain.setInternetCredentials(
                 'rtalky_all_users',
                 'user_list',
                 JSON.stringify(updatedList)
             );
-        } catch (error) {
-            console.error('从列表中移除用户失败:', error);
+            console.log('从用户列表中移除用户成功');
+        } catch (error: any) {
+            console.log('从列表中移除用户失败:', error);
+            throw new Error(`从用户列表中移除用户失败: ${error?.message ?? error}`);
         }
     }
 
@@ -310,13 +321,13 @@ class UserAuthManager {
      */
     static async saveUserAuthWithList(userId: string, authData: UserAuthData): Promise<boolean> {
         try {
-            const saveSuccess = await this.saveUserAuth(userId, authData);
+            const saveSuccess = await saveUserAuth(userId, authData);
             if (saveSuccess) {
-                await this.addUserToList(userId);
+                await addUserToList(userId);
             }
             return saveSuccess;
         } catch (error) {
-            console.error('保存用户认证数据（含列表）失败:', error);
+            console.log('保存用户认证数据（含列表）失败:', error);
             return false;
         }
     }
@@ -328,14 +339,17 @@ class UserAuthManager {
      */
     static async deleteUserAuthWithList(userId: string): Promise<boolean> {
         try {
-            const deleteSuccess = await this.deleteUserAuth(userId);
-            if (deleteSuccess) {
-                await this.removeUserFromList(userId);
-            }
-            return deleteSuccess;
+            // 删除用户认证数据
+            await deleteUserAuth(userId);
+
+            // 从用户列表中移除
+            await removeUserFromList(userId);
+
+            console.log('删除用户认证数据（含列表）成功');
+            return true;
         } catch (error) {
-            console.error('删除用户认证数据（含列表）失败:', error);
-            return false;
+            console.log('删除用户认证数据（含列表）失败:', error);
+            throw error; // 重新抛出错误
         }
     }
 
@@ -353,7 +367,7 @@ class UserAuthManager {
             );
             return true;
         } catch (error) {
-            console.error('保存当前用户ID失败:', error);
+            console.log('保存当前用户ID失败:', error);
             return false;
         }
     }
@@ -367,7 +381,7 @@ class UserAuthManager {
             const result = await Keychain.getInternetCredentials(getCurrentUserIdKey());
             return (result && result.password) || null;
         } catch (error) {
-            console.error('获取当前用户ID失败:', error);
+            console.log('获取当前用户ID失败:', error);
             return null;
         }
     }
@@ -381,10 +395,11 @@ class UserAuthManager {
             await Keychain.resetInternetCredentials({
                 service: getCurrentUserIdKey(),
             });
+            console.log('删除当前用户ID成功');
             return true;
-        } catch (error) {
-            console.error('删除当前用户ID失败:', error);
-            return false;
+        } catch (error: any) {
+            console.log('删除当前用户ID失败:', error);
+            throw new Error(`删除当前用户ID失败: ${error?.message ?? error}`);
         }
     }
 
@@ -396,15 +411,15 @@ class UserAuthManager {
      */
     static async saveUserAuthComplete(userId: string, authData: UserAuthData): Promise<boolean> {
         try {
-            const saveSuccess = await this.saveUserAuthWithList(userId, authData);
+            const saveSuccess = await saveUserAuthWithList(userId, authData);
             if (saveSuccess) {
                 // 保存当前用户ID
-                await this.saveCurrentUserId(userId);
+                await saveCurrentUserId(userId);
             }
             console.log('保存用户认证数据（完整）成功');
             return saveSuccess;
         } catch (error) {
-            console.error('保存用户认证数据（完整）失败:', error);
+            console.log('保存用户认证数据（完整）失败:', error);
             return false;
         }
     }
@@ -416,15 +431,166 @@ class UserAuthManager {
      */
     static async deleteUserAuthComplete(userId: string): Promise<boolean> {
         try {
-            const deleteSuccess = await this.deleteUserAuthWithList(userId);
+            const deleteSuccess = await deleteUserAuthWithList(userId);
             if (deleteSuccess) {
                 // 删除当前用户ID
-                await this.deleteCurrentUserId();
+                await deleteCurrentUserId();
             }
             return deleteSuccess;
         } catch (error) {
-            console.error('删除用户认证数据（完整）失败:', error);
+            console.log('删除用户认证数据（完整）失败:', error);
             return false;
+        }
+    }
+
+    /**
+     * 检查当前会话是否存在（不暴露用户ID和会话信息）
+     * @returns 会话是否存在
+     */
+    static async hasValidSession(): Promise<boolean> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                return false;
+            }
+
+            // 检查该用户是否有有效的认证数据
+            const authData = await getUserAuth(userId);
+            if (!authData) {
+                return false;
+            }
+
+            // 检查关键字段是否存在且不为空
+            const hasValidData = !!authData.phoneNumber && !!authData.sessionToken && authData.phoneNumber.trim() !== '' && authData.sessionToken.trim() !== '';
+
+            return hasValidData;
+        } catch (error) {
+            console.log('检查当前会话失败:', error);
+            return false;
+        }
+    }
+
+    /**
+     * 检查当前会话是否存在（更严格的检查）
+     * @returns 会话是否存在
+     */
+    static async hasValidSessionStrict(): Promise<boolean> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                return false;
+            }
+
+            // 并行检查手机号和会话token是否存在
+            const [phoneResult, tokenResult] = await Promise.all([
+                getPhoneNumber(userId),
+                getSessionToken(userId),
+            ]);
+
+            // 检查两个关键字段都存在且不为空
+            const hasValidData = !!phoneResult && !!tokenResult && phoneResult.trim() !== '' && tokenResult.trim() !== '';
+
+            return hasValidData;
+        } catch (error) {
+            console.log('检查当前会话失败:', error);
+            return false;
+        }
+    }
+
+    /**
+     * 完整删除当前用户的所有认证数据（包含当前用户ID和用户列表管理）
+     * @returns 是否删除成功
+     */
+    static async deleteCurrentUserComplete(): Promise<boolean> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                console.log('没有当前用户ID，无需删除');
+                return true;
+            }
+
+            console.log(`开始删除用户 ${userId} 的所有认证数据`);
+
+            // 删除当前用户的所有认证数据
+            await deleteUserAuthWithList(userId);
+
+            // 删除当前用户ID
+            await deleteCurrentUserId();
+
+            console.log('删除当前用户认证数据（完整）成功');
+            return true;
+        } catch (error) {
+            console.log('删除当前用户认证数据（完整）失败:', error);
+            throw error; // 重新抛出错误，让调用方知道删除失败
+        }
+    }
+
+    /**
+     * 获取当前用户的会话token
+     * @returns 当前用户的会话token或null
+     */
+    static async getCurrentSessionToken(): Promise<string | null> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                console.log('没有当前用户ID');
+                return null;
+            }
+
+            // 获取当前用户的会话token
+            const token = await getSessionToken(userId);
+            return token;
+        } catch (error) {
+            console.log('获取当前用户会话token失败:', error);
+            return null;
+        }
+    }
+
+    /**
+     * 获取当前用户的手机号
+     * @returns 当前用户的手机号或null
+     */
+    static async getCurrentPhoneNumber(): Promise<string | null> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                console.log('没有当前用户ID');
+                return null;
+            }
+
+            // 获取当前用户的手机号
+            const phoneNumber = await getPhoneNumber(userId);
+            return phoneNumber;
+        } catch (error) {
+            console.log('获取当前用户手机号失败:', error);
+            return null;
+        }
+    }
+
+    /**
+     * 获取当前用户的完整认证数据
+     * @returns 当前用户的认证数据或null
+     */
+    static async getCurrentUserAuth(): Promise<UserAuthData | null> {
+        try {
+            // 获取当前用户ID
+            const userId = await getCurrentUserId();
+            if (!userId) {
+                console.log('没有当前用户ID');
+                return null;
+            }
+
+            // 获取当前用户的完整认证数据
+            const authData = await getUserAuth(userId);
+            return authData;
+        } catch (error) {
+            console.log('获取当前用户认证数据失败:', error);
+            return null;
         }
     }
 }
@@ -453,4 +619,10 @@ export const {
     deleteCurrentUserId,
     saveUserAuthComplete,
     deleteUserAuthComplete,
+    hasValidSession,
+    hasValidSessionStrict,
+    deleteCurrentUserComplete,
+    getCurrentSessionToken,
+    getCurrentPhoneNumber,
+    getCurrentUserAuth,
 } = UserAuthManager;

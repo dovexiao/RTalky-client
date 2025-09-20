@@ -40,10 +40,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
         })),
     handleLogin: (userId: string, userProfile: UserProfile) =>
         set(() => ({
-            isLoggedIn: true,
             userId,
             nickname: userProfile.nickname || '',
-            avatar: userProfile.avatar || '',
+            // avatar: userProfile.avatar || '',
             bio: userProfile.bio || '',
         })),
 }));

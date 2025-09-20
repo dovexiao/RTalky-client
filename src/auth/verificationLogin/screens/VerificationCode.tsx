@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     View,
-    Text,
     TouchableOpacity,
     StyleSheet,
     SafeAreaView,
@@ -11,49 +10,45 @@ import {
     VerificationCodeSection,
     NoVerificationCodeHelper,
     ResendTimer,
-    LoginStatusIndicator,
+    ReactiveToast,
 } from '@/auth/verificationLogin/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import { Divider } from '@ui-kitten/components';
+import { Divider, Spinner, Text } from '@ui-kitten/components';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { VerificationCodeProps } from '@/auth/verificationLogin/types';
+import { useUnifiedTheme } from '@/contexts';
 
 const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
-    const { formattedNumber } = useVerificationLoginStore.getState();
+    const { formattedNumber: internationalFormattedPhone } = useVerificationLoginStore.getState();
 
     const { bottomActionSheetRef } = useGlobal();
 
-    // 处理验证码输入完成
-    const handleCodeComplete = (inputCode: string) => {
-        const setSmsCode = useVerificationLoginStore.getState().setSmsCode;
-        const setIsCodeComplete = useVerificationLoginStore.getState().setIsCodeComplete;
-        setIsCodeComplete(true);
-        setSmsCode(inputCode);
-    };
+    const messageType = useVerificationLoginStore(state => state.codeMessageType);
+    const messageText = useVerificationLoginStore(state => state.codeMessageText);
+
+    const { themeColors } = useUnifiedTheme();
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
+            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
             {/* 顶部返回与帮助 */}
-            <TopNavigationOpe onBackPress={() => {
-                navigation.navigate('VerificationLogin');
-            }} />
+            <TopNavigationOpe
+                // onBackPress={() => {
+                //     navigation.goBack();
+                // }}
+            />
             <Divider />
             <View style={styles.container}>
                 {/* 标题与手机号提示 */}
                 <Text style={styles.title}>请输入验证码</Text>
                 <Text style={styles.phoneTip}>
-                    短信已发送至 <Text style={styles.phoneTipHighlight}>{formattedNumber}</Text>
+                    短信已发送至 <Text style={styles.phoneTipHighlight}>{internationalFormattedPhone}</Text>
                 </Text>
 
                 {/* 验证码输入框 */}
-                <VerificationCodeSection
-                    onCodeComplete={handleCodeComplete}
-                />
-
-                <LoginStatusIndicator />
+                <VerificationCodeSection />
 
                 {/* 辅助操作 */}
                 <View style={styles.helperContainer}>
@@ -67,6 +62,47 @@ const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
                     <ResendTimer initialCount={300} />
                 </View>
             </View>
+            <ReactiveToast
+                dependencies={{ messageType, messageText }}
+                shouldShow={({ messageType: type, messageText: text  }) => type !== 'none' && text !== ''}
+                autoClose={({ messageType: type }) => type === 'loading' ? false : 3000}
+                position={({ messageType: type }) => type === 'loading' ? 'center' : 'bottom'}
+                render={({ messageType: type, messageText: text }) => {
+                    return (
+                        <>
+                            {type === 'loading' ? (
+                                <View style={{
+                                    backgroundColor: themeColors['color-primary-500'],
+                                    width: 120,
+                                    // borderRadius: 15,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    aspectRatio: 1,
+                                    gap: 10,
+                                }}>
+                                    <Spinner size={'large'} status={'control'} />
+                                    <Text style={{ color: themeColors['bg-100'] }}>{text}</Text>
+                                </View>
+                            ) : (
+                                <View style={{
+                                    backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
+                                    padding: 15,
+                                    borderRadius: 5,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                                    <Text style={{color: 'white'}}>{text}</Text>
+                                </View>
+                            )}
+                        </>
+                    )
+                }}
+                onHide={() => {
+                    const { setCodeMessageType, setCodeMessageText } = useVerificationLoginStore.getState();
+                    setCodeMessageType('none');
+                    setCodeMessageText( '');
+                }}
+            />
         </SafeAreaView>
     );
 };

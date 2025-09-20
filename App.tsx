@@ -17,8 +17,22 @@ import { useNavigationStore } from '@/navigation/stores/navigationStore';
 import { SessionService, UserInfoService } from '@/auth/services';
 import { useAuthStore, UserProfile } from '@/auth/stores';
 import { ImageCache } from '@/utils';
+import { ReactiveToast } from '@/auth/verificationLogin/components';
+import { Text, View } from 'react-native';
+import UserAuthManager from '@utils/UserAuthManager.ts';
+import Orientation from 'react-native-orientation-locker';
 
 function App(): JSX.Element {
+    useEffect(() => {
+        // 锁定为竖屏方向
+        Orientation.lockToPortrait();
+
+        // 组件卸载时解除锁定（可选）
+        return () => {
+            Orientation.unlockAllOrientations();
+        };
+    }, []);
+
     return (
         <>
             <IconRegistry icons={EvaIconsPack}/>
@@ -33,11 +47,22 @@ function App(): JSX.Element {
 const AppContent: React.FC = () => {
     const { themeColors } = useUnifiedTheme();
 
+    const [messageType, setMessageType] = React.useState<'success' | 'danger' | 'info' | 'warning' | 'none'>('none');
+    const [messageText, setMessageText] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
+
     useEffect(() => {
         const init = async () => {
             const { setInitialRouteName } = useNavigationStore.getState();
+            const hashSession = await UserAuthManager.hasValidSessionStrict();
+
+            if (!hashSession) {
+                return;
+            }
 
             try {
+                setIsLoading(true);
+
                 // 并行执行会话验证和用户信息获取
                 const [sessionResponse, userInfoResponse] = await Promise.allSettled([
                     SessionService.validateSession(),
@@ -69,19 +94,28 @@ const AppContent: React.FC = () => {
                                 ? userInfoResponse.value.message
                                 : '网络错误'
                         );
+                        throw new Error(`获取用户信息失败: ${
+                            userInfoResponse.status === 'fulfilled'
+                                ? userInfoResponse.value.message
+                                : '网络错误'
+                        }`);
                     }
                 } else {
                     console.log('会话无效，设置初始路由为VerificationLogin');
+                    throw new Error('会话无效，请重新登录');
                 }
-            } catch (error) {
-                console.error('初始化失败:', error);
+            } catch (error: any) {
+                console.log('初始化失败:', error);
                 // 初始化失败时，默认设置为登录页面
+                setMessageType('danger');
+                setMessageText(error?.message ?? error);
             }
         };
 
         init().finally(async () => {
             console.log('BootSplash is ready to hide');
-            await BootSplash.hide({ fade: true });
+            await BootSplash.hide({fade: true});
+            setIsLoading(false);
             console.log('BootSplash has been hidden successfully');
         });
     }, []);
@@ -91,8 +125,29 @@ const AppContent: React.FC = () => {
             <GlobalProvider>
                 <AppNavigator />
             </GlobalProvider>
+            <ReactiveToast
+                dependencies={{ messageType, messageText, isLoading }}
+                shouldShow={({ messageType: type, messageText: text, isLoading: loading }) => type !== 'none' && text !== '' && !loading }
+                autoClose={({ isLoading: loading }) => loading ? false : 1500}
+                position={() => 'bottom'}
+                render={({ messageType: type, messageText: text }) => (
+                    <View style={{
+                        backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
+                        padding: 15,
+                        borderRadius: 5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        <Text style={{ color: 'white' }}>{text}</Text>
+                    </View>
+                )}
+                onHide={() => {
+                    setMessageType('none');
+                    setMessageText( '');
+                }}
+            />
         </ApplicationProvider>
     );
-}
+};
 
 export default App;

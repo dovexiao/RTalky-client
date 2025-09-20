@@ -37,7 +37,9 @@ export class ImageCache {
     ): Promise<string> {
         try {
             if (!base64Data) {
-                throw new Error('Base64 数据不能为空');
+                console.log('Base64 数据不能为空');
+                // throw new Error('Base64 数据不能为空');
+                return '';
             }
 
             const cacheDir = getCacheDir(group);
@@ -59,7 +61,7 @@ export class ImageCache {
 
             return filePath;
         } catch (error) {
-            console.error('保存图片到缓存失败:', error);
+            console.log('保存图片到缓存失败:', error);
             throw error;
         }
     }
@@ -82,7 +84,7 @@ export class ImageCache {
                 }
             }
         } catch (error) {
-            console.error('清理过期头像缓存失败:', error);
+            console.log('清理过期头像缓存失败:', error);
             throw error;
         }
     }

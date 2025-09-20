@@ -218,19 +218,24 @@ class CountryManager {
                         isValid: true,
                         formattedNumber: phoneNumberObj.formatInternational(),
                     };
+                } else {
+                    throw new Error('无效的手机号');
                 }
             } catch (parseError) {
                 // 如果解析失败，尝试使用国家代码进行验证
                 const countryCode = countryInfo.cca2;
                 if (isValidPhoneNumber(fullNumber, countryCode as any)) {
                     try {
-                        const parsedNumber = parsePhoneNumberWithError(fullNumber, countryCode as any);
+                        const parsedNumber = parsePhoneNumberWithError(fullNumber, countryCode as CountryCode);
                         return {
                             isValid: true,
                             formattedNumber: parsedNumber?.formatInternational() || `${callingCode}${cleanPhoneNumber}`,
                         };
-                    } catch (countryParseError) {
-                        // 继续到错误处理
+                    } catch (countryParseError: any) {
+                        return {
+                            isValid: false,
+                            errorMessage: countryParseError.message || '无效的手机号',
+                        };
                     }
                 }
             }

@@ -45,7 +45,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onCountryCodePress }) => {
             style={styles.phoneInput}
             value={phoneNumber}
             onChangeText={(value: string) => {
-                const setPhoneNumber = useVerificationLoginStore.getState().setPhoneNumber;
+                const { setPhoneNumber } = useVerificationLoginStore.getState();
                 setPhoneNumber(value);
             }}
             size={'large'}

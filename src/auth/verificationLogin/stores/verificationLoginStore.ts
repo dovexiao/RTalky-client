@@ -1,27 +1,55 @@
 import { create } from 'zustand';
 import { countryManager } from '@/auth/verificationLogin/utils';
+import { CellCount, MessageType } from '@/auth/verificationLogin/types';
+import { LoginService, SmsService } from '@/auth/services';
+import UserAuthManager from '@utils/UserAuthManager.ts';
+import { useNavigationStore } from '@navigation/stores';
+import { useAuthStore } from '@/auth/stores';
+import { ImageCache } from '@/utils';
 
 interface VerificationLoginState {
     phoneNumber: string;
     isAgreedToTerms: boolean;
     isFormValid: boolean;
     errorMessage: string;
+    isSendingSms: boolean;
+
     selectedCallingCode: string;
     selectedCCA2: string;
     selectedSectionLetter: string;
     formattedNumber: string;
-    codeDigits: number,
-    smsCode: string,
+
+    codeDigits: CellCount,
     isCodeComplete: boolean,
+
+    hideCountryCodeDialogFn: () => void,
+
+    messageType: MessageType;
+    messageText: string;
+    codeMessageType: MessageType;
+    codeMessageText: string;
+
     setPhoneNumber: (phoneNumber: string) => void;
     setIsAgreedToTerms: (isAgreed: boolean) => void;
     setSelectedCallingCode: (countryCode: string) => void;
     setSelectedCCA2: (cca2: string) => void;
     setSelectedSectionLetter: (letter: string) => void;
     setCodeDigits: (digits: number) => void;
-    setSmsCode: (code: string) => void,
     setIsCodeComplete: (isComplete: boolean) => void,
+    setHideCountryCodeDialogFn: (onHideFn: () => void) => void,
+    setMessageType: (type: MessageType) => void,
+    setMessageText: (text: string) => void,
+    setCodeMessageType: (type: MessageType) => void,
+    setCodeMessageText: (text: string) => void,
+
     validateAndFormatPhone: () => boolean;
+
+    onSelectedCallingCode: (callingCode: string, cca2: string, sectionLetters: string) => void,
+
+    sendSmsCode: (onSuccess: () => void) => Promise<void>;
+
+    handleCodeComplete: (inputCode: string) => Promise<void>;
+
     resetForm: () => void;
 }
 
@@ -30,13 +58,21 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     isAgreedToTerms: false,
     isFormValid: false,
     errorMessage: '',
+    isSendingSms: false,
+
     selectedCallingCode: '+86',
     selectedCCA2: 'CN',
     selectedSectionLetter: 'C',
     formattedNumber: '',
+
     codeDigits: 6,
-    smsCode: '',
     isCodeComplete: false,
+    hideCountryCodeDialogFn: () => {},
+
+    messageType: 'none',
+    messageText: '',
+    codeMessageType: 'none',
+    codeMessageText: '',
 
     setPhoneNumber: (phoneNumber: string) => {
         const { isAgreedToTerms } = get();
@@ -63,15 +99,31 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     },
 
     setCodeDigits: (digits: number) => {
-        set({ codeDigits: digits });
-    },
-
-    setSmsCode: (code: string) => {
-        set({ smsCode: code });
+        set({ codeDigits: digits as CellCount });
     },
 
     setIsCodeComplete: (isComplete: boolean) => {
         set({ isCodeComplete: isComplete });
+    },
+
+    setHideCountryCodeDialogFn: (onHideFn) => {
+        set({ hideCountryCodeDialogFn: onHideFn });
+    },
+
+    setMessageType: (type: MessageType) => {
+        set({ messageType: type });
+    },
+
+    setMessageText: (text: string) => {
+        set({ messageText: text });
+    },
+
+    setCodeMessageType: (type: MessageType) => {
+        set({ codeMessageType: type });
+    },
+
+    setCodeMessageText: (text: string) => {
+        set({ codeMessageText: text });
     },
 
     validateAndFormatPhone: () => {
@@ -89,8 +141,122 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
                 errorMessage: result.errorMessage || '手机号格式无效',
             });
         }
+        console.log('验证结果:', result);
 
         return result.isValid;
+    },
+
+    onSelectedCallingCode: (callingCode, cca2, sectionLetters) => {
+        set({
+            selectedCallingCode: callingCode,
+            selectedCCA2: cca2,
+            selectedSectionLetter: sectionLetters,
+        });
+        get().hideCountryCodeDialogFn();
+    },
+
+    sendSmsCode: async (onSuccess) => {
+        try {
+            set({
+                isSendingSms: true,
+                messageType: 'loading',
+            });
+
+            const { validateAndFormatPhone } = get();
+
+            const isValid = validateAndFormatPhone();
+
+            // 验证逻辑
+            if (!isValid) {
+                return;
+            }
+
+            const response = await SmsService.sendSmsCode(get().formattedNumber, get().isAgreedToTerms);
+
+            if (response.success && response.codeDigits) {
+                set({ codeDigits: response.codeDigits as CellCount });
+
+                onSuccess();
+            } else {
+                throw new Error(response.message || '发送失败');
+            }
+        } catch (error) {
+            throw error;
+        } finally {
+            set({ isSendingSms: false });
+
+            set({ codeMessageType: 'success', codeMessageText: '短信验证码已发送' });
+        }
+    },
+
+    handleCodeComplete: async (inputCode: string) => {
+        set({ isCodeComplete: true });
+
+        console.log('登录校验中');
+
+        set({
+            codeMessageType: 'loading',
+            codeMessageText: '登录校验中...',
+        });
+
+        try {
+            const response = await LoginService.smsLogin(
+                get().formattedNumber,
+                inputCode,
+                get().isAgreedToTerms,
+            );
+
+            if (response.success) {
+                console.log('校验完成');
+
+                set({
+                    codeMessageType: 'success',
+                    codeMessageText: '验证成功',
+                });
+
+                if (UserAuthManager) {
+                    console.log('校验完成初始化中');
+
+                    set({
+                        codeMessageType: 'loading',
+                        codeMessageText: '初始化中...',
+                    });
+
+                    await UserAuthManager.saveUserAuthComplete(
+                        response.data.userId,
+                        {
+                            phoneNumber: response.data.phoneNumber,
+                            sessionToken: response.data.sessionToken,
+                        },
+                    );
+                    const { setInitialRouteName } = useNavigationStore.getState();
+                    const { handleLogin, setAvatar, setIsLoggedIn } = useAuthStore.getState();
+
+                    setInitialRouteName('AppMain');
+
+                    handleLogin(response.data.userId, response.data.userProfile);
+                    const imagePath = await ImageCache.saveImageToFile(response.data.userProfile.avatar, 'AVATARS');
+                    setAvatar(imagePath);
+
+                    setIsLoggedIn(true);
+                } else {
+                    console.log('初始化失败');
+                    throw new Error('初始化失败, 相关服务缺失');
+                }
+            } else {
+                console.log('验证码校验失败');
+                throw new Error(`验证码校验失败, ${response.message}`);
+            }
+        } catch (error: any) {
+            console.log(error?.message ?? error);
+
+            set({
+                codeMessageType: 'danger',
+                codeMessageText: error?.message ?? error,
+            });
+        } finally {
+            set({ isCodeComplete: false });
+        }
     },
 
     resetForm: () => set({
@@ -103,7 +269,10 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         formattedNumber: '',
         errorMessage: '',
         codeDigits: 6,
-        smsCode: '',
         isCodeComplete: false,
+        hideCountryCodeDialogFn: () => {},
+        messageType: 'none',
+        messageText: '',
+        isSendingSms: false,
     }),
 }));

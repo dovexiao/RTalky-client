@@ -36,7 +36,6 @@ export class UserInfoService {
             const response = await get<UserInfoResponse>('/auth/user-info');
             return response;
         } catch (error) {
-            console.error('获取用户信息失败:', error);
             throw error;
         }
     }

@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Button, Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@navigation/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
-import { SmsService } from '@/auth/services';
 
 const LoadingIndicator = (): React.ReactElement => (
     <Spinner size="small" status="control" />
@@ -13,13 +12,45 @@ const LoadingIndicator = (): React.ReactElement => (
 
 const VerifyLoginButton: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const isFormValid = useVerificationLoginStore(state => state.isFormValid);
 
-    const [isWaiting, setIsWaiting] = useState(false);
+    const isFormValid = useVerificationLoginStore(state => state.isFormValid);
+    const isSendingSms = useVerificationLoginStore(state => state.isSendingSms);
 
     // 防抖相关ref
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isProcessingRef = useRef<boolean>(false);
+
+    const handleVerifyLogin = () => {
+        // 防抖检查
+        if (isProcessingRef.current || !isFormValid) {return;}
+
+        // 清除之前的定时器
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        // 设置防抖定时器
+        debounceTimerRef.current = setTimeout(async () => {
+            if (isProcessingRef.current) {return;}
+
+            try {
+                isProcessingRef.current = true;
+
+                const { sendSmsCode } = useVerificationLoginStore.getState();
+                await sendSmsCode(() => {
+                    navigation.navigate('VerificationCode');
+                });
+            } catch (error: any) {
+                isProcessingRef.current = false;
+                const { setMessageType, setMessageText } = useVerificationLoginStore.getState();
+                setMessageType('danger');
+                setMessageText(`发送短信验证码失败, ${error?.message ?? error}`);
+                console.log('发送短信验证码失败, ', error?.message ?? error);
+            } finally {
+                isProcessingRef.current = false;
+            }
+        }, 300);
+    };
 
     // 清理定时器，避免内存泄漏
     useEffect(() => {
@@ -30,67 +61,16 @@ const VerifyLoginButton: React.FC = () => {
         };
     }, []);
 
-    const handleVerifyLogin = () => {
-        const validateAndFormatPhone = useVerificationLoginStore.getState().validateAndFormatPhone;
-        const isValidAndFormatted = validateAndFormatPhone();
-
-        if (!isFormValid || !isValidAndFormatted) {
-            return;
-        }
-
-        // 防抖检查：如果正在处理中，直接返回
-        if (isProcessingRef.current) {
-            return;
-        }
-
-        // 清除之前的防抖定时器
-        if (debounceTimerRef.current) {
-            clearTimeout(debounceTimerRef.current);
-        }
-
-        // 设置防抖定时器
-        debounceTimerRef.current = setTimeout(async () => {
-            // 再次检查是否正在处理（防止快速点击）
-            if (isProcessingRef.current) {
-                return;
-            }
-
-            try {
-                isProcessingRef.current = true;
-                setIsWaiting(true);
-
-                const { formattedNumber, isAgreedToTerms } = useVerificationLoginStore.getState();
-                // console.log('发送短信验证码...', formattedNumber, isAgreed)
-                // 发送短信验证码
-                const response = await SmsService.sendSmsCode(formattedNumber, isAgreedToTerms);
-
-                if (response.success) {
-                    // 设置验证码位数
-                    if (response.codeDigits) {
-                        const setCodeDigits = useVerificationLoginStore.getState().setCodeDigits;
-                        setCodeDigits(response.codeDigits);
-                    }
-                    // 短信发送成功，跳转到验证码页面
-                    navigation.replace('VerificationCode');
-                }
-            } catch (error: any) {
-                console.error('发送短信验证码失败:', error);
-            } finally {
-                isProcessingRef.current = false;
-                setIsWaiting(false);
-            }
-        }, 300); // 300ms防抖延迟
-    };
 
     return (
         <Button
             style={styles.button}
             onPress={handleVerifyLogin}
             disabled={!isFormValid}
-            accessoryLeft={isWaiting ? LoadingIndicator : <></>}
+            accessoryLeft={isSendingSms ? LoadingIndicator : <></>}
         >
             <Text style={styles.buttonText}>
-                {isWaiting ? '发送中...' : '验证并登录'}
+                {isSendingSms ? '发送中...' : '验证并登录'}
             </Text>
         </Button>
     );

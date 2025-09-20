@@ -4,25 +4,17 @@ import { VerificationCodeInput } from './VerificationCodeInput';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { useTheme } from '@ui-kitten/components';
 
-// 导入CellCount类型
-type CellCount = 4 | 5 | 6 | 7;
-
-interface VerificationCodeSectionProps {
-    onCodeComplete: (code: string) => void;
-}
-
-export const VerificationCodeSection: React.FC<VerificationCodeSectionProps> = ({
-    onCodeComplete,
-}) => {
-    const codeDigits = useVerificationLoginStore(state => state.codeDigits);
+export const VerificationCodeSection = () => {
+    const { codeDigits, handleCodeComplete } = useVerificationLoginStore.getState();
     const editable = !useVerificationLoginStore(state => state.isCodeComplete);
+
     const themes = useTheme();
 
     return (
         <View style={styles.codeInputContainer}>
             <VerificationCodeInput
-                cellCount={codeDigits as CellCount}
-                onFinish={onCodeComplete}
+                cellCount={codeDigits}
+                onFinish={handleCodeComplete}
                 activeColor={themes['color-primary-500']}
                 editable={editable}
             />

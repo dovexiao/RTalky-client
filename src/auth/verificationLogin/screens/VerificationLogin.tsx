@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     SafeAreaView,
     StatusBar,
     Image,
+    Keyboard,
 } from 'react-native';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider } from '@ui-kitten/components';
@@ -16,41 +17,61 @@ import { useNavigationStore } from '@navigation/stores/navigationStore.ts';
 import PhoneInput from '../components/PhoneInput';
 import VerifyLoginButton from '../components/VerifyLoginButton';
 import AgreementCheckbox from '../components/AgreementCheckbox';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
+import { CountryCodeDialog, CountryCodeDialogAPI } from '@/auth/verificationLogin/components';
+import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
+import { ReactiveToast } from '@/auth/verificationLogin/components';
+import { useUnifiedTheme } from '@/contexts';
 
 const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => {
     const initialRouteName = useNavigationStore(state => state.initialRouteName);
-    const { countryCodeDialogRef } = useGlobal();
+    const countryCodeDialogRef = useRef<CountryCodeDialogAPI>(null);
+
+    const messageType = useVerificationLoginStore(state => state.messageType);
+    const messageText = useVerificationLoginStore(state => state.messageText);
+
+    const { themeColors } = useUnifiedTheme();
 
     // 密码登录跳转逻辑
-    const handlePasswordLogin = () => {
+    const handlePasswordLogin = useCallback(() => {
         navigation.navigate('PasswordLogin');
-    };
+    }, [navigation]);
 
     // 显示国家区号选择弹窗
-    const handleCountryCodePress = () => {
+    const handleCountryCodePress = useCallback(() => {
+        Keyboard.dismiss();
         countryCodeDialogRef.current?.show();
-    };
+    }, [countryCodeDialogRef]);
+
+    const headerContent = useMemo(() => {
+        return initialRouteName === 'VerificationLogin' ? (
+            <View style={styles.logoContainer}>
+                <Image
+                    source={require('@assets/images/logo_ss.png')}
+                    style={styles.logo}
+                />
+            </View>
+        ) : (
+            <>
+                <TopNavigationOpe />
+                <Divider />
+            </>
+        );
+    }, [initialRouteName]);
+
+    useEffect(() => {
+        const { setHideCountryCodeDialogFn } = useVerificationLoginStore.getState();
+        setHideCountryCodeDialogFn(() => {
+            countryCodeDialogRef.current?.hide();
+        });
+    }, [countryCodeDialogRef.current]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#ffffff'}} />
+            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
 
             {/* 根据路由条件渲染顶部导航或Logo */}
-            {initialRouteName === 'VerificationLogin' ? (
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('@assets/images/logo_ss.png')}
-                        style={styles.logo}
-                    />
-                </View>
-            ) : (
-                <>
-                    <TopNavigationOpe />
-                    <Divider />
-                </>
-            )}
+            {headerContent}
 
             <View style={styles.container}>
                 {/* 标题与说明 */}
@@ -72,6 +93,31 @@ const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => 
                 {/* 协议勾选 */}
                 <AgreementCheckbox />
             </View>
+
+            <CountryCodeDialog ref={countryCodeDialogRef} />
+
+            <ReactiveToast
+                dependencies={{ messageType, messageText }}
+                shouldShow={({ messageType: type, messageText: text }) => type !== 'none' && type !== 'loading' && text !== '' }
+                autoClose={() => 3000}
+                position={() => 'bottom'}
+                render={({ messageType: type, messageText: text }) => (
+                    <View style={{
+                        backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
+                        padding: 15,
+                        borderRadius: 5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        <Text style={{ color: 'white' }}>{text}</Text>
+                    </View>
+                )}
+                onHide={() => {
+                    const { setMessageType, setMessageText } = useVerificationLoginStore.getState();
+                    setMessageType('none');
+                    setMessageText( '');
+                }}
+            />
         </SafeAreaView>
     );
 };
