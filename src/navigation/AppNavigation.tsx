@@ -5,17 +5,17 @@ import { RootStackParamList } from '@navigation/types';
 // import BootSplash from 'react-native-bootsplash';
 import AppMain from '@/main/screen/AppMain.tsx';
 import TestPage from '@/test/TestPage.tsx';
-import QuestionBank from '@/question/questionBank/screens/QuestionBank.tsx';
-import QuestionPaginator from '@/question/questionPaginator/screens/QuestionPaginator.tsx';
-import OpeQuestion from '@/question/opeQuestion/screens/OpeQuestion.tsx';
-import CreateQuestionTags from '@/question/opeQuestion/screens/CreateQuestionTags.tsx';
+// import QuestionBank from '@/question/questionBank/screens/QuestionBank.tsx';
+// import QuestionPaginator from '@/question/questionPaginator/screens/QuestionPaginator.tsx';
+// import OpeQuestion from '@/question/opeQuestion/screens/OpeQuestion.tsx';
+// import CreateQuestionTags from '@/question/opeQuestion/screens/CreateQuestionTags.tsx';
 import NoteLibrary from '@/note/noteLibrary/screens/NoteLibrary.tsx';
 import NoteReader from '@/note/noteReader/screens/NoteReader.tsx';
 import EditNote from '@/note/editNote/screens/EditNote.tsx';
 import CreateNoteTag from '@/note/createNote/screens/CreateNoteTag.tsx';
 import AddNoteCover from '@/note/createNote/screens/AddNoteCover.tsx';
 import AddNoteContent from '@/note/createNote/screens/AddNoteContent.tsx';
-import RecycleBin from '@/center/recycleBin/screens/RecycleBin.tsx';
+// import RecycleBin from '@/center/recycleBin/screens/RecycleBin.tsx';
 import PersonCenter from '@/center/personCenter/screens/PersonCenter.tsx';
 import BackgroundSettings from '@/center/backgroundSettings/screens/BackgroundSettings.tsx';
 import { UserAgreement, PrivacyPolicy, OpenSourceLicense, AppPermissions, AboutRTalky } from '@/center/about';
@@ -41,10 +41,10 @@ const AppStackNavigator = () => {
             {/*<Screen name="AppRegister" component={AppRegister} />*/}
             <Screen name="AppMain" component={AppMain} />
             {/* 题目模块 */}
-            <Screen name="QuestionBank" component={QuestionBank} />
-            <Screen name="QuestionPaginator" component={QuestionPaginator} initialParams={{ questionId: '' }} />
-            <Screen name="OpeQuestion" component={OpeQuestion} initialParams={{ type: '', questionId: '' }} />
-            <Screen name="CreateQuestionTags" component={CreateQuestionTags} initialParams={{ question: null }} />
+            {/*<Screen name="QuestionBank" component={QuestionBank} />*/}
+            {/*<Screen name="QuestionPaginator" component={QuestionPaginator} initialParams={{ questionId: '' }} />*/}
+            {/*<Screen name="OpeQuestion" component={OpeQuestion} initialParams={{ type: '', questionId: '' }} />*/}
+            {/*<Screen name="CreateQuestionTags" component={CreateQuestionTags} initialParams={{ question: null }} />*/}
             {/*/!* 笔记模块 *!/*/}
             <Screen name="NoteLibrary" component={NoteLibrary} />
             <Screen name="NoteReader" component={NoteReader} initialParams={{ noteId: '' }} />
@@ -54,7 +54,7 @@ const AppStackNavigator = () => {
             <Screen name="EditNote" component={EditNote} />
             {/*个人中心*/}
             <Screen name="PersonCenter" component={PersonCenter} />
-            <Screen name="RecycleBin" component={RecycleBin} />
+            {/*<Screen name="RecycleBin" component={RecycleBin} />*/}
             <Screen name="BackgroundSettings" component={BackgroundSettings} />
             {/*关于模块*/}
             <Screen name="UserAgreement" component={UserAgreement} />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
     View,
     TouchableOpacity,
@@ -10,29 +10,27 @@ import {
     VerificationCodeSection,
     NoVerificationCodeHelper,
     ResendTimer,
-    ReactiveToast,
 } from '@/auth/verificationLogin/components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import { Divider, Spinner, Text } from '@ui-kitten/components';
+import { Divider, Text } from '@ui-kitten/components';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { VerificationCodeProps } from '@/auth/verificationLogin/types';
-import { useUnifiedTheme } from '@/contexts';
 
 const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
     const { formattedNumber: internationalFormattedPhone } = useVerificationLoginStore.getState();
 
     const { bottomActionSheetRef } = useGlobal();
 
-    const messageType = useVerificationLoginStore(state => state.codeMessageType);
-    const messageText = useVerificationLoginStore(state => state.codeMessageText);
-
-    const { themeColors } = useUnifiedTheme();
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
-            <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
+            <View style={{ height: StatusBarHeight, backgroundColor: '#FFFFFF'}} />
             {/* 顶部返回与帮助 */}
             <TopNavigationOpe
                 // onBackPress={() => {
@@ -62,47 +60,6 @@ const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
                     <ResendTimer initialCount={300} />
                 </View>
             </View>
-            <ReactiveToast
-                dependencies={{ messageType, messageText }}
-                shouldShow={({ messageType: type, messageText: text  }) => type !== 'none' && text !== ''}
-                autoClose={({ messageType: type }) => type === 'loading' ? false : 3000}
-                position={({ messageType: type }) => type === 'loading' ? 'center' : 'bottom'}
-                render={({ messageType: type, messageText: text }) => {
-                    return (
-                        <>
-                            {type === 'loading' ? (
-                                <View style={{
-                                    backgroundColor: themeColors['color-primary-500'],
-                                    width: 120,
-                                    // borderRadius: 15,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    aspectRatio: 1,
-                                    gap: 10,
-                                }}>
-                                    <Spinner size={'large'} status={'control'} />
-                                    <Text style={{ color: themeColors['bg-100'] }}>{text}</Text>
-                                </View>
-                            ) : (
-                                <View style={{
-                                    backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
-                                    padding: 15,
-                                    borderRadius: 5,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}>
-                                    <Text style={{color: 'white'}}>{text}</Text>
-                                </View>
-                            )}
-                        </>
-                    )
-                }}
-                onHide={() => {
-                    const { setCodeMessageType, setCodeMessageText } = useVerificationLoginStore.getState();
-                    setCodeMessageType('none');
-                    setCodeMessageText( '');
-                }}
-            />
         </SafeAreaView>
     );
 };

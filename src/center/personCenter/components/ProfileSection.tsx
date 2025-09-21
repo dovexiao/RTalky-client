@@ -15,12 +15,14 @@ import { EditIcon, CameraIcon } from '@/icon';
 import EditNicknameAction, { EditNicknameActionAPI } from './EditNicknameAction';
 import EditBioAction, { EditBioActionAPI } from './EditBioAction';
 import { useUnifiedTheme } from '@/contexts';
+import { useNavigationStore } from '@navigation/stores';
 
 export const ProfileSection = () => {
     const nickname = useAuthStore(state => state.nickname);
     const avatar = useAuthStore(state => state.avatar);
     const bio = useAuthStore(state => state.bio);
     const { setNickname, setBio } = useAuthStore.getState();
+    const { setMessageType, setMessageText } = useNavigationStore.getState();
 
     const { avatarActionsModalRef, actionDialogRef } = useGlobal();
     const editNicknameActionRef = useRef<EditNicknameActionAPI>(null);
@@ -58,8 +60,12 @@ export const ProfileSection = () => {
                         });
                         // 更新本地状态
                         setNickname(newNickname.trim());
+                        setMessageType('success');
+                        setMessageText('昵称更新成功');
                     } catch (error) {
-                        console.error('更新昵称失败:', error);
+                        console.log('更新昵称失败:', error);
+                        setMessageType('danger');
+                        setMessageText('昵称更新失败');
                         // 这里可以添加错误提示，比如 Toast
                     }
                 }
@@ -80,8 +86,12 @@ export const ProfileSection = () => {
                     });
                     // 更新本地状态
                     setBio(newBio?.trim() || '');
+                    setMessageType('success');
+                    setMessageText('简介更新成功');
                 } catch (error) {
                     console.error('更新简介失败:', error);
+                    setMessageType('danger');
+                    setMessageText('简介更新失败');
                     // 这里可以添加错误提示，比如 Toast
                 }
             },

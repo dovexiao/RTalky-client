@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     SafeAreaView, StatusBar,
-    StyleSheet, Text, View,
+    StyleSheet, View,
 } from 'react-native';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider } from '@ui-kitten/components';
@@ -14,7 +14,6 @@ const RecycleBin: React.FC<RecycleBinProps> = ({ navigation }) => {
             <View style={{ height: StatusBar.currentHeight, backgroundColor: '#FFFFFF'}} />
             <TopNavigationOpe
                 title={'回收站'}
-                navigation={navigation}
             />
             <Divider />
             <TabProvider />

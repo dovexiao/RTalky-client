@@ -60,7 +60,8 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ onCountryCodePress }) => {
 const styles = StyleSheet.create({
     phoneInput: {
         borderRadius: 8,
-        marginBottom: 15,
+        // marginBottom: 15,
+        marginBottom: 30,
     },
     countryCodeContainer: {
         flexDirection: 'row',

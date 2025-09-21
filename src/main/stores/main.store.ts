@@ -1,11 +1,5 @@
 import { create } from 'zustand';
 
-interface MainStore {
-    navigateRecycleBin: () => void;
-    setNavigateRecycleBin: (navigateRecycleBin: () => void) => void;
-}
+interface MainStore {}
 
-export const useMainStore = create<MainStore>((set) => ({
-    navigateRecycleBin: () => {},
-    setNavigateRecycleBin: (navigateRecycleBin: () => void) => set(() => ({ navigateRecycleBin })),
-}));
+export const useMainStore = create<MainStore>((set) => ({}));

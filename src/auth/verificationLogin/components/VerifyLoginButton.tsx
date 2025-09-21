@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@navigation/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
+import { useNavigationStore } from '@navigation/stores';
 
 const LoadingIndicator = (): React.ReactElement => (
     <Spinner size="small" status="control" />
@@ -42,7 +43,7 @@ const VerifyLoginButton: React.FC = () => {
                 });
             } catch (error: any) {
                 isProcessingRef.current = false;
-                const { setMessageType, setMessageText } = useVerificationLoginStore.getState();
+                const { setMessageType, setMessageText } = useNavigationStore.getState();
                 setMessageType('danger');
                 setMessageText(`发送短信验证码失败, ${error?.message ?? error}`);
                 console.log('发送短信验证码失败, ', error?.message ?? error);

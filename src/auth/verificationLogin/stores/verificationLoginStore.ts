@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { countryManager } from '@/auth/verificationLogin/utils';
-import { CellCount, MessageType } from '@/auth/verificationLogin/types';
+import { CellCount } from '@/auth/verificationLogin/types';
 import { LoginService, SmsService } from '@/auth/services';
 import UserAuthManager from '@utils/UserAuthManager.ts';
 import { useNavigationStore } from '@navigation/stores';
@@ -24,11 +24,6 @@ interface VerificationLoginState {
 
     hideCountryCodeDialogFn: () => void,
 
-    messageType: MessageType;
-    messageText: string;
-    codeMessageType: MessageType;
-    codeMessageText: string;
-
     setPhoneNumber: (phoneNumber: string) => void;
     setIsAgreedToTerms: (isAgreed: boolean) => void;
     setSelectedCallingCode: (countryCode: string) => void;
@@ -37,10 +32,6 @@ interface VerificationLoginState {
     setCodeDigits: (digits: number) => void;
     setIsCodeComplete: (isComplete: boolean) => void,
     setHideCountryCodeDialogFn: (onHideFn: () => void) => void,
-    setMessageType: (type: MessageType) => void,
-    setMessageText: (text: string) => void,
-    setCodeMessageType: (type: MessageType) => void,
-    setCodeMessageText: (text: string) => void,
 
     validateAndFormatPhone: () => boolean;
 
@@ -68,11 +59,6 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     codeDigits: 6,
     isCodeComplete: false,
     hideCountryCodeDialogFn: () => {},
-
-    messageType: 'none',
-    messageText: '',
-    codeMessageType: 'none',
-    codeMessageText: '',
 
     setPhoneNumber: (phoneNumber: string) => {
         const { isAgreedToTerms } = get();
@@ -110,22 +96,6 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         set({ hideCountryCodeDialogFn: onHideFn });
     },
 
-    setMessageType: (type: MessageType) => {
-        set({ messageType: type });
-    },
-
-    setMessageText: (text: string) => {
-        set({ messageText: text });
-    },
-
-    setCodeMessageType: (type: MessageType) => {
-        set({ codeMessageType: type });
-    },
-
-    setCodeMessageText: (text: string) => {
-        set({ codeMessageText: text });
-    },
-
     validateAndFormatPhone: () => {
         const { phoneNumber, selectedCallingCode } = get();
         const result = countryManager.validatePhoneNumber(selectedCallingCode, phoneNumber);
@@ -156,10 +126,13 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     },
 
     sendSmsCode: async (onSuccess) => {
+        const { setMessageType, setMessageText } = useNavigationStore.getState();
+
         try {
+            setMessageType('loading');
+
             set({
                 isSendingSms: true,
-                messageType: 'loading',
             });
 
             const { validateAndFormatPhone } = get();
@@ -185,7 +158,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         } finally {
             set({ isSendingSms: false });
 
-            set({ codeMessageType: 'success', codeMessageText: '短信验证码已发送' });
+            setMessageType('success');
+            setMessageText('短信验证码已发送');
         }
     },
 
@@ -194,10 +168,10 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
         console.log('登录校验中');
 
-        set({
-            codeMessageType: 'loading',
-            codeMessageText: '登录校验中...',
-        });
+        const { setMessageType, setMessageText } = useNavigationStore.getState();
+
+        setMessageType('loading');
+        setMessageText('登录校验中...');
 
         try {
             const response = await LoginService.smsLogin(
@@ -209,18 +183,14 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
             if (response.success) {
                 console.log('校验完成');
 
-                set({
-                    codeMessageType: 'success',
-                    codeMessageText: '验证成功',
-                });
+                setMessageType('success');
+                setMessageText('验证成功');
 
                 if (UserAuthManager) {
                     console.log('校验完成初始化中');
 
-                    set({
-                        codeMessageType: 'loading',
-                        codeMessageText: '初始化中...',
-                    });
+                    setMessageType('loading');
+                    setMessageText('初始化中...');
 
                     await UserAuthManager.saveUserAuthComplete(
                         response.data.userId,
@@ -239,6 +209,9 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
                     setAvatar(imagePath);
 
                     setIsLoggedIn(true);
+
+                    setMessageType('none');
+                    setMessageText('');
                 } else {
                     console.log('初始化失败');
                     throw new Error('初始化失败, 相关服务缺失');
@@ -250,10 +223,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         } catch (error: any) {
             console.log(error?.message ?? error);
 
-            set({
-                codeMessageType: 'danger',
-                codeMessageText: error?.message ?? error,
-            });
+            setMessageType('danger');
+            setMessageText(error?.message ?? error);
         } finally {
             set({ isCodeComplete: false });
         }
@@ -271,8 +242,6 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         codeDigits: 6,
         isCodeComplete: false,
         hideCountryCodeDialogFn: () => {},
-        messageType: 'none',
-        messageText: '',
         isSendingSms: false,
     }),
 }));

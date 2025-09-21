@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, StatusBar, Linking, Alert, Image } from 'react-native';
 import { Divider, Text, Button, Card } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
@@ -24,9 +24,17 @@ const AboutRTalky: React.FC = () => {
         }
     };
 
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
+
     return (
         <View style={[styles.container, { backgroundColor: themeColors['bg-100'] }]}>
-            <View style={[styles.statusBar, { backgroundColor: themeColors['bg-100'] }]} />
+            <View style={{
+                height: StatusBarHeight,
+                backgroundColor: themeColors['bg-100'],
+            }} />
             <TopNavigationOpe title={'关于RTalky'} />
             <Divider />
 

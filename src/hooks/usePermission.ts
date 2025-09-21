@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
     check,
@@ -108,7 +108,10 @@ export const usePermission = (config: PermissionConfig) => {
     });
 
     const appStateSubscription = useRef<{ remove: () => void } | null>(null);
-    const [permissionConstant, setPermissionConstant] = useState<Permission | null>(getPermissionConstant(config.permission));
+
+    const permissionConstant = useMemo(() => {
+        return getPermissionConstant(config.permission);
+    }, [config.permission]);
 
     const { actionDialogRef } = useGlobal();
 

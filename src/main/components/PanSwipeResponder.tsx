@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { PanResponder, View } from "react-native";
+import React, { useRef } from 'react';
+import { PanResponder, View } from 'react-native';
 
 interface PanSwipeResponderProps  {
     children: React.ReactNode;

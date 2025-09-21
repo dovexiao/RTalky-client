@@ -72,6 +72,11 @@ const AppMain: React.FC<AppMainProps> = ({}) => {
         return theme === 'light' ? 'dark-content' : 'light-content';
     }, [theme]);
 
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
+
     return (
         <SafeAreaView style={[
             styles.safeArea,
@@ -79,7 +84,7 @@ const AppMain: React.FC<AppMainProps> = ({}) => {
         ]}>
             <StatusBar barStyle={barStyle} backgroundColor={'rgba(255,255,255,0)'} translucent={true} />
             <View style={{
-                height: StatusBar.currentHeight,
+                height: StatusBarHeight,
                 backgroundColor: themeColors['bg-100'],
             }} />
             <View style={{

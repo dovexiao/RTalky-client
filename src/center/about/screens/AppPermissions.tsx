@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Card, Divider, Spinner } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
@@ -9,6 +9,7 @@ import { CheckmarkIcon, RefreshIcon } from '@/icon';
 import { PermissionItem, PermissionStatusText } from '@/center/about/types';
 import { permissionList as permissions } from '@/center/about/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigationStore } from '@navigation/stores';
 
 const AppPermissions: React.FC<{}> = () => {
     const { themeColors } = useUnifiedTheme();
@@ -43,14 +44,18 @@ const AppPermissions: React.FC<{}> = () => {
         },
     });
 
+    const { setMessageType, setMessageText } = useNavigationStore.getState();
+
     // 请求权限并更新状态
     const handlePermissionRequest = async (permissionType: 'camera' | 'photos') => {
         try {
             const permission = permissionType === 'camera' ? cameraPermission : photosPermission;
             await permission.requestPermission();
             await permission.checkPermission();
-        } catch (error) {
-            console.error('权限请求失败:', error);
+        } catch (error: any) {
+            setMessageType('danger');
+            setMessageText(`权限请求失败, ${error.message ?? error ?? '未知错误'}`);
+            console.log('权限请求失败:', error);
         }
     };
 
@@ -59,8 +64,10 @@ const AppPermissions: React.FC<{}> = () => {
         try {
             const permission = permissionType === 'camera' ? cameraPermission : photosPermission;
             await permission.checkPermission();
-        } catch (error) {
-            console.error('权限刷新失败:', error);
+        } catch (error: any) {
+            setMessageType('danger');
+            setMessageText(`权限刷新失败, ${error.message ?? error ?? '未知错误'}`);
+            console.log('权限刷新失败:', error);
         }
     };
 
@@ -68,8 +75,10 @@ const AppPermissions: React.FC<{}> = () => {
     const handleOpenSettings = async () => {
         try {
             await openSettings();
-        } catch (error) {
-            console.error('打开设置失败:', error);
+        } catch (error: any) {
+            setMessageType('danger');
+            setMessageText(`打开设置失败, ${error.message ?? error ?? '未知错误'}`);
+            console.log('打开设置失败, ', error);
         }
     };
 
@@ -155,12 +164,17 @@ const AppPermissions: React.FC<{}> = () => {
         );
     };
 
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
+
     return (
         <View style={[styles.container, { backgroundColor: themeColors['bg-100'] }]}>
-            <View style={[
-                styles.statusBar,
-                { backgroundColor: themeColors['bg-100'] },
-            ]} />
+            <View style={{
+                height: StatusBarHeight,
+                backgroundColor: themeColors['bg-100'],
+            }} />
             <TopNavigationOpe
                 title={'应用权限'}
             />
@@ -208,9 +222,6 @@ const AppPermissions: React.FC<{}> = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    statusBar: {
-        height: StatusBar.currentHeight,
     },
     scrollView: {
         flex: 1,

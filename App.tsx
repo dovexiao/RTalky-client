@@ -7,7 +7,7 @@
 
 import React, {JSX, useEffect} from 'react';
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { ApplicationProvider, IconRegistry, Spinner } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { UnifiedThemeProvider, useUnifiedTheme } from '@contexts/UnifiedThemeContext';
 import { AppNavigator } from '@navigation/AppNavigation.tsx';
@@ -45,11 +45,12 @@ function App(): JSX.Element {
 
 // 分离的 App 内容组件
 const AppContent: React.FC = () => {
-    const { themeColors } = useUnifiedTheme();
+    const { themeColors, setTheme, setAutoSwitch } = useUnifiedTheme();
 
-    const [messageType, setMessageType] = React.useState<'success' | 'danger' | 'info' | 'warning' | 'none'>('none');
-    const [messageText, setMessageText] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
+    const messageType = useNavigationStore(state => state.messageType);
+    const messageText = useNavigationStore(state => state.messageText);
+    const { setMessageType, setMessageText } = useNavigationStore.getState();
 
     useEffect(() => {
         const init = async () => {
@@ -87,6 +88,21 @@ const AppContent: React.FC = () => {
                         setUserProfile(userInfoResponse.value.data as UserProfile);
                         const imagePath = await ImageCache.saveImageToFile(userInfoResponse.value.data?.avatar ?? '', 'AVATARS');
                         setAvatar(imagePath);
+                        const userTheme = userInfoResponse.value.data?.theme;
+                        if (userTheme) {
+                            switch (userTheme) {
+                                case 'DARK':
+                                    setTheme('dark');
+                                    break;
+                                case 'LIGHT':
+                                    setTheme('light');
+                                    break;
+                                case 'SYSTEM':
+                                    setAutoSwitch(true);
+                                    break;
+                                default:
+                            }
+                        }
                         console.log('获取用户信息成功:', JSON.stringify({...userInfoResponse.value.data, avatar: imagePath}));
                     } else {
                         console.log('获取用户信息失败:',
@@ -124,28 +140,47 @@ const AppContent: React.FC = () => {
         <ApplicationProvider {...eva} theme={themeColors}>
             <GlobalProvider>
                 <AppNavigator />
+                <ReactiveToast
+                    dependencies={{ messageType, messageText }}
+                    shouldShow={({ messageType: type, messageText: text  }) => type !== 'none' && text !== '' && !isLoading }
+                    autoClose={({ messageType: type }) => type === 'loading' ? false : 3000}
+                    position={({ messageType: type }) => type === 'loading' ? 'center' : 'bottom'}
+                    render={({ messageType: type, messageText: text }) => {
+                        return (
+                            <>
+                                {type === 'loading' ? (
+                                    <View style={{
+                                        backgroundColor: themeColors['color-primary-500'],
+                                        width: 120,
+                                        // borderRadius: 15,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        aspectRatio: 1,
+                                        gap: 10,
+                                    }}>
+                                        <Spinner size={'large'} status={'control'} />
+                                        <Text style={{ color: themeColors['bg-100'] }}>{text}</Text>
+                                    </View>
+                                ) : (
+                                    <View style={{
+                                        backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
+                                        padding: 15,
+                                        borderRadius: 5,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}>
+                                        <Text style={{color: 'white'}}>{text}</Text>
+                                    </View>
+                                )}
+                            </>
+                        );
+                    }}
+                    onHide={() => {
+                        setMessageType('none');
+                        setMessageText( '');
+                    }}
+                />
             </GlobalProvider>
-            <ReactiveToast
-                dependencies={{ messageType, messageText, isLoading }}
-                shouldShow={({ messageType: type, messageText: text, isLoading: loading }) => type !== 'none' && text !== '' && !loading }
-                autoClose={({ isLoading: loading }) => loading ? false : 1500}
-                position={() => 'bottom'}
-                render={({ messageType: type, messageText: text }) => (
-                    <View style={{
-                        backgroundColor: themeColors[`color-${type}-500`] || 'transparent',
-                        padding: 15,
-                        borderRadius: 5,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                        <Text style={{ color: 'white' }}>{text}</Text>
-                    </View>
-                )}
-                onHide={() => {
-                    setMessageType('none');
-                    setMessageText( '');
-                }}
-            />
         </ApplicationProvider>
     );
 };

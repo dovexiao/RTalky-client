@@ -9,6 +9,7 @@ export default function SessionWatcher() {
     const hasRedirectedRef = useRef(false);
 
     useEffect(() => {
+        console.log('SessionWatcher', isLoggedIn, hasRedirectedRef.current);
         if (navigationRef.isReady() && !hasRedirectedRef.current) {
             hasRedirectedRef.current = true; // 幂等，防止并发 401 重复跳转
             navigationRef.dispatch(
@@ -17,8 +18,6 @@ export default function SessionWatcher() {
                     routes: [{ name: useNavigationStore.getState().initialRouteName }], // 你的登录入口
                 })
             );
-        }
-        if (isLoggedIn) {
             hasRedirectedRef.current = false;
         }
     }, [isLoggedIn]);

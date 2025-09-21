@@ -12,6 +12,7 @@ import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { UserInfoService } from '@/auth/services';
 import { usePermission } from '@hooks/usePermission.ts';
+import { useNavigationStore } from '@navigation/stores';
 
 type AvatarActionsModalAPI = {
     show: () => void;
@@ -74,6 +75,8 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
     const avatar = useAuthStore(state => state.avatar);
     const setAvatar = useAuthStore(state => state.setAvatar);
 
+    const { setMessageType, setMessageText } = useNavigationStore.getState();
+
     // 处理头像更新
     const handleAvatarUpdate = async (imagePath: string, base64Data?: string) => {
         try {
@@ -85,8 +88,13 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
             setAvatar(imagePath);
             // 隐藏模态框
             hideActionsModal();
+
+            setMessageType('success');
+            setMessageText('更新头像成功');
         } catch (error) {
-            console.error('更新头像失败:', error);
+            setMessageType('danger');
+            setMessageText('更新头像失败');
+            console.log('更新头像失败:', error);
             // 这里可以添加错误提示，比如 Toast
         }
     };

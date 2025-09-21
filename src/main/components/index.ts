@@ -4,4 +4,5 @@ export * from './SwipeSidebar';
 export * from './TopAvatarColumn';
 export * from './TopNavigationOpe';
 export * from './PanSwipeResponder';
+export * from './ConfirmLogout';
 

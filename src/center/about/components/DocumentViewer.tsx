@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { DocumentViewerProps } from '@/center/about/types';
 import { Divider, Spinner } from '@ui-kitten/components';
@@ -18,12 +18,17 @@ export const DocumentViewer: FC<DocumentViewerProps> = ({ title, content }) => {
         return () => task.cancel();
     }, []);
 
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
+
     return (
         <View style={[styles.container, { backgroundColor: themeColors['bg-100'] }]}>
-            <View style={[
-                styles.statusBar,
-                { backgroundColor: themeColors['bg-100'] },
-            ]} />
+            <View style={{
+                height: StatusBarHeight,
+                backgroundColor: themeColors['bg-100'],
+            }} />
             <TopNavigationOpe title={title} />
             <Divider />
             {isReady ? (
@@ -46,9 +51,6 @@ export const DocumentViewer: FC<DocumentViewerProps> = ({ title, content }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    statusBar: {
-        height: StatusBar.currentHeight,
     },
     topNavigation: {
         paddingHorizontal: 16,

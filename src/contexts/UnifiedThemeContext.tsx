@@ -72,6 +72,9 @@ interface UnifiedThemeContextType {
     /** 选择是否跟随系统 */
     handleAutoSwitch: (enabled: boolean) => void;
 
+    /** 重置主题设置为初始状态（浅色主题，不跟随系统） */
+    resetThemeToDefault: () => void;
+
     // 向后兼容属性
     specialTheme: ThemeType;
     specialThemeColors: SpecialThemeColors;
@@ -153,6 +156,13 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         }
     };
 
+    // 重置主题设置为初始状态（浅色主题，不跟随系统）
+    const resetThemeToDefault = () => {
+        setCurrentTheme('light');
+        setAutoSwitch(false);
+        console.log('主题设置已重置为默认状态: 浅色主题，不跟随系统');
+    };
+
     React.useEffect(() => {
         const colorScheme: ColorSchemeName = Appearance.getColorScheme();
         if (autoSwitch && colorScheme) {
@@ -196,6 +206,7 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         cancelPreviewTheme,
         previewAutoSwitch,
         handleAutoSwitch,
+        resetThemeToDefault,
         // 向后兼容
         specialTheme: currentTheme,
         specialThemeColors,
@@ -241,6 +252,10 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
  * // 自动切换设置
  * const { autoSwitch, setAutoSwitch } = useUnifiedTheme();
  * <Switch value={autoSwitch} onValueChange={setAutoSwitch} />
+ *
+ * // 重置主题设置为默认状态（用于退出登录时）
+ * const { resetThemeToDefault } = useUnifiedTheme();
+ * <Button onPress={resetThemeToDefault}>重置主题设置</Button>
  * ```
  *
  * @example

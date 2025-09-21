@@ -7,14 +7,21 @@ import {
 } from '../components';
 import { BackgroundSettingsProps } from '@/center/backgroundSettings/types';
 import { useUnifiedTheme } from '@/contexts';
+import { UserInfoService } from '@/auth/services';
+import { useNavigationStore } from '@navigation/stores';
 
 const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) => {
     const {
+        theme,
+        autoSwitch,
         themeColors,
+        previewTheme,
         setPreviewMode,
         applyPreviewTheme,
         cancelPreviewTheme,
     } = useUnifiedTheme();
+
+    const { setMessageType, setMessageText } = useNavigationStore.getState();
 
     // 处理取消
     const handleCancel = () => {
@@ -24,10 +31,24 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
     };
 
     // 处理确认
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         // 应用预览主题，并在完成后跳转页面
-        applyPreviewTheme();
-        navigation.goBack();
+        const themeSyncStatus = autoSwitch ? 'SYSTEM' : theme === 'light' ? 'LIGHT' : 'DARK';
+        try {
+            await UserInfoService.updateUserInfo({
+                theme: themeSyncStatus,
+            });
+            if (theme === previewTheme) {
+                setMessageType('success');
+                setMessageText('主题设置成功');
+            }
+            applyPreviewTheme();
+            navigation.goBack();
+        } catch (error: any) {
+            setMessageType('danger');
+            setMessageText(`主题设置失败${error?.message ?? error}`);
+            console.log('主题设置失败', error);
+        }
     };
 
     useEffect(() => {

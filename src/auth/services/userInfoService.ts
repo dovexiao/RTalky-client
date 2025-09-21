@@ -6,6 +6,7 @@ export interface UserInfoData {
     nickname: string;
     bio: string;
     avatar: string;
+    theme?: string;
 }
 
 // 用户信息API响应
@@ -21,6 +22,7 @@ export interface UpdateUserInfoRequest {
     nickname?: string;
     bio?: string;
     avatar?: string;
+    theme?: string;
 }
 
 export class UserInfoService {

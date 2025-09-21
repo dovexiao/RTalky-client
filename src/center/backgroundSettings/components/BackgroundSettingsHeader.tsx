@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, StatusBar } from 'react-native';
 import { TopNavigation, useTheme } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
@@ -12,10 +12,15 @@ const BackgroundSettingsHeader: React.FC<BackgroundSettingsHeaderProps> = ({onCa
     const themes = useTheme();
     const { themeColors } = useUnifiedTheme();
 
+    const StatusBarHeight = useMemo(() => {
+        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        return StatusBar.currentHeight || 36;
+    }, []);
+
     return (
         <>
             <View style={{
-                height: StatusBar.currentHeight,
+                height: StatusBarHeight,
                 backgroundColor: themeColors['bg-100'],
             }}/>
             <TopNavigation

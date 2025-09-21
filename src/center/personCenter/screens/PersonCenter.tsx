@@ -12,7 +12,7 @@ import Animated, {
     interpolate,
 } from 'react-native-reanimated';
 import {
-    AccountSecuritySection,
+    // AccountSecuritySection,
     ProfileSection,
     OtherSection,
     GeneralSettingsSection,
@@ -122,7 +122,7 @@ const PersonCenter = () => {
                     </Animated.View>
 
                     {/* 账号安全项区域 */}
-                    <AccountSecuritySection />
+                    {/*<AccountSecuritySection />*/}
                     {/* 通用设置项区域 */}
                     <GeneralSettingsSection />
                     {/*关于RTalky项区域*/}

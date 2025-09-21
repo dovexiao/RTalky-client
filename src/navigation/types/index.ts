@@ -46,3 +46,5 @@ export type RootStackParamList = {
     // 测试模块
     TestPage: undefined;
 };
+
+export type MessageType = 'danger' | 'success' | 'info' | 'warning' | 'none' | 'loading';
