@@ -80,7 +80,7 @@ export const ReactiveToast: React.FC<ReactiveToastProps> = ({
 
     // 位置变化处理：先隐藏再在新位置展示
     useEffect(() => {
-        if (isVisible && prevPositionRef.current !== positionResult) {
+        if (isVisible && (prevPositionRef.current !== positionResult || contentResult !== currentContent)) {
             // 位置变化，先隐藏
             transitionValue.value = withTiming(0, { duration: 150 }, (finished) => {
                 if (finished) {
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     top: {
-        top: 25,
+        top: 50,
         left: undefined,
         bottom: undefined,
         right: undefined,

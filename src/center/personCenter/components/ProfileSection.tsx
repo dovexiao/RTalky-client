@@ -226,7 +226,7 @@ export const ProfileSection = () => {
                                     styles.bioHorizontal,
                                     { color: themeColors['text-200'] },
                                 ]}
-                                numberOfLines={1}
+                                numberOfLines={2}
                                 ellipsizeMode={'tail'}
                             >
                                 {bio || '这个很懒，还没有留下简介'}

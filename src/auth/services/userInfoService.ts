@@ -56,7 +56,6 @@ export class UserInfoService {
             const response = await put<UserInfoResponse>('/auth/user-info', request);
             return response;
         } catch (error) {
-            console.error('更新用户信息失败:', error);
             throw error;
         }
     }

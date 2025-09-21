@@ -25,7 +25,7 @@ import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.
 import PasswordLogin from '@/auth/passwordLogin/screens/PasswordLogin.tsx';
 import { RouteName, useNavigationStore } from '@navigation/stores';
 import { navigationRef } from '@navigation/navigationRef.ts';
-import SessionWatcher from './SessionWatcher';
+import SystemWatcher from './SystemWatcher.tsx';
 
 const { Navigator, Screen } = createNativeStackNavigator<RootStackParamList>();
 
@@ -76,7 +76,7 @@ export const AppNavigator = () => {
                 // BootSplash.hide({ fade: true });
             }}
         >
-            <SessionWatcher />
+            <SystemWatcher />
             <AppStackNavigator />
         </NavigationContainer>
     );

@@ -42,7 +42,7 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
                         ]}>
                             {learnBox.title}
                         </Text>
-                        <Text style={styles.time}>{learnBox.lastUpdated}</Text>
+                        {/*<Text style={styles.time}>{learnBox.lastUpdated}</Text>*/}
                     </View>
                     <Text style={[
                         styles.description,
@@ -50,19 +50,19 @@ const LearnBox: React.FC<LearnBoxProps> = ( {learnBox, index }) => {
                     ]}>
                         {learnBox.description}
                     </Text>
-                    <View style={styles.moduleStats}>
-                        <View style={[
-                            styles.countBadge,
-                            { backgroundColor: themeColors['bg-300'] },
-                        ]}>
-                            <Text style={[
-                                styles.countText,
-                                { color: themeColors['text-200'] },
-                            ]}>
-                                {learnBox.count} notes
-                            </Text>
-                        </View>
-                    </View>
+                    {/*<View style={styles.moduleStats}>*/}
+                    {/*    <View style={[*/}
+                    {/*        styles.countBadge,*/}
+                    {/*        { backgroundColor: themeColors['bg-300'] },*/}
+                    {/*    ]}>*/}
+                    {/*        <Text style={[*/}
+                    {/*            styles.countText,*/}
+                    {/*            { color: themeColors['text-200'] },*/}
+                    {/*        ]}>*/}
+                    {/*            {learnBox.count} notes*/}
+                    {/*        </Text>*/}
+                    {/*    </View>*/}
+                    {/*</View>*/}
                 </View>
             </View>
         </TouchableOpacity>

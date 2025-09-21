@@ -143,8 +143,27 @@ const AppContent: React.FC = () => {
                 <ReactiveToast
                     dependencies={{ messageType, messageText }}
                     shouldShow={({ messageType: type, messageText: text  }) => type !== 'none' && text !== '' && !isLoading }
-                    autoClose={({ messageType: type }) => type === 'loading' ? false : 3000}
-                    position={({ messageType: type }) => type === 'loading' ? 'center' : 'bottom'}
+                    autoClose={({ messageType: type }) => {
+                        switch (type) {
+                            case 'loading':
+                                return false;
+                            case 'offline':
+                                return false;
+                            default:
+                                return 1500;
+                        }
+                    }}
+                    position={({ messageType: type }) => {
+                        switch (type) {
+                            case 'loading':
+                                return 'center';
+                            case 'offline':
+                            case 'online':
+                                return 'top';
+                            default:
+                                return 'bottom';
+                        }
+                    }}
                     render={({ messageType: type, messageText: text }) => {
                         return (
                             <>
@@ -160,6 +179,19 @@ const AppContent: React.FC = () => {
                                     }}>
                                         <Spinner size={'large'} status={'control'} />
                                         <Text style={{ color: themeColors['bg-100'] }}>{text}</Text>
+                                    </View>
+                                ) : type === 'offline' || type === 'online' ? (
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        backgroundColor: themeColors[`color-${type === 'online' ? 'success' : 'warning'}-500`] || 'transparent',
+                                        padding: 15,
+                                        borderRadius: 5,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        gap: 10,
+                                    }}>
+                                        {type === 'offline' && <Spinner size={'large'} status={'control'}/>}
+                                        <Text style={{color: 'white'}}>{text}</Text>
                                     </View>
                                 ) : (
                                     <View style={{
