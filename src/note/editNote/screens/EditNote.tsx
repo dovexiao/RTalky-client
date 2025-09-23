@@ -15,6 +15,7 @@ import { NoteContentEditor, NoteIntroduceEditor, NoteTagsEditor, NoteTitleEditor
 import { EditNoteProps } from '../types';
 import { NoteService } from '@/note/services';
 import { useUnifiedTheme } from '@/contexts';
+import { useNavigationStore } from '@navigation/stores';
 
 const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const { noteId } = route.params;
@@ -70,7 +71,7 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
 const SaveStepButton = ({ navigation }: { navigation: any }) => {
     const isSaveDisabled = useOpeNoteStore(state => state.isOpeDisabled);
     const [isSaving, setIsSaving] = useState(false);
-
+    const { setMessageText, setMessageType } = useNavigationStore.getState();
     // 处理保存
     const handleSave = async () => {
         try {
@@ -90,22 +91,30 @@ const SaveStepButton = ({ navigation }: { navigation: any }) => {
 
             const updateNote = useNoteStore.getState().updateNote;
 
-            // 将 NoteResponse 转换为 Note 类型并更新本地 store
-            updateNote({
-                noteId: updatedNote.noteId,
-                displayId: updatedNote.displayId,
-                title: updatedNote.title,
-                content: updatedNote.content,
-                introduce: updatedNote.description,
-                tags: updatedNote.tags,
-                createdAt: updatedNote.createdTime,
-                lastModified: updatedNote.updatedTime,
-            });
+            if ('success' in updatedNote) {
+                throw new Error(updatedNote.message);
+            } else {
+                setMessageType('success');
+                setMessageText('笔记保存成功');
+                // 将 NoteResponse 转换为 Note 类型并更新本地 store
+                updateNote({
+                    noteId: updatedNote.noteId,
+                    displayId: updatedNote.displayId,
+                    title: updatedNote.title,
+                    content: updatedNote.content,
+                    introduce: updatedNote.description,
+                    tags: updatedNote.tags,
+                    createdAt: updatedNote.createdTime,
+                    lastModified: updatedNote.updatedTime,
+                });
 
-            // 返回上一页
-            navigation.goBack();
+                // 返回上一页
+                navigation.goBack();
+            }
         } catch (error: any) {
-            console.error('保存笔记失败:', error);
+            setMessageType('danger');
+            setMessageText(error.message ?? error ?? '保存笔记失败');
+            console.log('保存笔记失败:', error.message ?? error);
         } finally {
             setIsSaving(false);
         }

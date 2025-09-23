@@ -47,4 +47,4 @@ export type RootStackParamList = {
     TestPage: undefined;
 };
 
-export type MessageType = 'danger' | 'success' | 'info' | 'warning' | 'none' | 'loading' | 'offline' | 'online';
+export type MessageType = 'danger' | 'success' | 'info' | 'warning' | 'none' | 'loading' | 'offline' | 'online' | 'tilt';

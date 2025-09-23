@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     View,
     Text,
@@ -11,9 +11,7 @@ import { useUnifiedTheme } from '@/contexts';
 interface TagsEditorProps {
     title: string;
     tags: string[];
-    tagInput: string;
-    setTagInput: (text: string) => void;
-    onAddTag: () => void;
+    onAddTag: (input: string) => void;
     onRemoveTag: (index: number) => void;
     onSubmit?: () => void;
     submitButtonText?: string;
@@ -22,8 +20,6 @@ interface TagsEditorProps {
 export const TagsEditor: React.FC<TagsEditorProps> = ({
     title,
     tags,
-    tagInput,
-    setTagInput,
     onAddTag,
     onRemoveTag,
     onSubmit,
@@ -31,6 +27,8 @@ export const TagsEditor: React.FC<TagsEditorProps> = ({
 }) => {
     const { themeColors } = useUnifiedTheme();
     const themes = useTheme();
+
+    const [tagInput, setTagInput] = useState('');
 
     return (
         <View style={[
@@ -102,7 +100,10 @@ export const TagsEditor: React.FC<TagsEditorProps> = ({
                             borderColor: themes['border-basic-color-4'],
                         },
                     ]}
-                    onPress={onAddTag}
+                    onPress={() => {
+                        onAddTag(tagInput);
+                        setTagInput('');
+                    }}
                 >
                     <Icon
                         style={{ width: 20, height: 20 }}
@@ -155,7 +156,8 @@ const styles = StyleSheet.create({
     tagsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginBottom: 24,
+        marginBottom: 16,
+        gap: 8,
     },
     tag: {
         flexDirection: 'row',
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         paddingVertical: 4,
         paddingHorizontal: 12,
-        marginRight: 8,
+        // marginRight: 8,
         // marginBottom: 8,
     },
     tagText: {

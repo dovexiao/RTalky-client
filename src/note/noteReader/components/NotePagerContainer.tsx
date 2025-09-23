@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useNoteReaderStore } from '../stores';
 import { Note } from '@/note/noteLibrary/types';
+import { usePagerController } from '@/note/noteReader/contexts';
+import { useNoteStore } from '@/note/noteLibrary/stores';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -30,7 +32,10 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
         const flatListRef = useAnimatedRef<Animated.FlatList<Note>>();
         const isScrollEnabled = useSharedValue(true);
 
-        const setCurrentPage = useNoteReaderStore.getState().setCurrentPage;
+        const { resetScrollViewPosition } = usePagerController();
+
+        const { setCurrentPage, currentPage } = useNoteReaderStore.getState();
+        const { notes: noteList } = useNoteStore.getState();
 
         // 暴露API给控制层
         useImperativeHandle(ref, () => ({
@@ -51,15 +56,19 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
         const scrollHandler = useAnimatedScrollHandler({
             onScroll: (event) => {
                 scrollX.value = event.contentOffset.x;
-                const page = Math.round(scrollX.value / screenWidth);
-                runOnJS(setCurrentPage)(page);
+                // const page = Math.round(scrollX.value / screenWidth);
+                // console.log('current page:', page);
+                // runOnJS(setCurrentPage)(page);
             },
             onMomentumEnd: (event) => {
                 scrollX.value = event.contentOffset.x;
                 const page = Math.round(scrollX.value / screenWidth);
+                if (currentPage !== page) {
+                    runOnJS(resetScrollViewPosition)(noteList[currentPage].noteId);
+                }
                 runOnJS(setCurrentPage)(page);
             },
-        });
+        }, [currentPage]);
 
         const animatedProps = useAnimatedProps(() => {
             return {
@@ -68,29 +77,31 @@ const NotePagerContainer = forwardRef<ContainerAPI, NotePagerContainerProps>(
         });
 
         return (
-            <Animated.FlatList
-                ref={flatListRef}
-                animatedProps={animatedProps}
-                data={notes}
-                renderItem={renderItem}
-                initialScrollIndex={initialScrollIndex}
-                initialNumToRender={10}
-                keyExtractor={(item) => item.noteId}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                scrollEventThrottle={16}
-                onScroll={scrollHandler}
-                onMomentumScrollEnd={scrollHandler}
-                // scrollEnabled={isScrollEnabled.value}
-                style={styles.container}
-                getItemLayout={(data, index) => ({
-                    length: screenWidth, // 每个item的高度
-                    offset: screenWidth * index, // 累加偏移量
-                    index,
-                })}
-                removeClippedSubviews={false}
-            />
+            <>
+                <Animated.FlatList
+                    ref={flatListRef}
+                    animatedProps={animatedProps}
+                    data={notes}
+                    renderItem={renderItem}
+                    initialScrollIndex={initialScrollIndex}
+                    initialNumToRender={10}
+                    keyExtractor={(item) => item.noteId}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    scrollEventThrottle={16}
+                    onScroll={scrollHandler}
+                    onMomentumScrollEnd={scrollHandler}
+                    // scrollEnabled={isScrollEnabled.value}
+                    style={styles.container}
+                    getItemLayout={(data, index) => ({
+                        length: screenWidth, // 每个item的高度
+                        offset: screenWidth * index, // 累加偏移量
+                        index,
+                    })}
+                    removeClippedSubviews={false}
+                />
+            </>
         );
     }
 );

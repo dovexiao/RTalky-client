@@ -55,9 +55,14 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     loadNotes: async (page = 0, size = 10) => {
         try {
             const response = await NoteService.getNoteList({ page, size });
-            const convertedNotes = response.content.map(convertNoteInfoToNote);
 
-            set({ notes: convertedNotes });
+            if ('success' in response) {
+                throw new Error(response.message);
+            } else {
+                const convertedNotes = response.content.map(convertNoteInfoToNote);
+
+                set({ notes: convertedNotes });
+            }
         } catch (error) {
             console.error('加载笔记失败:', error);
             throw error;
@@ -69,13 +74,18 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
             const { notes } = get();
             const nextPage = Math.floor(notes.length / 10);
             const response = await NoteService.getNoteList({ page: nextPage, size: 10 });
-            const convertedNotes = response.content.map(convertNoteInfoToNote);
 
-            set((state) => ({
-                notes: [...state.notes.slice(0, Math.max(0, nextPage - 1) * 10), ...convertedNotes],
-            }));
-        } catch (error) {
-            console.error('加载更多笔记失败:', error);
+            if ('success' in response) {
+                throw new Error(response.message);
+            } else {
+                const convertedNotes = response.content.map(convertNoteInfoToNote);
+
+                set((state) => ({
+                    notes: [...state.notes.slice(0, Math.max(0, nextPage - 1) * 10), ...convertedNotes],
+                }));
+            }
+        } catch (error: any) {
+            console.error('加载更多笔记失败, ', error);
             throw error;
         }
     },
@@ -83,11 +93,16 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     refreshNotes: async () => {
         try {
             const response = await NoteService.getNoteList({ page: 0, size: 10 });
-            const convertedNotes = response.content.map(convertNoteInfoToNote);
 
-            set({ notes: convertedNotes });
+            if ('success' in response) {
+                throw new Error(response.message);
+            } else {
+                const convertedNotes = response.content.map(convertNoteInfoToNote);
+
+                set({ notes: convertedNotes });
+            }
         } catch (error) {
-            console.error('刷新笔记失败:', error);
+            console.error('刷新笔记失败, ', error);
             throw error;
         }
     },

@@ -88,7 +88,7 @@ export class NoteService {
      * @param params 分页参数
      * @returns 笔记分页数据
      */
-    static async getNoteList(params: NotePageRequest = {}): Promise<NotePageResponse> {
+    static async getNoteList(params: NotePageRequest = {}): Promise<NotePageResponse | ErrorResponse> {
         try {
             const { page = 0, size = 20 } = params;
 
@@ -98,11 +98,11 @@ export class NoteService {
                 size: size.toString(),
             });
 
-            const response = await get<NotePageResponse>(`/notes?${queryParams.toString()}`);
+            const response = await get<NotePageResponse | ErrorResponse>(`/notes?${queryParams.toString()}`);
 
             return response;
         } catch (error) {
-            console.error('获取笔记列表失败:', error);
+            // console.error('获取笔记列表失败:', error);
             throw error;
         }
     }
@@ -112,13 +112,13 @@ export class NoteService {
      * @param request 创建笔记请求参数
      * @returns 创建的笔记数据
      */
-    static async createNote(request: CreateNoteRequest): Promise<NoteResponse> {
+    static async createNote(request: CreateNoteRequest): Promise<NoteResponse | ErrorResponse> {
         try {
-            const response = await post<NoteResponse>('/notes', request);
+            const response = await post<NoteResponse | ErrorResponse>('/notes', request);
 
             return response;
         } catch (error) {
-            console.error('创建笔记失败:', error);
+            // console.error('创建笔记失败:', error);
             throw error;
         }
     }
@@ -128,13 +128,13 @@ export class NoteService {
      * @param noteId 笔记ID
      * @returns 笔记详情数据
      */
-    static async getNoteDetail(noteId: string): Promise<NoteResponse> {
+    static async getNoteDetail(noteId: string): Promise<NoteResponse | ErrorResponse> {
         try {
-            const response = await get<NoteResponse>(`/notes/${noteId}`);
+            const response = await get<NoteResponse | ErrorResponse>(`/notes/${noteId}`);
 
             return response;
         } catch (error) {
-            console.error('获取笔记详情失败:', error);
+            // console.error('获取笔记详情失败:', error);
             throw error;
         }
     }
@@ -145,13 +145,13 @@ export class NoteService {
      * @param request 重命名请求参数
      * @returns 更新后的笔记数据
      */
-    static async renameNote(noteId: string, request: RenameNoteRequest): Promise<NoteResponse> {
+    static async renameNote(noteId: string, request: RenameNoteRequest): Promise<NoteResponse | ErrorResponse> {
         try {
-            const response = await put<NoteResponse>(`/notes/${noteId}/title`, request);
+            const response = await put<NoteResponse | ErrorResponse>(`/notes/${noteId}/title`, request);
 
             return response;
         } catch (error) {
-            console.error('重命名笔记失败:', error);
+            // console.error('重命名笔记失败:', error);
             throw error;
         }
     }
@@ -162,13 +162,13 @@ export class NoteService {
      * @param request 更新简介请求参数
      * @returns 更新后的笔记数据
      */
-    static async updateNoteDescription(noteId: string, request: UpdateDescriptionRequest): Promise<NoteResponse> {
+    static async updateNoteDescription(noteId: string, request: UpdateDescriptionRequest): Promise<NoteResponse | ErrorResponse> {
         try {
-            const response = await put<NoteResponse>(`/notes/${noteId}/description`, request);
+            const response = await put<NoteResponse | ErrorResponse>(`/notes/${noteId}/description`, request);
 
             return response;
         } catch (error) {
-            console.error('修改笔记简介失败:', error);
+            // console.error('修改笔记简介失败:', error);
             throw error;
         }
     }
@@ -179,13 +179,13 @@ export class NoteService {
      * @param request 更新笔记请求参数
      * @returns 更新后的笔记数据
      */
-    static async updateNote(noteId: string, request: UpdateNoteRequest): Promise<NoteResponse> {
+    static async updateNote(noteId: string, request: UpdateNoteRequest): Promise<NoteResponse | ErrorResponse> {
         try {
-            const response = await put<NoteResponse>(`/notes/${noteId}`, request);
+            const response = await put<NoteResponse | ErrorResponse>(`/notes/${noteId}`, request);
 
             return response;
         } catch (error) {
-            console.error('修改笔记失败:', error);
+            // console.error('修改笔记失败:', error);
             throw error;
         }
     }
@@ -201,7 +201,7 @@ export class NoteService {
 
             return response;
         } catch (error) {
-            console.error('删除笔记失败:', error);
+            // console.error('删除笔记失败:', error);
             throw error;
         }
     }

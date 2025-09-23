@@ -8,6 +8,7 @@ import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
 import { useUnifiedTheme } from '@/contexts';
 import MarkdownRenderer from './MarkdownRenderer';
+import {useNavigationStore} from "@navigation/stores";
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -18,8 +19,7 @@ interface NoteDetailContentProps {
 
 const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [currentNote, setCurrentNote] = useState(note);
-    const updateNote = useNoteStore(state => state.updateNote);
+    const [currentNote, setCurrentNote] = useState<Note | null>(null);
 
     const { themeColors } = useUnifiedTheme();
 
@@ -27,11 +27,13 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     useEffect(() => {
         const fetchNoteDetail = async () => {
             // 如果 content 为空或只有空白字符，则获取详情
-            if (!note.content || note.content.trim() === '') {
-                try {
-                    setIsLoading(true);
-                    const noteDetail = await NoteService.getNoteDetail(note.noteId);
+            try {
+                setIsLoading(true);
+                const noteDetail = await NoteService.getNoteDetail(note.noteId);
 
+                if ('success' in noteDetail) {
+                    throw new Error('笔记详情获取失败');
+                } else {
                     // 将 NoteResponse 转换为 Note 类型
                     const updatedNote: Note = {
                         noteId: noteDetail.noteId,
@@ -48,18 +50,27 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     setCurrentNote(updatedNote);
 
                     // 更新 store 中的笔记数据
+                    const { updateNote } = useNoteStore.getState();
                     updateNote(updatedNote);
-                } catch (error) {
-                    console.error('获取笔记详情失败:', error);
-                    // 如果获取失败，保持原有状态
-                } finally {
-                    setIsLoading(false);
                 }
+            } catch (error: any) {
+                const { setMessageType, setMessageText } = useNavigationStore.getState();
+                setMessageType('danger');
+                setMessageText(error.message ?? error ?? '笔记详情获取失败');
+                console.log('获取笔记详情失败:', error.message ?? error);
+                // 如果获取失败，保持原有状态
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchNoteDetail();
-    }, [note.noteId, note.content, updateNote]);
+        if (!note.content || note.content.trim() === '') {
+            fetchNoteDetail();
+        } else {
+            console.log('笔记内容非空，无需获取详情');
+            setCurrentNote(note);
+        }
+    }, [note]);
 
     // 如果正在加载，显示加载指示器
     if (isLoading) {
@@ -90,17 +101,17 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     ellipsizeMode={'tail'}
                     numberOfLines={1}
                 >
-                    {currentNote.title}
+                    {currentNote?.title}
                 </Text>
                 <Text
                     style={[
                         styles.introduction,
                         { color: themeColors['text-100'] },
                     ]}
-                    ellipsizeMode={'tail'}
-                    numberOfLines={3}
+                    // ellipsizeMode={'tail'}
+                    // numberOfLines={3}
                 >
-                    {currentNote.introduce}
+                    {currentNote?.introduce}
                 </Text>
             </View>
 
@@ -108,7 +119,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                 styles.creationInfo,
                 { color: themeColors['text-200'] },
             ]}>
-                {formatTime(currentNote.createdAt, { format: 'datetime' })}
+                {(currentNote?.createdAt && formatTime(currentNote.createdAt, { format: 'datetime' })) ?? ''}
             </Text>
 
             <Divider style={{
@@ -116,23 +127,33 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                 backgroundColor: themeColors['bg-300'],
             }} />
 
-            <MarkdownRenderer content={currentNote.content} />
+            <MarkdownRenderer content={currentNote?.content ?? ''} />
 
             <Divider style={{
                 marginVertical: 10,
                 backgroundColor: themeColors['bg-300'],
             }} />
 
-            {currentNote.tags.length > 0 && (
+            {currentNote?.tags && currentNote.tags.length > 0 && (
                 <View style={styles.tagsContainer}>
-                    <Text style={styles.sectionTitle}>标签</Text>
+                    <Text style={[
+                        styles.sectionTitle,
+                        { color: themeColors['text-100'] },
+                    ]}>
+                        标签
+                    </Text>
                     <View style={styles.tagsList}>
                         {currentNote.tags.map((tag: string, index: number) => (
                             <View
                                 key={index}
-                                style={[styles.tag, { backgroundColor: getTagColor() }]}
+                                style={[styles.tag, { backgroundColor: themeColors['bg-300'] }]}
                             >
-                                <Text style={styles.tagText}>{tag}</Text>
+                                <Text style={[
+                                    styles.tagText,
+                                    { color: themeColors['text-200'] },
+                                ]}>
+                                    {tag}
+                                </Text>
                             </View>
                         ))}
                     </View>
@@ -144,7 +165,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     styles.footerText,
                     { color: themeColors['text-200'] },
                 ]}>
-                    最近修改: {formatTime(currentNote.lastModified, { format: 'datetime' })}
+                    最近修改: {(currentNote?.lastModified && formatTime(currentNote.lastModified, { format: 'datetime' })) ?? ''}
                 </Text>
             </View>
             <View style={{ height: 40 }} />
@@ -219,14 +240,15 @@ const styles = StyleSheet.create({
     tagsList: {
         flexDirection: 'row',
         flexWrap: 'wrap',
+        gap: 8,
     },
     tag: {
         backgroundColor: '#E3F2FD',
         borderRadius: 16,
         paddingVertical: 4,
         paddingHorizontal: 12,
-        marginRight: 8,
-        marginBottom: 8,
+        // marginRight: 8,
+        // marginBottom: 8,
     },
     tagText: {
         fontSize: 14,

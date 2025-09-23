@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useCallback} from 'react';
 import {
     View,
     StyleSheet,
@@ -13,57 +13,66 @@ import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { NoteService, CreateNoteRequest } from '@/note/services';
 import { useUnifiedTheme } from '@/contexts';
+import { useNavigationStore } from '@navigation/stores';
 
 const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
-    const [tagInput, setTagInput] = useState('');
     const tags = useOpeNoteStore(state => state.noteTags);
 
     const { themeColors } = useUnifiedTheme();
 
-    const handleAddTag = () => {
-        const addTag = useOpeNoteStore.getState().addTag;
+    const handleAddTag = useCallback((tagInput: string) => {
+        const { addTag } = useOpeNoteStore.getState();
 
         if (tagInput.trim() !== '') {
             addTag(tagInput.trim());
-            setTagInput('');
         }
-    };
+    }, []);
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
+        const { setMessageType, setMessageText } = useNavigationStore.getState();
         try {
-            const createNote = useNoteStore.getState().createNote;
-            const { noteIntroduce, noteContent, noteTitle } = useOpeNoteStore.getState();
+            const { createNote } = useNoteStore.getState();
+            const { noteIntroduce, noteContent, noteTitle, noteTags } = useOpeNoteStore.getState();
 
             // 类型转换：将 Note 类型转换为 CreateNoteRequest 类型
             const createNoteRequest: CreateNoteRequest = {
                 title: noteTitle,
                 description: noteIntroduce,
                 content: noteContent,
-                tags,
+                tags: noteTags,
             };
 
             const createdNote = await NoteService.createNote(createNoteRequest);
 
-            // 创建成功后，更新本地 store
-            createNote({
-                noteId: createdNote.noteId,
-                displayId: createdNote.displayId,
-                title: createdNote.title,
-                content: createdNote.content,
-                introduce: createdNote.description,
-                tags: createdNote.tags,
-                createdAt: createdNote.createdTime,
-                lastModified: createdNote.updatedTime,
-            });
+            if ('success' in createdNote) {
+                throw new Error(createdNote.message);
+            } else {
+                setMessageType('success');
+                setMessageText('创建笔记成功');
 
-            // 特殊处理 - 返回上一页
-            navigation.goBack();
-            navigation.goBack();
-            navigation.goBack();
+                // 创建成功后，更新本地 store
+                createNote({
+                    noteId: createdNote.noteId,
+                    displayId: createdNote.displayId,
+                    title: createdNote.title,
+                    content: createdNote.content,
+                    introduce: createdNote.description,
+                    tags: createdNote.tags,
+                    createdAt: createdNote.createdTime,
+                    lastModified: createdNote.updatedTime,
+                });
+
+                // 特殊处理 - 返回上一页
+                navigation.goBack();
+                navigation.goBack();
+                navigation.goBack();
+            }
         } catch (error: any) {
-            console.error('创建笔记失败:', error);
+            setMessageType('danger');
+            setMessageText(error?.message ?? error ?? '创建笔记失败');
+            console.log('创建笔记失败:', error?.message ?? error);
         }
-    };
+    }, [navigation]);
 
     return (
         <SafeAreaView style={[
@@ -86,8 +95,6 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
                 <TagsEditor
                     title="添加标签"
                     tags={tags}
-                    tagInput={tagInput}
-                    setTagInput={setTagInput}
                     onAddTag={handleAddTag}
                     onRemoveTag={(tagIndex) => {
                         const removeTag = useOpeNoteStore.getState().removeTag;

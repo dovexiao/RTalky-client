@@ -75,10 +75,15 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
                         key={index}
                         style={[
                             styles.tag,
-                            { backgroundColor: getTagColor() },
+                            { backgroundColor: themeColors['bg-300'] },
                         ]}
                     >
-                        <Text style={styles.tagText}>{tag}</Text>
+                        <Text style={[
+                            styles.tagText,
+                            { color: themeColors['text-200'] },
+                        ]}>
+                            {tag}
+                        </Text>
                     </View>
                 ))}
             </View>
@@ -145,17 +150,21 @@ const styles = StyleSheet.create({
     tagsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 8,
+        maxHeight: 25,
+        overflow: 'hidden',
+        // marginTop: 8,
+        gap: 8,
     },
     tag: {
         paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 16,
-        marginRight: 8,
-        marginBottom: 4,
+        // marginRight: 8,
+        // marginBottom: 4,
     },
     tagText: {
         fontSize: 12,
+        lineHeight: 16,
         color: '#555555',
     },
 });

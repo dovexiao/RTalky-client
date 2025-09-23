@@ -75,8 +75,31 @@ export const ReactiveToast: React.FC<ReactiveToastProps> = ({
 
     // 细粒度更新
     useEffect(() => {
+        // console.log('shouldShowResult -> isVisible', shouldShowResult);
         setIsVisible(shouldShowResult);
     }, [shouldShowResult]);
+
+    // 自动关闭逻辑
+    useEffect(() => {
+        // console.log('autoCloseResult', autoCloseResult, shouldShowResult, prevPositionRef.current, positionResult, currentContent, contentResult);
+        if (shouldShowResult && autoCloseResult !== false && autoCloseResult > 0 && (prevPositionRef.current !== positionResult || contentResult !== currentContent)) {
+            console.log('autoCloseResult', autoCloseResult);
+            if (autoCloseTimerRef.current) {
+                clearTimeout(autoCloseTimerRef.current);
+            }
+
+            autoCloseTimerRef.current = setTimeout(() => {
+                console.log('自动计时到时');
+                setIsVisible(false);
+            }, autoCloseResult);
+        }
+
+        return () => {
+            if (autoCloseTimerRef.current) {
+                clearTimeout(autoCloseTimerRef.current);
+            }
+        };
+    }, [shouldShowResult, autoCloseResult, positionResult, contentResult]);
 
     // 位置变化处理：先隐藏再在新位置展示
     useEffect(() => {
@@ -120,25 +143,6 @@ export const ReactiveToast: React.FC<ReactiveToastProps> = ({
 
         prevVisibleRef.current = isVisible;
     }, [isVisible]);
-
-    // 自动关闭逻辑
-    useEffect(() => {
-        if (isVisible && autoCloseResult !== false && autoCloseResult > 0) {
-            if (autoCloseTimerRef.current) {
-                clearTimeout(autoCloseTimerRef.current);
-            }
-
-            autoCloseTimerRef.current = setTimeout(() => {
-                setIsVisible(false);
-            }, autoCloseResult);
-        }
-
-        return () => {
-            if (autoCloseTimerRef.current) {
-                clearTimeout(autoCloseTimerRef.current);
-            }
-        };
-    }, [isVisible, autoCloseResult]);
 
     // 手动关闭处理
     // const handleClose = () => {

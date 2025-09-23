@@ -5,6 +5,7 @@ import { navigationRef } from '@navigation/navigationRef.ts';
 import { useNavigationStore } from '@navigation/stores';
 import NetInfo from '@react-native-community/netinfo';
 import type { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
+import { useUnifiedTheme } from '@/contexts';
 
 export default function SystemWatcher() {
     const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -19,10 +20,19 @@ export default function SystemWatcher() {
 
     const { setMessageType, setMessageText } = useNavigationStore.getState();
 
+    const { resetThemeToDefault } = useUnifiedTheme();
+
     // 重置路由的通用方法
     const resetNavigation = () => {
         console.log('SessionWatcher: 重置路由');
         if (navigationRef.isReady() && !hasRedirectedRef.current) {
+
+            const { isLoggedIn: isLogin } = useAuthStore.getState();
+
+            if (!isLogin) {
+                resetThemeToDefault();
+            }
+
             hasRedirectedRef.current = true; // 幂等，防止并发重复跳转
             navigationRef.dispatch(
                 CommonActions.reset({
