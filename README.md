@@ -1,287 +1,104 @@
 # RTalky
 
-一个基于 React Native 开发的现代化笔记应用，提供优雅的用户体验和强大的功能特性。
+一个基于 React Native 的移动应用（iOS/Android）。
 
-## 📱 项目简介
 
-RTalky 是一款功能丰富的笔记管理应用，采用 React Native 0.76.5 开发，支持 iOS 和 Android 平台。应用集成了笔记创建、编辑、阅读、个人中心管理等功能，为用户提供流畅的笔记记录和管理体验。
+## 启动与初始化流程
 
-## ✨ 核心功能
+- 锁定竖屏 → BootSplash 显示 → 会话预检 → 并行校验会话与拉取用户信息 → 更新用户信息 → 设置登录状态 → 决定初始路由 → 隐藏 BootSplash
 
-### 📝 笔记模块
+注记：
+- 锁屏：react-native-orientation-locker
+- 启动页：react-native-bootsplash
+- 路由：React Navigation（初始路由受上述流程决定）
+- 主题设置：由 SystemWatcher 在导航重置时统一处理，应用初始化阶段不直接设置主题
 
-**笔记库管理**
-- 支持创建、编辑、删除笔记
-- 笔记列表展示，支持搜索和筛选
-- 笔记标签系统，便于分类管理
 
-**笔记阅读器**
-- 内置 Markdown 渲染，支持代码高亮、表格、图片等
-- 自适应主题的阅读界面
-- 笔记元信息展示（创建时间、修改时间、标签等）
-- 支持按键和滑动翻页功能
+## Provider 装配结构
 
-**笔记创建流程**
-- 分步骤的笔记创建向导
-- 支持添加封面、标题、内容、标签
+- UnifiedThemeProvider → ApplicationProvider(themeColors) → GlobalProvider → AppNavigator
 
-### 👤 个人中心模块
+说明：
+- UnifiedThemeProvider：统一主题上下文容器（主题类型、系统跟随、颜色映射的来源，详细见“主题”章节）
+- ApplicationProvider(themeColors)：UI Kitten / Eva 的主题注入点（以 themeColors 驱动组件库样式）
+- GlobalProvider：全局交互容器（如全局对话框、底部操作等的上下文）
+- AppNavigator：导航根出口（路由栈与初始路由）
 
-**用户资料管理**
-- 头像上传和编辑（支持拍照和相册选择）
-- 昵称和简介编辑
-- 权限管理和用户友好的错误提示
 
-**主题设置**
-- 支持浅色/深色主题切换
-- 实时主题预览功能
-- 跟随系统主题设置
-- 主题设置页面提供直观的预览界面
+## UI 与主题
 
-## 🎨 优秀的 UI/UX 设计
+- UI 基座：UI Kitten（@ui-kitten/components）与 Eva 设计体系（@eva-design/eva）。
+- 主题来源：`UnifiedThemeContext` 合并 Eva 基础主题与自定义 special 主题，导出 `themeColors`。
+- 使用方式：根组件将 `themeColors` 注入 `ApplicationProvider`，全局生效。
+- 能力概览：主题切换、预览模式、跟随系统、登出重置（详见 `docs/UnifiedThemeContext.md`）。
 
-### 📖 笔记阅读器设计
 
-RTalky 的笔记阅读器采用了精心设计的 Markdown 渲染系统：
+## 全局组件与交互
 
-- **主题适配**：阅读器会根据当前主题自动调整文字颜色、背景色等样式
-- **代码高亮**：支持代码块的语法高亮，提供良好的代码阅读体验
+- 全局容器：`GlobalContext` 提供命令式 API 的 ref（`actionDialogRef`、`bottomActionSheetRef`），并在根部挂载三个全局组件。
+- 全局对话框：`ActionDialog` 居中模态框，支持自定义内容、滚动、按钮回调；Reanimated 淡入+缩放动画。
+- 底部操作栏：`BottomActionSheet` 自底部滑入的操作面板，内容由调用方传入；Reanimated 位移动画。
+- 全局提示：`ReactiveToastContainer` 状态驱动的提示系统，根据消息类型决定位置与自动关闭；支持 loading、offline/online、success/warning 等类型。
+- 层级管理：全局组件使用绝对定位与高 `zIndex`，确保始终覆盖业务页面（详见 `docs/GlobalComponents.md` 与 `docs/ReactiveToast.md`）。
 
-### 🖼️ 头像修改操作栏
 
-个人中心的头像修改功能展现了优秀的交互设计：
+## 导航与会话
 
-- **权限管理**：集成了智能的权限请求系统，支持相机和相册权限
-- **动画效果**：使用 React Native Reanimated 实现流畅的弹窗动画
-- **用户引导**：提供清晰的权限说明和设置引导
-- **多种选择**：支持从相册选择、拍照、保存图片等多种操作
+- 导航结构：`AppNavigation` 使用原生栈导航，动态初始路由通过 `useNavigationStore` 管理，默认 `VerificationLogin`。
+- 系统监听：`SystemWatcher` 监听登录状态与网络状态，网络断开30秒后自动重置路由，负责登录状态变更引起的主题设置变更。
+- 路由管理：完整的 TypeScript 类型定义，支持认证、主应用、笔记、个人中心等模块路由。
+- 外部控制：通过 `navigationRef` 提供外部导航控制能力，支持路由重置和状态管理（详见 `docs/Navigation.md`）。
 
-### 🎭 全局弹窗动画设计
-
-应用中的各种弹窗组件都采用了统一的动画设计语言：
-
-**ActionDialog（操作对话框）**
-- 居中弹出动画，配合缩放效果
-- 半透明遮罩层，提供良好的视觉层次
-- 支持自定义内容高度和宽度比例
-- 流畅的进入和退出动画
-
-**BottomActionSheet（底部操作栏）**
-- 从底部滑入的动画效果
-- 圆角设计，符合现代移动应用设计规范
-- 支持自定义内容容器样式
-- 优雅的关闭动画
-
-### 🌈 主题切换功能设计
-
-RTalky 的主题系统展现了出色的设计理念：
-
-**统一主题管理**
-- 基于 Context API 的全局主题状态管理
-- 支持浅色、深色主题，以及自定义主题
-- 实时主题预览功能，用户可以在应用前预览效果
-- 自动跟随系统主题设置
-
-**主题预览界面**
-- 直观的主题对比界面
-- 模拟真实应用界面的预览效果
-- 支持实时切换和预览
-- 确认/取消机制，避免误操作
-
-### 🌍 多国家区号选择设计
-
-针对国际化需求，RTalky 实现了优雅的区号选择功能：
-
-**CountryManager 国家管理**
-- 基于 `world-countries` 和 `libphonenumber-js` 的权威数据
-- 支持 200+ 个国家和地区的区号信息
-- 支持多国家手机号格式验证
-- 支持中英文国家名称搜索
-
-**CountryCodeSelector 选择器**
-- 分组列表展示，按字母顺序排列
-- 侧边字母导航，快速定位
-- 字母弹窗提示，提升用户体验
-- 支持模糊搜索功能
-
-## 🛠️ 技术架构
-
-### 核心技术栈
-
-- **React Native 0.76.5** - 跨平台移动应用开发框架
-- **TypeScript** - 类型安全的 JavaScript 超集
-- **UI Kitten** - 基于 Eva Design 的 React Native UI 组件库
-- **Zustand** - 轻量级状态管理库
-- **React Navigation** - 导航管理
-- **React Native Reanimated** - 高性能动画库
-
-### 网络请求架构
-
-**Axios 封装**
-- 统一的请求/响应拦截器
-- 自动 Token 管理和刷新
-- 请求取消机制，避免重复请求
-- 完善的错误处理和用户提示
-
-**请求工具函数**
-- 类型安全的 API 调用封装
-- 统一的错误处理逻辑
-- 支持 GET、POST、PUT、DELETE 等 HTTP 方法
-- 自动处理网络错误和服务器错误
-
-### 权限管理
-
-**usePermission Hook**
-- 统一的权限请求和管理
-- 支持相机、相册、麦克风、位置等权限
-- 智能的权限状态检测
-- 用户友好的权限说明和引导
-
-## 📦 项目结构
-
-```
-src/
-├── auth/                    # 认证模块
-│   ├── login/              # 登录相关
-│   ├── oneTapLogin/        # 一键登录
-│   ├── passwordLogin/      # 密码登录
-│   ├── verificationLogin/  # 验证码登录
-│   └── services/           # 认证服务
-├── center/                 # 个人中心
-│   ├── about/              # 关于页面
-│   ├── backgroundSettings/ # 背景设置
-│   ├── personCenter/       # 个人中心主页
-│   └── recycleBin/         # 回收站
-├── contexts/               # 全局上下文
-│   ├── GlobalContext.tsx   # 全局状态
-│   └── UnifiedThemeContext.tsx # 主题管理
-├── global/                 # 全局组件
-│   ├── actionDialog/       # 操作对话框
-│   ├── avatarActionsModal/ # 头像操作弹窗
-│   ├── bottomActionSheet/  # 底部操作栏
-│   └── sliderVerification/ # 滑动验证
-├── hooks/                  # 自定义 Hooks
-├── icon/                   # 图标组件
-├── main/                   # 主页面
-├── navigation/             # 导航配置
-├── note/                   # 笔记模块
-│   ├── createNote/         # 创建笔记
-│   ├── editNote/           # 编辑笔记
-│   ├── noteLibrary/        # 笔记库
-│   ├── noteReader/         # 笔记阅读器
-│   └── services/           # 笔记服务
-├── question/               # 问题模块
-├── services/               # 服务层
-│   └── fetch/              # 网络请求
-└── utils/                  # 工具函数
-```
-
-## 🚀 快速开始
-
-### 环境要求
-
-- Node.js >= 18
-- React Native CLI
-- Android Studio (Android 开发)
-- Xcode (iOS 开发)
-
-### 安装依赖
-
-```bash
-npm install
-```
-
-### 运行项目
-
-```bash
-# Android
-npm run android
-
-# iOS
-npm run ios
-
-# 启动 Metro
-npm start
-```
-
-### 环境配置
-
-项目支持多环境配置：
-
-```bash
-# 开发环境
-npm run start:dev
-
-# 测试环境
-npm run start:staging
-
-# 生产环境
-npm run start:prod
-```
-
-## 📱 功能特性
-
-### 笔记管理
-- ✅ Markdown 格式支持
-- ✅ 标签分类系统
-- ✅ 搜索和筛选
-- ✅ 笔记导入导出
-- ✅ 回收站功能
-
-### 用户系统
-- ✅ 多种登录方式
-- ✅ 用户资料管理
-- ✅ 头像上传编辑
-- ✅ 主题个性化
-
-### 国际化支持
-- ✅ 多国家区号选择
-- ✅ 手机号格式验证
-- ✅ 中英文界面支持
-
-### 主题系统
-- ✅ 浅色/深色主题
-- ✅ 实时预览
-- ✅ 跟随系统设置
-- ✅ 自定义主题支持
-
-## 🔧 开发指南
-
-### 代码规范
-
-- 使用 TypeScript 进行类型检查
-- 遵循 ESLint 代码规范
-- 使用 Prettier 进行代码格式化
-- 组件采用函数式组件和 Hooks
-
-### 状态管理
-
-- 使用 Zustand 进行全局状态管理
-- 按模块划分 Store
-- 支持持久化存储
-
-### 样式规范
-
-- 使用 StyleSheet 创建样式
-- 支持主题系统
-- 响应式设计原则
-
-## 📄 许可证
-
-本项目采用 MIT 许可证，详情请参阅 [LICENSE.md](LICENSE.md) 文件。
-
-## 🤝 贡献指南
-
-欢迎提交 Issue 和 Pull Request 来帮助改进项目。
-
-## 📞 联系我们
-
-如有问题或建议，请通过以下方式联系：
-
-- 提交 Issue
-- 发送邮件
-- 项目讨论区
-
----
-
-**RTalky** - 让笔记记录变得更加优雅和高效 🚀
+
+## 网络与数据
+
+- 请求封装：基于 Axios 的统一 HTTP 请求封装，支持 GET/POST/PUT/DELETE 方法，提供类型安全的泛型支持。
+- 自动认证：请求拦截器自动添加 Bearer Token，401 错误时自动清理认证状态并重置路由。
+- 错误处理：统一的错误响应格式，分类处理服务器错误、网络错误、请求配置错误。
+- 请求管理：支持请求取消机制，401 处理时自动取消所有进行中的请求（详见 `docs/NetworkServices.md`）。
+
+
+## 认证与用户
+
+- 启用短信验证登录。登录成功后写入用户资料与登录态；主题应用不在登录回调执行，由 `SystemWatcher` 在路由重置阶段统一处理。
+- 详见：`docs/Auth.md`
+
+
+## 功能模块说明
+
+- Main（工作台）
+  - 登录后的主入口；顶部头像栏 + 功能入口卡片；右滑或点头像打开个人中心侧边栏。
+  - 详见：`docs/Main.md`
+- Center（个人中心）
+  - 个人资料（头像/昵称/简介）、背景设置（主题预览与应用）、关于/协议/权限等信息页。
+  - 详见：`docs/Center.md`
+- Note（笔记）
+  - 列表/新增/编辑概述；阅读器是核心（横向分页 + Markdown 渲染），支持按钮/手势/倾斜翻页，含解锁门槛。
+  - 详见：`docs/Note.md`（内含 `docs/TiltObserver.md` 与 `docs/ShakeUnlockButton.md` 链接）。
+
+
+## 配置与约定
+
+
+## 资源与媒体
+
+- 图片与缓存策略：详见 `docs/ImageCache.md`
+- Markdown 渲染与限制：基于 `MarkdownRenderer` 的样式与图片规则
+
+
+## 权限与设备
+
+- 权限统一封装：详见 `docs/usePermission.md`
+- 设备信息与方向锁定：`DeviceInfoManager`、`react-native-orientation-locker`
+
+
+## 可测试性与质量
+
+
+## 构建与发布
+
+
+## 故障排查
+
+
+## 路线图与待办

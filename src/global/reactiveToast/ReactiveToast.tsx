@@ -25,7 +25,7 @@ interface ReactiveToastProps {
 
 const { width } = Dimensions.get('window');
 
-export const ReactiveToast: React.FC<ReactiveToastProps> = ({
+const ReactiveToast: React.FC<ReactiveToastProps> = ({
     dependencies,
     render,
     shouldShow,
@@ -254,3 +254,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
 });
+
+export default ReactiveToast;

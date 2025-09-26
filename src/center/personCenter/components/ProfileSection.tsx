@@ -15,16 +15,21 @@ import { EditIcon, CameraIcon } from '@/icon';
 import EditNicknameAction, { EditNicknameActionAPI } from './EditNicknameAction';
 import EditBioAction, { EditBioActionAPI } from './EditBioAction';
 import { useUnifiedTheme } from '@/contexts';
-import { useNavigationStore } from '@navigation/stores';
+import type { AvatarActionsModalAPI } from '@/center/personCenter/components';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
-export const ProfileSection = () => {
+interface ProfileSectionProps {
+    avatarActionsModalRef: React.RefObject<AvatarActionsModalAPI>;
+}
+
+export const ProfileSection: React.FC<ProfileSectionProps> = ({ avatarActionsModalRef }) => {
     const nickname = useAuthStore(state => state.nickname);
     const avatar = useAuthStore(state => state.avatar);
     const bio = useAuthStore(state => state.bio);
     const { setNickname, setBio } = useAuthStore.getState();
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
-    const { avatarActionsModalRef, actionDialogRef } = useGlobal();
+    const { actionDialogRef } = useGlobal();
     const editNicknameActionRef = useRef<EditNicknameActionAPI>(null);
     const editBioActionRef = useRef<EditBioActionAPI>(null);
 
@@ -45,6 +50,10 @@ export const ProfileSection = () => {
             subscription?.remove(); // 使用返回的 remove 方法
         };
     }, []);
+
+    const handleEditAvatar = () => {
+        avatarActionsModalRef.current?.show();
+    };
 
     // 编辑昵称
     const handleEditNickname = () => {
@@ -121,9 +130,7 @@ export const ProfileSection = () => {
                         {/* 头像编辑图标 */}
                         <TouchableOpacity
                             style={styles.avatarEditButton}
-                            onPress={() => {
-                                avatarActionsModalRef.current?.show();
-                            }}
+                            onPress={handleEditAvatar}
                         >
                             <CameraIcon width={20} height={20} />
                         </TouchableOpacity>

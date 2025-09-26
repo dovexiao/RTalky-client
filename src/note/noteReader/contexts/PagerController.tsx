@@ -16,7 +16,7 @@ import {
     TiltObserverAPI,
 } from '@/note/noteReader/components';
 import ShakeUnlockButton from '@/note/noteReader/components/ShakeUnlockButton.tsx';
-import { useNavigationStore } from '@navigation/stores';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -43,7 +43,7 @@ export const PagerController: React.FC<PagerControllerProps> = ({
 
     const currentPage = useNoteReaderStore((state) => state.currentPage);
 
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
     // 设置 ScrollView 引用
     const setScrollViewRef = useCallback((noteId: string, ref: ScrollView | null) => {

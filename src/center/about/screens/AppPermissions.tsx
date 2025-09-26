@@ -9,7 +9,7 @@ import { CheckmarkIcon, RefreshIcon } from '@/icon';
 import { PermissionItem, PermissionStatusText } from '@/center/about/types';
 import { permissionList as permissions } from '@/center/about/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigationStore } from '@navigation/stores';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const AppPermissions: React.FC<{}> = () => {
     const { themeColors } = useUnifiedTheme();
@@ -44,7 +44,7 @@ const AppPermissions: React.FC<{}> = () => {
         },
     });
 
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
     // 请求权限并更新状态
     const handlePermissionRequest = async (permissionType: 'camera' | 'photos') => {

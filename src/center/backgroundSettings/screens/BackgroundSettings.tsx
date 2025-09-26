@@ -8,7 +8,7 @@ import {
 import { BackgroundSettingsProps } from '@/center/backgroundSettings/types';
 import { useUnifiedTheme } from '@/contexts';
 import { UserInfoService } from '@/auth/services';
-import { useNavigationStore } from '@navigation/stores';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) => {
     const {
@@ -21,7 +21,7 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
         cancelPreviewTheme,
     } = useUnifiedTheme();
 
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
     // 处理取消
     const handleCancel = () => {

@@ -13,7 +13,7 @@ import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { NoteService, CreateNoteRequest } from '@/note/services';
 import { useUnifiedTheme } from '@/contexts';
-import { useNavigationStore } from '@navigation/stores';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     const tags = useOpeNoteStore(state => state.noteTags);
@@ -29,7 +29,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     }, []);
 
     const handleSubmit = useCallback(async () => {
-        const { setMessageType, setMessageText } = useNavigationStore.getState();
+        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
         try {
             const { createNote } = useNoteStore.getState();
             const { noteIntroduce, noteContent, noteTitle, noteTags } = useOpeNoteStore.getState();

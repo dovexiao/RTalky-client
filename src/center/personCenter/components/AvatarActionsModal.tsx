@@ -12,7 +12,7 @@ import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { UserInfoService } from '@/auth/services';
 import { usePermission } from '@hooks/usePermission.ts';
-import { useNavigationStore } from '@navigation/stores';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 type AvatarActionsModalAPI = {
     show: () => void;
@@ -75,7 +75,7 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
     const avatar = useAuthStore(state => state.avatar);
     const setAvatar = useAuthStore(state => state.setAvatar);
 
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
     // 处理头像更新
     const handleAvatarUpdate = async (imagePath: string, base64Data?: string) => {

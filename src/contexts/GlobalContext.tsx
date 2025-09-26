@@ -1,20 +1,18 @@
 import React, { useRef } from 'react';
 import {
-    AvatarActionsModal,
-    SliderVerification,
+    // SliderVerification,
+    ReactiveToastContainer,
     BottomActionSheet,
     ActionDialog,
 } from '@/global';
 import type {
-    AvatarActionsModalAPI,
-    SliderVerificationAPI,
+    // SliderVerificationAPI,
     BottomActionSheetAPI,
     ActionDialogAPI,
 } from '@/global';
 
 interface GlobalContextType {
-    sliderVerificationRef: React.RefObject<SliderVerificationAPI>,
-    avatarActionsModalRef: React.RefObject<AvatarActionsModalAPI>,
+    // sliderVerificationRef: React.RefObject<SliderVerificationAPI>,
     bottomActionSheetRef: React.RefObject<BottomActionSheetAPI>
     actionDialogRef: React.RefObject<ActionDialogAPI>
 }
@@ -22,15 +20,12 @@ interface GlobalContextType {
 const GlobalContext = React.createContext<GlobalContextType | null>(null);
 
 export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const sliderVerificationRef = useRef<SliderVerificationAPI>(null);
-    const avatarActionsModalRef = useRef<AvatarActionsModalAPI>(null);
+    // const sliderVerificationRef = useRef<SliderVerificationAPI>(null);
     const bottomActionSheetRef = useRef<BottomActionSheetAPI>(null);
     const actionDialogRef = useRef<ActionDialogAPI>(null);
 
-
     const globalValue: GlobalContextType = {
-        sliderVerificationRef,
-        avatarActionsModalRef,
+        // sliderVerificationRef,
         bottomActionSheetRef,
         actionDialogRef,
     };
@@ -38,10 +33,10 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     return (
         <GlobalContext.Provider value={globalValue}>
             {children}
-            <SliderVerification ref={sliderVerificationRef} />
-            <AvatarActionsModal ref={avatarActionsModalRef} />
+            {/*<SliderVerification ref={sliderVerificationRef} />*/}
             <BottomActionSheet ref={bottomActionSheetRef} />
             <ActionDialog ref={actionDialogRef} />
+            <ReactiveToastContainer />
         </GlobalContext.Provider>
     );
 };

@@ -92,8 +92,8 @@ api.interceptors.response.use((response) => {
                 // 清理useAuthStore状态
                 const { setIsLoggedIn, setUserId } = useAuthStore.getState();
 
-                const { setInitialRouteName } = useNavigationStore.getState();
-                setInitialRouteName('VerificationLogin');
+                const { resetInitialRouteName } = useNavigationStore.getState();
+                resetInitialRouteName();
 
                 setIsLoggedIn(false);
                 setUserId('');

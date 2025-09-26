@@ -26,7 +26,6 @@ const AppMain: React.FC<AppMainProps> = ({}) => {
     const {
         // swipeSidebarRef,
         actionDialogRef,
-        avatarActionsModalRef,
     } = useGlobal();
 
     const swipeSidebarRef = useRef<SwipeSidebarAPI>(null);
@@ -34,30 +33,14 @@ const AppMain: React.FC<AppMainProps> = ({}) => {
     const { theme, themeColors } = useUnifiedTheme();
 
     useBackHandler(() => {
-        if (swipeSidebarRef.current?.getVisible()) {
-            avatarActionsModalRef.current?.hide();
+        actionDialogRef.current?.show({
+            content: <ConfirmExit />,
+            onConfirm: () => {
+                RNExitApp.exitApp();
+            },
+        });
 
-            let timer: NodeJS.Timeout | null = null;
-            timer = avatarActionsModalRef.current?.getVisible() ? setTimeout(() => {
-                swipeSidebarRef.current?.hide();
-                timer && clearTimeout(timer);
-            }, 400) : null;
-
-            if (!timer) {
-                swipeSidebarRef.current?.hide();
-            }
-
-            return true; // 阻止默认行为
-        } else {
-            actionDialogRef.current?.show({
-                content: <ConfirmExit />,
-                onConfirm: () => {
-                    RNExitApp.exitApp();
-                },
-            });
-
-            return true; // 阻止默认行为
-        }
+        return true;
     });
 
     const handleRightSwipe = () => {

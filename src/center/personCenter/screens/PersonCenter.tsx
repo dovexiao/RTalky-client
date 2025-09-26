@@ -17,7 +17,9 @@ import {
     OtherSection,
     GeneralSettingsSection,
     AboutRTalkySection,
+    AvatarActionsModal,
 } from '@/center/personCenter/components';
+import type { AvatarActionsModalAPI } from '@/center/personCenter/components';
 import { Divider, TopNavigation } from '@ui-kitten/components';
 import { useUnifiedTheme } from '@/contexts';
 
@@ -25,6 +27,7 @@ import { useUnifiedTheme } from '@/contexts';
 const PersonCenter = () => {
     const scrollY = useSharedValue(0);
     const profileSectionRef = useRef<View>(null);
+    const avatarActionsModalRef = useRef<AvatarActionsModalAPI>(null);
     // 根据ProfileSection的实际高度调整，考虑到marginVertical: 90, marginBottom: 30
     const profileSectionHeight: number = 200;
 
@@ -118,7 +121,7 @@ const PersonCenter = () => {
                         ref={profileSectionRef}
                         style={profileSectionAnimatedStyle}
                     >
-                        <ProfileSection />
+                        <ProfileSection avatarActionsModalRef={avatarActionsModalRef} />
                     </Animated.View>
 
                     {/* 账号安全项区域 */}
@@ -133,6 +136,8 @@ const PersonCenter = () => {
                     <View style={{ height: 30 }}></View>
                 </Animated.ScrollView>
             </View>
+
+            <AvatarActionsModal ref={avatarActionsModalRef} />
         </SafeAreaView>
     );
 };

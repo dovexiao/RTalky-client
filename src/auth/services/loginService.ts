@@ -19,11 +19,15 @@ export interface LoginRequest {
     agreedToTerms: boolean;
 }
 
+
+export type UserTheme = 'DARK' | 'LIGHT' | 'SYSTEM';
+
 // 用户资料信息
 export interface UserProfile {
     nickname: string;
     avatar: string;
     bio: string;
+    theme: UserTheme;
 }
 
 // 登录数据

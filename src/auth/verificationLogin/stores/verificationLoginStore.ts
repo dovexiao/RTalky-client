@@ -6,6 +6,7 @@ import UserAuthManager from '@utils/UserAuthManager.ts';
 import { useNavigationStore } from '@navigation/stores';
 import { useAuthStore } from '@/auth/stores';
 import { ImageCache } from '@/utils';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 interface VerificationLoginState {
     phoneNumber: string;
@@ -126,7 +127,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     },
 
     sendSmsCode: async (onSuccess) => {
-        const { setMessageType, setMessageText } = useNavigationStore.getState();
+        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
         try {
             setMessageType('loading');
@@ -168,7 +169,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
         console.log('登录校验中');
 
-        const { setMessageType, setMessageText } = useNavigationStore.getState();
+        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
         setMessageType('loading');
         setMessageText('登录校验中...');

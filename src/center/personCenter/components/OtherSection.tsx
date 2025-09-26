@@ -8,6 +8,7 @@ import { SessionService } from '@/auth/services';
 import { useAuthStore } from '@/auth/stores';
 import { useNavigationStore } from '@navigation/stores';
 import { ConfirmLogout } from '@/main/components';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 export const OtherSection = () => {
     const { actionDialogRef } = useGlobal();
@@ -28,7 +29,7 @@ export const OtherSection = () => {
             actionDialogRef.current?.show({
                 content: <ConfirmLogout />,
                 onConfirm: async () => {
-                    const { setMessageType, setMessageText } = useNavigationStore.getState();
+                    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
                     setMessageType('loading');
                     setMessageText('正在退出登录...');

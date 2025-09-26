@@ -6,6 +6,7 @@ import { useNavigationStore } from '@navigation/stores';
 import NetInfo from '@react-native-community/netinfo';
 import type { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 import { useUnifiedTheme } from '@/contexts';
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 export default function SystemWatcher() {
     const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -18,9 +19,9 @@ export default function SystemWatcher() {
     // 配置常量
     const OFFLINE_TIMEOUT = 30000; // 30秒无网络后重置路由
 
-    const { setMessageType, setMessageText } = useNavigationStore.getState();
+    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
-    const { resetThemeToDefault } = useUnifiedTheme();
+    const { resetThemeToDefault, setTheme, setAutoSwitch } = useUnifiedTheme();
 
     // 重置路由的通用方法
     const resetNavigation = () => {
@@ -31,6 +32,22 @@ export default function SystemWatcher() {
 
             if (!isLogin) {
                 resetThemeToDefault();
+            } else {
+                const { theme } = useAuthStore.getState();
+                if (theme) {
+                    switch (theme) {
+                        case 'DARK':
+                            setTheme('dark');
+                            break;
+                        case 'LIGHT':
+                            setTheme('light');
+                            break;
+                        case 'SYSTEM':
+                            setAutoSwitch(true);
+                            break;
+                        default:
+                    }
+                }
             }
 
             hasRedirectedRef.current = true; // 幂等，防止并发重复跳转
@@ -80,10 +97,11 @@ export default function SystemWatcher() {
                 // 网络恢复，清除计时器
                 clearOfflineTimer();
                 if (prevIsOnlineRef.current !== null && prevIsOnlineRef.current !== isOnline) {
+                    prevIsOnlineRef.current = isOnline
                     setMessageType('online');
                     setMessageText('网络已恢复');
+                    console.log('SessionWatcher: 网络已恢复');
                 }
-                console.log('SessionWatcher: 网络已恢复');
             } else {
                 // 网络断开，开始计时
                 prevIsOnlineRef.current = isOnline;

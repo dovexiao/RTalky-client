@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import {Platform, TextInput, View, StyleSheet, ViewStyle, TextStyle, TextInputProps, Text} from 'react-native';
+import {
+    Platform,
+    TextInput,
+    View,
+    StyleSheet,
+    ViewStyle,
+    TextStyle,
+    TextInputProps,
+    Text,
+    Dimensions,
+} from 'react-native';
 import {
     CodeField,
     Cursor,
     useBlurOnFulfill,
     useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
+
+const { width } = Dimensions.get('window');
 
 // 默认尺寸配置
 const DEFAULT_DIMENSIONS = {

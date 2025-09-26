@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { Divider } from '@ui-kitten/components';
 import { formatTime } from '@utils/formatTime.ts';
-import { getTagColor } from '@utils/getTagColor.ts';
+// import { getTagColor } from '@utils/getTagColor.ts';
 import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
 import { useUnifiedTheme } from '@/contexts';
 import MarkdownRenderer from './MarkdownRenderer';
-import {useNavigationStore} from "@navigation/stores";
+import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -54,7 +54,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     updateNote(updatedNote);
                 }
             } catch (error: any) {
-                const { setMessageType, setMessageText } = useNavigationStore.getState();
+                const { setMessageType, setMessageText } = useReactiveToastStore.getState();
                 setMessageType('danger');
                 setMessageText(error.message ?? error ?? '笔记详情获取失败');
                 console.log('获取笔记详情失败:', error.message ?? error);
