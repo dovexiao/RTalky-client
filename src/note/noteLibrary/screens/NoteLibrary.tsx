@@ -16,29 +16,14 @@ import {
     NoteList,
 } from '../components';
 import { NoteLibraryProps } from '../types';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { useUnifiedTheme } from '@/contexts';
+import { BottomActionSheet } from '@/components';
+import { useNoteStore } from '@/note/noteLibrary/stores';
+import NoteSettingsAction from '@/note/noteLibrary/components/NoteSettingsAction.tsx';
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
-    const { bottomActionSheetRef, actionDialogRef } = useGlobal();
 
     const { themeColors } = useUnifiedTheme();
-
-    useEffect(() => {
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            if (actionDialogRef.current?.getVisible() || bottomActionSheetRef.current?.getVisible()) {
-                bottomActionSheetRef.current?.hide();
-                actionDialogRef.current?.hide();
-                const timer = setTimeout(() => {
-                    navigation.goBack();
-                    clearTimeout(timer);
-                }, 400);
-                return true;
-            }
-        });
-
-        return () => backHandler.remove();
-    }, [actionDialogRef, bottomActionSheetRef, navigation]);
 
     const renderItemAccessory = () => {
         return (
@@ -80,16 +65,36 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
 
             <View style={[
                 styles.container,
-                {
-                    backgroundColor: themeColors['bg-100'],
-                },
+                { backgroundColor: themeColors['bg-100'] },
             ]}>
                 <NoteList />
             </View>
+            <NoteSettingsBottomSheet />
         </SafeAreaView>
     );
 };
 
+const NoteSettingsBottomSheet = () => {
+    const visible = useNoteStore(state => state.noteSettingsVisible);
+    const noteId = useNoteStore(state => state.noteSettingsNoteId);
+
+    const { themeColors } = useUnifiedTheme();
+
+    return (
+        <BottomActionSheet
+            visible={visible}
+            onRequestClose={() => {
+                useNoteStore.getState().setNoteSettingsVisible(false);
+            }}
+            contentContainerStyle={{
+                backgroundColor: themeColors['bg-200'],
+            }}
+            keepMounted={true}
+        >
+            <NoteSettingsAction cardId={noteId}/>
+        </BottomActionSheet>
+    );
+};
 
 // 筛选内容
 // const FilterContent: React.FC = () => {

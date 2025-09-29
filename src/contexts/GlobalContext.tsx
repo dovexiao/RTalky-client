@@ -1,18 +1,15 @@
 import React, {useCallback, useRef} from 'react';
 import {
-    BottomActionSheet,
     ActionDialog,
     Toast,
 } from '@/global';
 import type {
-    BottomActionSheetAPI,
     ActionDialogAPI,
     ToastAPI,
 } from '@/global';
-import {useNavigationStore} from "@navigation/stores";
+import { useNavigationStore } from '@navigation/stores';
 
 interface GlobalContextType {
-    bottomActionSheetRef: React.RefObject<BottomActionSheetAPI>
     actionDialogRef: React.RefObject<ActionDialogAPI>
     toastShow: ToastAPI['show'];
     toastClean: ToastAPI['hideAll'];
@@ -21,7 +18,6 @@ interface GlobalContextType {
 const GlobalContext = React.createContext<GlobalContextType | null>(null);
 
 export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const bottomActionSheetRef = useRef<BottomActionSheetAPI>(null);
     const actionDialogRef = useRef<ActionDialogAPI>(null);
     const toastRef = useRef<ToastAPI>(null);
 
@@ -37,7 +33,6 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     }, []);
 
     const globalValue: GlobalContextType = {
-        bottomActionSheetRef,
         actionDialogRef,
         toastShow,
         toastClean,
@@ -46,7 +41,6 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     return (
         <GlobalContext.Provider value={globalValue}>
             {children}
-            <BottomActionSheet ref={bottomActionSheetRef} />
             <ActionDialog ref={actionDialogRef} />
             <Toast ref={toastRef} enabled={isActive} />
         </GlobalContext.Provider>

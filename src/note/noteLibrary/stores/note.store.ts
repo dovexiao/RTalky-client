@@ -9,6 +9,11 @@ interface NoteStore {
     updateNote: (note: any) => void;
     deleteNote: (noteId: string) => void;
 
+    noteSettingsVisible: boolean;
+    setNoteSettingsVisible: (visible: boolean) => void;
+    noteSettingsNoteId: string;
+    setNoteSettingsNoteId: (noteId: string) => void;
+
     // 分页相关方法
     loadNotes: (page?: number, size?: number) => Promise<void>;
     loadMoreNotes: () => Promise<void>;
@@ -49,6 +54,15 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
             notes: state.notes.filter((n) => n.noteId !== noteId),
             // lastUpdated: new Date(),
         }));
+    },
+
+    noteSettingsVisible: false,
+    setNoteSettingsVisible: (visible: boolean) => {
+        set({ noteSettingsVisible: visible });
+    },
+    noteSettingsNoteId: '',
+    setNoteSettingsNoteId: (noteId: string) => {
+        set({ noteSettingsNoteId: noteId });
     },
 
     // 分页相关方法

@@ -2,13 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { getTagColor } from '@utils/getTagColor.ts';
 import { RootStackParamList } from '@navigation/types';
-import { Note } from '../types';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
-import NoteSettingsAction from './NoteSettingsAction.tsx';
-import { MoreOpeIcon } from '@/icon';
+import { Note } from '../types';import { MoreOpeIcon } from '@/icon';
 import { useUnifiedTheme } from '@/contexts';
+import { useNoteStore } from '@/note/noteLibrary/stores';
 
 interface NoteCardProps {
     note: Note;
@@ -16,7 +13,6 @@ interface NoteCardProps {
 
 export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const { bottomActionSheetRef } = useGlobal();
 
     const { themeColors } = useUnifiedTheme();
 
@@ -49,7 +45,9 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note }) => {
                 {/*    bottomActionSheetRef.current?.show(<SettingsActionModal />);*/}
                 {/*}} />*/}
                 <TouchableOpacity onPress={() => {
-                    bottomActionSheetRef.current?.show(<NoteSettingsAction cardId={note.noteId}/>);
+                    const { setNoteSettingsVisible: setVisible, setNoteSettingsNoteId: setNoteId } = useNoteStore.getState();
+                    setVisible(true);
+                    setNoteId(note.noteId);
                 }}>
                     <MoreOpeIcon width={25} height={25} color={'#000'} />
                 </TouchableOpacity>
