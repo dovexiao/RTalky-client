@@ -5,8 +5,11 @@ import { navigationRef } from '@navigation/navigationRef.ts';
 import { useNavigationStore } from '@navigation/stores';
 import NetInfo from '@react-native-community/netinfo';
 import type { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
-import { useUnifiedTheme } from '@/contexts';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import {useGlobal, useUnifiedTheme} from '@/contexts';
+import BootSplash from 'react-native-bootsplash';
+import UserAuthManager from '@utils/UserAuthManager.ts';
+import { SessionService, UserInfoService, UserProfile } from '@/auth/services';
+import { ImageCache } from '@/utils';
 
 export default function SystemWatcher() {
     const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -19,21 +22,28 @@ export default function SystemWatcher() {
     // 配置常量
     const OFFLINE_TIMEOUT = 30000; // 30秒无网络后重置路由
 
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-
     const { resetThemeToDefault, setTheme, setAutoSwitch } = useUnifiedTheme();
 
+    const { toastShow, toastClean } = useGlobal();
+
     // 重置路由的通用方法
-    const resetNavigation = () => {
+    const resetNavigation = async () => {
         console.log('SessionWatcher: 重置路由');
         if (navigationRef.isReady() && !hasRedirectedRef.current) {
 
-            const { isLoggedIn: isLogin } = useAuthStore.getState();
+            const {isLoggedIn: isLogin} = useAuthStore.getState();
 
             if (!isLogin) {
+                // 清空toast
+                toastClean();
+
+                // 重置应用主题
                 resetThemeToDefault();
+
+                // 删除用户信息
+                await UserAuthManager.deleteCurrentUserComplete();
             } else {
-                const { theme } = useAuthStore.getState();
+                const {theme} = useAuthStore.getState();
                 if (theme) {
                     switch (theme) {
                         case 'DARK':
@@ -54,7 +64,7 @@ export default function SystemWatcher() {
             navigationRef.dispatch(
                 CommonActions.reset({
                     index: 0,
-                    routes: [{ name: useNavigationStore.getState().initialRouteName }],
+                    routes: [{name: useNavigationStore.getState().initialRouteName}],
                 })
             );
             hasRedirectedRef.current = false;
@@ -97,18 +107,18 @@ export default function SystemWatcher() {
                 // 网络恢复，清除计时器
                 clearOfflineTimer();
                 if (prevIsOnlineRef.current !== null && prevIsOnlineRef.current !== isOnline) {
-                    prevIsOnlineRef.current = isOnline
-                    setMessageType('online');
-                    setMessageText('网络已恢复');
+                    prevIsOnlineRef.current = isOnline;
+                    toastShow('网络已恢复', { type: 'success' });
                     console.log('SessionWatcher: 网络已恢复');
                 }
             } else {
                 // 网络断开，开始计时
-                prevIsOnlineRef.current = isOnline;
-                setMessageType('offline');
-                setMessageText('网络已断开，请检查网络连接。');
-                startOfflineTimer();
-                console.log('SessionWatcher: 网络断开，开始计时');
+                if (prevIsOnlineRef.current !== null && prevIsOnlineRef.current !== isOnline) {
+                    prevIsOnlineRef.current = isOnline;
+                    toastShow('网络已断开，请检查网络连接。', { type: 'warning', duration: OFFLINE_TIMEOUT });
+                    startOfflineTimer();
+                    console.log('SessionWatcher: 网络断开，开始计时');
+                }
             }
         });
 
@@ -118,6 +128,77 @@ export default function SystemWatcher() {
             unsubscribe();
             clearOfflineTimer();
         };
+    }, []);
+
+    useEffect(() => {
+        const { setInitialRouteName, setIsActive } = useNavigationStore.getState();
+
+        const init = async () => {
+
+            const hashSession = await UserAuthManager.hasValidSessionStrict();
+
+            if (!hashSession) {
+                return;
+            }
+
+            try {
+                // 并行执行会话验证和用户信息获取
+                const [sessionResponse, userInfoResponse] = await Promise.allSettled([
+                    SessionService.validateSession(),
+                    UserInfoService.getUserInfo(),
+                ]);
+
+                // 检查会话验证结果
+                const isSessionValid = sessionResponse.status === 'fulfilled' && sessionResponse.value.success;
+
+                if (isSessionValid) {
+                    console.log('会话有效，设置初始路由为AppMain');
+                    setInitialRouteName('AppMain');
+
+                    // 设置登录状态
+                    const { setIsLoggedIn } = useAuthStore.getState();
+                    setIsLoggedIn(true);
+
+                    // 处理用户信息（如果获取成功）
+                    if (userInfoResponse.status === 'fulfilled' && userInfoResponse.value.success) {
+                        const { setUserId, setUserProfile, setAvatar } = useAuthStore.getState();
+                        setUserId(userInfoResponse.value.data?.userId ?? '');
+                        setUserProfile(userInfoResponse.value.data as UserProfile);
+                        const imagePath = await ImageCache.saveImageToFile(userInfoResponse.value.data?.avatar ?? '', 'AVATARS');
+                        setAvatar(imagePath);
+                        console.log('获取用户信息成功:', JSON.stringify({...userInfoResponse.value.data, avatar: imagePath}));
+                    } else {
+                        console.log('获取用户信息失败:',
+                            userInfoResponse.status === 'fulfilled'
+                                ? userInfoResponse.value.message
+                                : '网络错误'
+                        );
+                        throw new Error(`获取用户信息失败: ${
+                            userInfoResponse.status === 'fulfilled'
+                                ? userInfoResponse.value.message
+                                : '网络错误'
+                        }`);
+                    }
+                } else {
+                    console.log('会话无效，设置初始路由为VerificationLogin');
+                    throw new Error('会话无效，请重新登录');
+                }
+            } catch (error: any) {
+                console.log('初始化失败:', error);
+                // 初始化失败时，默认设置为登录页面
+                toastShow(error?.message ?? error, { type: 'danger', duration: 3000, position: 'bottom' });
+            }
+        };
+
+        init().finally(async () => {
+            console.log('BootSplash is ready to hide');
+            await BootSplash.hide({ fade: true });
+            const timer = setTimeout(() => {
+                setIsActive(true);
+                clearTimeout(timer);
+            }, 1000);
+            console.log('BootSplash has been hidden successfully');
+        });
     }, []);
 
     // 监听登录状态变化

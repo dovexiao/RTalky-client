@@ -16,7 +16,6 @@ import EditNicknameAction, { EditNicknameActionAPI } from './EditNicknameAction'
 import EditBioAction, { EditBioActionAPI } from './EditBioAction';
 import { useUnifiedTheme } from '@/contexts';
 import type { AvatarActionsModalAPI } from '@/center/personCenter/components';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 interface ProfileSectionProps {
     avatarActionsModalRef: React.RefObject<AvatarActionsModalAPI>;
@@ -27,7 +26,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({ avatarActionsMod
     const avatar = useAuthStore(state => state.avatar);
     const bio = useAuthStore(state => state.bio);
     const { setNickname, setBio } = useAuthStore.getState();
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
+    const { toastShow } = useGlobal();
 
     const { actionDialogRef } = useGlobal();
     const editNicknameActionRef = useRef<EditNicknameActionAPI>(null);
@@ -69,12 +68,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({ avatarActionsMod
                         });
                         // 更新本地状态
                         setNickname(newNickname.trim());
-                        setMessageType('success');
-                        setMessageText('昵称更新成功');
+                        toastShow('昵称更新成功', { type: 'success'});
                     } catch (error) {
                         console.log('更新昵称失败:', error);
-                        setMessageType('danger');
-                        setMessageText('昵称更新失败');
+                        toastShow('昵称更新失败', { type: 'danger'});
                         // 这里可以添加错误提示，比如 Toast
                     }
                 }
@@ -95,13 +92,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({ avatarActionsMod
                     });
                     // 更新本地状态
                     setBio(newBio?.trim() || '');
-                    setMessageType('success');
-                    setMessageText('简介更新成功');
+                    toastShow('简介更新成功', { type: 'success'});
                 } catch (error) {
                     console.error('更新简介失败:', error);
-                    setMessageType('danger');
-                    setMessageText('简介更新失败');
-                    // 这里可以添加错误提示，比如 Toast
+                    toastShow('简介更新失败', { type: 'danger'});
                 }
             },
         });

@@ -12,13 +12,14 @@ import { CreateNoteTagProps } from '../types';
 import { useOpeNoteStore } from '@/note/createNote/stores';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { NoteService, CreateNoteRequest } from '@/note/services';
-import { useUnifiedTheme } from '@/contexts';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import { useGlobal, useUnifiedTheme } from '@/contexts';
 
 const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     const tags = useOpeNoteStore(state => state.noteTags);
 
     const { themeColors } = useUnifiedTheme();
+
+    const { toastShow } = useGlobal();
 
     const handleAddTag = useCallback((tagInput: string) => {
         const { addTag } = useOpeNoteStore.getState();
@@ -29,7 +30,6 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
     }, []);
 
     const handleSubmit = useCallback(async () => {
-        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
         try {
             const { createNote } = useNoteStore.getState();
             const { noteIntroduce, noteContent, noteTitle, noteTags } = useOpeNoteStore.getState();
@@ -47,8 +47,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
             if ('success' in createdNote) {
                 throw new Error(createdNote.message);
             } else {
-                setMessageType('success');
-                setMessageText('创建笔记成功');
+                toastShow('创建笔记成功', { type: 'success'});
 
                 // 创建成功后，更新本地 store
                 createNote({
@@ -68,8 +67,7 @@ const CreateNoteTag: React.FC<CreateNoteTagProps> = ({ navigation }) => {
                 navigation.goBack();
             }
         } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(error?.message ?? error ?? '创建笔记失败');
+            toastShow(error?.message ?? error ?? '创建笔记失败', { type: 'danger'});
             console.log('创建笔记失败:', error?.message ?? error);
         }
     }, [navigation]);

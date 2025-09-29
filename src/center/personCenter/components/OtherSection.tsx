@@ -8,11 +8,11 @@ import { SessionService } from '@/auth/services';
 import { useAuthStore } from '@/auth/stores';
 import { useNavigationStore } from '@navigation/stores';
 import { ConfirmLogout } from '@/main/components';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 export const OtherSection = () => {
     const { actionDialogRef } = useGlobal();
     const { resetThemeToDefault } = useUnifiedTheme();
+    const { toastShow } = useGlobal();
 
     const menuItems: MenuItem[] = [{
     //     icon: 'sync-alt',
@@ -29,10 +29,8 @@ export const OtherSection = () => {
             actionDialogRef.current?.show({
                 content: <ConfirmLogout />,
                 onConfirm: async () => {
-                    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
 
-                    setMessageType('loading');
-                    setMessageText('正在退出登录...');
+                    console.log('正在退出登录..., loading');
 
                     const timer = setTimeout(async () => {
                         try {
@@ -48,14 +46,12 @@ export const OtherSection = () => {
                                 setIsLoggedIn(false);
                                 resetThemeToDefault();
 
-                                setMessageType('success');
-                                setMessageText('退出登录成功');
+                                toastShow('退出登录成功', { type: 'success', position: 'bottom' });
                             } else {
-                                throw new Error('退出登录');
+                                throw new Error('退出登录失败');
                             }
                         } catch (error: any) {
-                            setMessageType('danger');
-                            setMessageText(error?.message ?? error ?? '未知错误');
+                            toastShow(`退出登录失败, ${error?.message ?? error ?? '未知错误'}`, { type: 'danger', position: 'bottom' });
                             console.log(error?.message ?? error ?? '未知错误');
                         } finally {}
 

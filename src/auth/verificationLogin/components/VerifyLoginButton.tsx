@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@navigation/types';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import { useGlobal } from '@/contexts';
 
 const LoadingIndicator = (): React.ReactElement => (
     <Spinner size="small" status="control" />
@@ -20,6 +20,8 @@ const VerifyLoginButton: React.FC = () => {
     // 防抖相关ref
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isProcessingRef = useRef<boolean>(false);
+
+    const { toastShow } = useGlobal();
 
     const handleVerifyLogin = () => {
         // 防抖检查
@@ -40,12 +42,11 @@ const VerifyLoginButton: React.FC = () => {
                 const { sendSmsCode } = useVerificationLoginStore.getState();
                 await sendSmsCode(() => {
                     navigation.navigate('VerificationCode');
+                    toastShow('短信验证码已发送, 请查收', { type: 'success', position: 'bottom' });
                 });
             } catch (error: any) {
                 isProcessingRef.current = false;
-                const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-                setMessageType('danger');
-                setMessageText(`发送短信验证码失败, ${error?.message ?? error}`);
+                toastShow(`发送短信验证码失败, ${error?.message ?? error}`, { type: 'danger', position: 'bottom' });
                 console.log('发送短信验证码失败, ', error?.message ?? error);
             } finally {
                 isProcessingRef.current = false;

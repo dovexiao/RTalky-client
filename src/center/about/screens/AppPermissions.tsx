@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Card, Divider, Spinner } from '@ui-kitten/components';
-import { useUnifiedTheme } from '@/contexts';
+import { useGlobal, useUnifiedTheme } from '@/contexts';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { usePermission } from '@/hooks/usePermission';
 import { openSettings, RESULTS } from 'react-native-permissions';
@@ -9,7 +9,6 @@ import { CheckmarkIcon, RefreshIcon } from '@/icon';
 import { PermissionItem, PermissionStatusText } from '@/center/about/types';
 import { permissionList as permissions } from '@/center/about/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const AppPermissions: React.FC<{}> = () => {
     const { themeColors } = useUnifiedTheme();
@@ -44,7 +43,7 @@ const AppPermissions: React.FC<{}> = () => {
         },
     });
 
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
+    const { toastShow } = useGlobal();
 
     // 请求权限并更新状态
     const handlePermissionRequest = async (permissionType: 'camera' | 'photos') => {
@@ -53,8 +52,8 @@ const AppPermissions: React.FC<{}> = () => {
             await permission.requestPermission();
             await permission.checkPermission();
         } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(`权限请求失败, ${error.message ?? error ?? '未知错误'}`);
+            toastShow(`权限请求失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
+
             console.log('权限请求失败:', error);
         }
     };
@@ -65,8 +64,7 @@ const AppPermissions: React.FC<{}> = () => {
             const permission = permissionType === 'camera' ? cameraPermission : photosPermission;
             await permission.checkPermission();
         } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(`权限刷新失败, ${error.message ?? error ?? '未知错误'}`);
+            toastShow(`权限刷新失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
             console.log('权限刷新失败:', error);
         }
     };
@@ -76,8 +74,7 @@ const AppPermissions: React.FC<{}> = () => {
         try {
             await openSettings();
         } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(`打开设置失败, ${error.message ?? error ?? '未知错误'}`);
+            toastShow(`打开设置失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
             console.log('打开设置失败, ', error);
         }
     };

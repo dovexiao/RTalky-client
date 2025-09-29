@@ -12,7 +12,7 @@ import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { UserInfoService } from '@/auth/services';
 import { usePermission } from '@hooks/usePermission.ts';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import { useGlobal } from '@/contexts';
 
 type AvatarActionsModalAPI = {
     show: () => void;
@@ -75,7 +75,7 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
     const avatar = useAuthStore(state => state.avatar);
     const setAvatar = useAuthStore(state => state.setAvatar);
 
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
+    const { toastShow } = useGlobal();
 
     // 处理头像更新
     const handleAvatarUpdate = async (imagePath: string, base64Data?: string) => {
@@ -88,12 +88,9 @@ const AvatarActionsModal = forwardRef<AvatarActionsModalAPI>((_, ref) => {
             setAvatar(imagePath);
             // 隐藏模态框
             hideActionsModal();
-
-            setMessageType('success');
-            setMessageText('更新头像成功');
+            toastShow('更新头像成功', { type: 'success', position: 'bottom'});
         } catch (error) {
-            setMessageType('danger');
-            setMessageText('更新头像失败');
+            toastShow('更新头像失败', { type: 'danger', position: 'bottom'});
             console.log('更新头像失败:', error);
             // 这里可以添加错误提示，比如 Toast
         }

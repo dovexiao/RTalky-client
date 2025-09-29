@@ -1,42 +1,54 @@
-import React, { useRef } from 'react';
+import React, {useCallback, useRef} from 'react';
 import {
-    // SliderVerification,
-    ReactiveToastContainer,
     BottomActionSheet,
     ActionDialog,
+    Toast,
 } from '@/global';
 import type {
-    // SliderVerificationAPI,
     BottomActionSheetAPI,
     ActionDialogAPI,
+    ToastAPI,
 } from '@/global';
+import {useNavigationStore} from "@navigation/stores";
 
 interface GlobalContextType {
-    // sliderVerificationRef: React.RefObject<SliderVerificationAPI>,
     bottomActionSheetRef: React.RefObject<BottomActionSheetAPI>
     actionDialogRef: React.RefObject<ActionDialogAPI>
+    toastShow: ToastAPI['show'];
+    toastClean: ToastAPI['hideAll'];
 }
 
 const GlobalContext = React.createContext<GlobalContextType | null>(null);
 
 export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    // const sliderVerificationRef = useRef<SliderVerificationAPI>(null);
     const bottomActionSheetRef = useRef<BottomActionSheetAPI>(null);
     const actionDialogRef = useRef<ActionDialogAPI>(null);
+    const toastRef = useRef<ToastAPI>(null);
+
+    const isActive = useNavigationStore((state) => state.isActive);
+
+    // 使用 useCallback 动态包装方法调用
+    const toastShow = useCallback<NonNullable<GlobalContextType['toastShow']>>((content?, options?) => {
+        return toastRef.current?.show?.(content, options);
+    }, []);
+
+    const toastClean = useCallback<NonNullable<GlobalContextType['toastClean']>>(() => {
+        return toastRef.current?.hideAll?.();
+    }, []);
 
     const globalValue: GlobalContextType = {
-        // sliderVerificationRef,
         bottomActionSheetRef,
         actionDialogRef,
+        toastShow,
+        toastClean,
     };
 
     return (
         <GlobalContext.Provider value={globalValue}>
             {children}
-            {/*<SliderVerification ref={sliderVerificationRef} />*/}
             <BottomActionSheet ref={bottomActionSheetRef} />
             <ActionDialog ref={actionDialogRef} />
-            <ReactiveToastContainer />
+            <Toast ref={toastRef} enabled={isActive} />
         </GlobalContext.Provider>
     );
 };

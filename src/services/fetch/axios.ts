@@ -3,7 +3,6 @@ import Config from 'react-native-config';
 import UserAuthManager from '@/utils/UserAuthManager';
 import { useAuthStore } from '@/auth/stores/auth.store.ts';
 import { useNavigationStore } from '@navigation/stores';
-// import { useNavigationStore } from '@navigation/navigationStore.ts';
 
 // 401 处理并发锁
 let isHandling401 = false;
@@ -78,31 +77,20 @@ api.interceptors.response.use((response) => {
             isHandling401 = true;
             console.log('Token 过期或无效，清除本地认证信息');
 
-            try {
-                // 取消所有进行中的请求
-                console.log(`取消 ${pendingRequests.size} 个进行中的请求`);
-                pendingRequests.forEach((source, requestId) => {
-                    source.cancel('Token expired, request cancelled');
-                    pendingRequests.delete(requestId);
-                });
+            // 取消所有进行中的请求
+            console.log(`取消 ${pendingRequests.size} 个进行中的请求`);
+            pendingRequests.forEach((source, requestId) => {
+                source.cancel('Token expired, request cancelled');
+                pendingRequests.delete(requestId);
+            });
 
-                // 使用完整删除方法，包含当前用户ID的清理
-                await UserAuthManager.deleteCurrentUserComplete();
+            const { resetInitialRouteName } = useNavigationStore.getState();
+            resetInitialRouteName();
 
-                // 清理useAuthStore状态
-                const { setIsLoggedIn, setUserId } = useAuthStore.getState();
+            const { setIsLoggedIn } = useAuthStore.getState();
+            setIsLoggedIn(false);
 
-                const { resetInitialRouteName } = useNavigationStore.getState();
-                resetInitialRouteName();
-
-                setIsLoggedIn(false);
-                setUserId('');
-            } catch (cleanupError) {
-                console.log('清理认证信息失败:', cleanupError);
-            } finally {
-                // 处理完成，释放锁
-                isHandling401 = false;
-            }
+            isHandling401 = false;
         }
 
         return Promise.reject(resError);

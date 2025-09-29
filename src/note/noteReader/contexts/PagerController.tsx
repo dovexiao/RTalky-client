@@ -16,7 +16,7 @@ import {
     TiltObserverAPI,
 } from '@/note/noteReader/components';
 import ShakeUnlockButton from '@/note/noteReader/components/ShakeUnlockButton.tsx';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import { useGlobal } from '@/contexts';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -43,7 +43,7 @@ export const PagerController: React.FC<PagerControllerProps> = ({
 
     const currentPage = useNoteReaderStore((state) => state.currentPage);
 
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
+    const { toastShow } = useGlobal();
 
     // 设置 ScrollView 引用
     const setScrollViewRef = useCallback((noteId: string, ref: ScrollView | null) => {
@@ -134,17 +134,14 @@ export const PagerController: React.FC<PagerControllerProps> = ({
             <ShakeUnlockButton
                 longPressDuration={1000}
                 onShow={() => {
-                    setMessageType('tilt');
-                    setMessageText('请长按锁定按钮一秒以解锁倾斜手机翻页服务');
+                    toastShow('请长按锁定按钮持续一秒解锁倾斜翻页服务', { type: 'success' });
                 }}
                 onUnlock={() => {
-                    setMessageType('tilt');
-                    setMessageText('倾斜手机翻页服务已解锁, 请保持手机屏幕朝向自己，顶部向上的正常握持姿势');
+                    toastShow('倾斜手机翻页服务已解锁, 请保持手机屏幕朝向自己，顶部向上的正常握持姿势', { type: 'success' });
                     TiltObserverRef.current?.start();
                 }}
                 onLock={() => {
-                    setMessageType('tilt');
-                    setMessageText('倾斜手机翻页服务已上锁');
+                    toastShow('倾斜翻页服务已上锁', { type: 'success' });
                     TiltObserverRef.current?.stop();
                 }}
             />

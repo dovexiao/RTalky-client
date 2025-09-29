@@ -2,11 +2,7 @@ import { create } from 'zustand';
 import { countryManager } from '@/auth/verificationLogin/utils';
 import { CellCount } from '@/auth/verificationLogin/types';
 import { LoginService, SmsService } from '@/auth/services';
-import UserAuthManager from '@utils/UserAuthManager.ts';
-import { useNavigationStore } from '@navigation/stores';
-import { useAuthStore } from '@/auth/stores';
-import { ImageCache } from '@/utils';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
+import type { LoginData } from '@/auth/services/loginService.ts';
 
 interface VerificationLoginState {
     phoneNumber: string;
@@ -21,7 +17,7 @@ interface VerificationLoginState {
     formattedNumber: string;
 
     codeDigits: CellCount,
-    isCodeComplete: boolean,
+    isCodeCompleted: boolean,
 
     hideCountryCodeDialogFn: () => void,
 
@@ -31,7 +27,7 @@ interface VerificationLoginState {
     setSelectedCCA2: (cca2: string) => void;
     setSelectedSectionLetter: (letter: string) => void;
     setCodeDigits: (digits: number) => void;
-    setIsCodeComplete: (isComplete: boolean) => void,
+    setIsCodeCompleted: (isComplete: boolean) => void,
     setHideCountryCodeDialogFn: (onHideFn: () => void) => void,
 
     validateAndFormatPhone: () => boolean;
@@ -40,7 +36,7 @@ interface VerificationLoginState {
 
     sendSmsCode: (onSuccess: () => void) => Promise<void>;
 
-    handleCodeComplete: (inputCode: string) => Promise<void>;
+    verificationSmsLogin: (inputCode: string) => Promise<LoginData>;
 
     resetForm: () => void;
 }
@@ -58,7 +54,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     formattedNumber: '',
 
     codeDigits: 6,
-    isCodeComplete: false,
+    isCodeCompleted: false,
     hideCountryCodeDialogFn: () => {},
 
     setPhoneNumber: (phoneNumber: string) => {
@@ -89,8 +85,8 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         set({ codeDigits: digits as CellCount });
     },
 
-    setIsCodeComplete: (isComplete: boolean) => {
-        set({ isCodeComplete: isComplete });
+    setIsCodeCompleted: (isComplete: boolean) => {
+        set({ isCodeCompleted: isComplete });
     },
 
     setHideCountryCodeDialogFn: (onHideFn) => {
@@ -127,11 +123,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
     },
 
     sendSmsCode: async (onSuccess) => {
-        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-
         try {
-            setMessageType('loading');
-
             set({
                 isSendingSms: true,
             });
@@ -158,22 +150,10 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
             throw error;
         } finally {
             set({ isSendingSms: false });
-
-            setMessageType('success');
-            setMessageText('短信验证码已发送');
         }
     },
 
-    handleCodeComplete: async (inputCode: string) => {
-        set({ isCodeComplete: true });
-
-        console.log('登录校验中');
-
-        const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-
-        setMessageType('loading');
-        setMessageText('登录校验中...');
-
+    verificationSmsLogin: async (inputCode: string) => {
         try {
             const response = await LoginService.smsLogin(
                 get().formattedNumber,
@@ -182,52 +162,14 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
             );
 
             if (response.success) {
-                console.log('校验完成');
-
-                setMessageType('success');
-                setMessageText('验证成功');
-
-                if (UserAuthManager) {
-                    console.log('校验完成初始化中');
-
-                    setMessageType('loading');
-                    setMessageText('初始化中...');
-
-                    await UserAuthManager.saveUserAuthComplete(
-                        response.data.userId,
-                        {
-                            phoneNumber: response.data.phoneNumber,
-                            sessionToken: response.data.sessionToken,
-                        },
-                    );
-                    const { setInitialRouteName } = useNavigationStore.getState();
-                    const { handleLogin, setAvatar, setIsLoggedIn } = useAuthStore.getState();
-
-                    setInitialRouteName('AppMain');
-
-                    handleLogin(response.data.userId, response.data.userProfile);
-                    const imagePath = await ImageCache.saveImageToFile(response.data.userProfile.avatar, 'AVATARS');
-                    setAvatar(imagePath);
-
-                    setIsLoggedIn(true);
-
-                    setMessageType('none');
-                    setMessageText('');
-                } else {
-                    console.log('初始化失败');
-                    throw new Error('初始化失败, 相关服务缺失');
-                }
+                console.log('短信验证码校验成功');
+                return response.data;
             } else {
                 console.log('验证码校验失败');
                 throw new Error(`验证码校验失败, ${response.message}`);
             }
         } catch (error: any) {
-            console.log(error?.message ?? error);
-
-            setMessageType('danger');
-            setMessageText(error?.message ?? error);
-        } finally {
-            set({ isCodeComplete: false });
+            throw error;
         }
     },
 
@@ -241,7 +183,7 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
         formattedNumber: '',
         errorMessage: '',
         codeDigits: 6,
-        isCodeComplete: false,
+        isCodeCompleted: false,
         hideCountryCodeDialogFn: () => {},
         isSendingSms: false,
     }),

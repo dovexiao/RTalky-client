@@ -6,9 +6,8 @@ import { formatTime } from '@utils/formatTime.ts';
 import { NoteService } from '@/note/services';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { Note } from '@/note/noteLibrary/types';
-import { useUnifiedTheme } from '@/contexts';
+import { useGlobal, useUnifiedTheme } from '@/contexts';
 import MarkdownRenderer from './MarkdownRenderer';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -22,6 +21,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
     const [currentNote, setCurrentNote] = useState<Note | null>(null);
 
     const { themeColors } = useUnifiedTheme();
+    const { toastShow } = useGlobal();
 
     // 检查是否需要获取笔记详情
     useEffect(() => {
@@ -54,9 +54,7 @@ const NoteDetailContent = ({ note }: NoteDetailContentProps) => {
                     updateNote(updatedNote);
                 }
             } catch (error: any) {
-                const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-                setMessageType('danger');
-                setMessageText(error.message ?? error ?? '笔记详情获取失败');
+                toastShow(error.message ?? error ?? '笔记详情获取失败', { type: 'danger' });
                 console.log('获取笔记详情失败:', error.message ?? error);
                 // 如果获取失败，保持原有状态
             } finally {

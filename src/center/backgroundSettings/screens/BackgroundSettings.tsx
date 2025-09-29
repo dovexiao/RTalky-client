@@ -6,9 +6,8 @@ import {
     BackgroundSettingsFooter,
 } from '../components';
 import { BackgroundSettingsProps } from '@/center/backgroundSettings/types';
-import { useUnifiedTheme } from '@/contexts';
+import { useGlobal, useUnifiedTheme } from '@/contexts';
 import { UserInfoService } from '@/auth/services';
-import { useReactiveToastStore } from '@global/reactiveToast/stores';
 
 const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) => {
     const {
@@ -21,14 +20,14 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
         cancelPreviewTheme,
     } = useUnifiedTheme();
 
-    const { setMessageType, setMessageText } = useReactiveToastStore.getState();
-
     // 处理取消
     const handleCancel = () => {
         // 取消预览模式，恢复原主题
         cancelPreviewTheme();
         navigation.goBack();
     };
+
+    const { toastShow } = useGlobal();
 
     // 处理确认
     const handleConfirm = async () => {
@@ -39,14 +38,15 @@ const BackgroundSettings: React.FC<BackgroundSettingsProps> = ({ navigation }) =
                 theme: themeSyncStatus,
             });
             if (theme === previewTheme) {
-                setMessageType('success');
-                setMessageText('主题设置成功');
+                toastShow(
+                    '主题设置成功',
+                    { type: 'success', position: 'bottom' },
+                );
             }
             applyPreviewTheme();
             navigation.goBack();
         } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(`主题设置失败${error?.message ?? error}`);
+            toastShow(`主题设置失败${error?.message ?? error}`, { type: 'danger', position: 'bottom' })
             console.log('主题设置失败', error);
         }
     };
