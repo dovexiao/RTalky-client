@@ -14,6 +14,16 @@ interface NoteStore {
     noteSettingsNoteId: string;
     setNoteSettingsNoteId: (noteId: string) => void;
 
+    noteActionDialogVisible: boolean;
+    setNoteActionDialogVisible: (visible: boolean) => void;
+    noteActionDialogContent: React.ReactNode;
+    setNoteActionDialogContent: (content: React.ReactNode) => void;
+    noteActionDialogOnConfirm: () => void;
+    setNoteActionDialogOnConfirm: (onConfirm: () => void) => void;
+    showNoteActionDialog: (content: React.ReactNode, onConfirm: () => void) => void,
+    hideNoteActionDialog: () => void;
+    resetNoteActionDialog: () => void,
+
     // 分页相关方法
     loadNotes: (page?: number, size?: number) => Promise<void>;
     loadMoreNotes: () => Promise<void>;
@@ -63,6 +73,37 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     noteSettingsNoteId: '',
     setNoteSettingsNoteId: (noteId: string) => {
         set({ noteSettingsNoteId: noteId });
+    },
+
+    noteActionDialogVisible: false,
+    setNoteActionDialogVisible: (visible: boolean) => {
+        set({ noteActionDialogVisible: visible });
+    },
+    noteActionDialogContent: null,
+    setNoteActionDialogContent: (content: React.ReactNode) => {
+        set({ noteActionDialogContent: content });
+    },
+    noteActionDialogOnConfirm: () => {},
+    setNoteActionDialogOnConfirm: (onConfirm: () => void) => {
+        set({ noteActionDialogOnConfirm: onConfirm });
+    },
+    showNoteActionDialog: (content: React.ReactNode, onConfirm: () => void) => {
+        set({
+            noteActionDialogVisible: true,
+            noteActionDialogContent: content,
+            noteActionDialogOnConfirm: onConfirm,
+        });
+    },
+    hideNoteActionDialog: () => {
+        set({
+            noteActionDialogVisible: false,
+        });
+    },
+    resetNoteActionDialog: () => {
+        set({
+            noteActionDialogContent: null,
+            noteActionDialogOnConfirm: () => {},
+        });
     },
 
     // 分页相关方法

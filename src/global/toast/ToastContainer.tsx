@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     },
     topList: {
         position: 'absolute',
-        top: 25,
+        top: 50,
         left: 20,
         right: 20,
         alignItems: 'center',

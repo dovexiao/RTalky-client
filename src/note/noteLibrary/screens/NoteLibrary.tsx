@@ -20,6 +20,7 @@ import { useUnifiedTheme } from '@/contexts';
 import { BottomActionSheet } from '@/components';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import NoteSettingsAction from '@/note/noteLibrary/components/NoteSettingsAction.tsx';
+import ActionDialog from "../../../components/dialog/ActionDialog.tsx";
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
 
@@ -70,6 +71,7 @@ const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
                 <NoteList />
             </View>
             <NoteSettingsBottomSheet />
+            <NoteOperatorsDialog />
         </SafeAreaView>
     );
 };
@@ -95,6 +97,37 @@ const NoteSettingsBottomSheet = () => {
         </BottomActionSheet>
     );
 };
+
+const NoteOperatorsDialog = () => {
+    const { themeColors } = useUnifiedTheme();
+    const visible = useNoteStore(state => state.noteActionDialogVisible);
+    const content = useNoteStore(state => state.noteActionDialogContent);
+    const onConfirm = useNoteStore(state => state.noteActionDialogOnConfirm);
+
+    return (
+        <ActionDialog
+            visible={visible}
+            onRequestClose={() => {
+                useNoteStore.getState().hideNoteActionDialog();
+            }}
+            onConfirm={onConfirm}
+            onHideEnd={() => {
+                useNoteStore.getState().resetNoteActionDialog();
+            }}
+            dialogStyle={{
+                backgroundColor: themeColors['bg-200'],
+            }}
+            contentContainerStyle={{
+                backgroundColor: themeColors['bg-200'],
+            }}
+            footerContainerStyle={{
+                backgroundColor: themeColors['bg-200'],
+            }}
+        >
+            {content}
+        </ActionDialog>
+    )
+}
 
 // 筛选内容
 // const FilterContent: React.FC = () => {

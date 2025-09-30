@@ -18,7 +18,7 @@ export const NoteSettingsAction = ({
     cardId: string,
     // columnCount?: ColumnCount
 }) => {
-    const { actionDialogRef, bottomActionSheetRef } = useGlobal();
+    const { toastShow } = useGlobal();
     const note = useNoteStore(state => state.notes.filter(n => n.noteId === cardId)[0]);
 
     const renameNoteActionRef = useRef<RenameNoteActionAPI>(null);
@@ -70,23 +70,29 @@ export const NoteSettingsAction = ({
             // 调用 API 重命名笔记
             const updatedNote = await NoteService.renameNote(cardId, { title: newTitle });
 
-            // 将 NoteResponse 转换为 Note 类型并更新本地 store
-            const { updateNote } = useNoteStore.getState();
-            updateNote({
-                noteId: updatedNote.noteId,
-                title: updatedNote.title,
-                content: updatedNote.content,
-                introduce: updatedNote.description,
-                tags: updatedNote.tags,
-                createdAt: updatedNote.createdTime,
-                lastModified: updatedNote.updatedTime,
-            });
+            if ('success' in updatedNote) {
+                throw new Error(updatedNote.message);
+            } else {
+                toastShow('笔记重命名成功', { type: 'success', position: 'bottom' });
+                // 将 NoteResponse 转换为 Note 类型并更新本地 store
+                const { updateNote } = useNoteStore.getState();
+                updateNote({
+                    noteId: updatedNote.noteId,
+                    title: updatedNote.title,
+                    content: updatedNote.content,
+                    introduce: updatedNote.description,
+                    tags: updatedNote.tags,
+                    createdAt: updatedNote.createdTime,
+                    lastModified: updatedNote.updatedTime,
+                });
 
-            // 关闭对话框
-            actionDialogRef.current?.hide();
+                // 关闭对话框
+                useNoteStore.getState().hideNoteActionDialog();
+            }
+
         } catch (error: any) {
             console.error('重命名笔记失败:', error);
-            Alert.alert('重命名失败', error.message || '重命名笔记失败，请稍后重试');
+            toastShow(`重命名笔记失败, ${error.message || '重命名笔记失败，请稍后重试'}`, { type: 'danger', position: 'bottom' });
         }
     };
 
@@ -102,23 +108,28 @@ export const NoteSettingsAction = ({
             // 调用 API 修改笔记简介
             const updatedNote = await NoteService.updateNoteDescription(cardId, { description: newIntroduce });
 
-            // 将 NoteResponse 转换为 Note 类型并更新本地 store
-            const { updateNote } = useNoteStore.getState();
-            updateNote({
-                noteId: updatedNote.noteId,
-                title: updatedNote.title,
-                content: updatedNote.content,
-                introduce: updatedNote.description,
-                tags: updatedNote.tags,
-                createdAt: updatedNote.createdTime,
-                lastModified: updatedNote.updatedTime,
-            });
+            if ('success' in updatedNote) {
+                throw new Error(updatedNote.message);
+            } else {
+                toastShow('笔记简介修改成功', { type: 'success', position: 'bottom' });
+                // 将 NoteResponse 转换为 Note 类型并更新本地 store
+                const { updateNote } = useNoteStore.getState();
+                updateNote({
+                    noteId: updatedNote.noteId,
+                    title: updatedNote.title,
+                    content: updatedNote.content,
+                    introduce: updatedNote.description,
+                    tags: updatedNote.tags,
+                    createdAt: updatedNote.createdTime,
+                    lastModified: updatedNote.updatedTime,
+                });
 
-            // 关闭对话框
-            actionDialogRef.current?.hide();
+                // 关闭对话框
+                useNoteStore.getState().hideNoteActionDialog();
+            }
         } catch (error: any) {
-            console.error('修改笔记简介失败:', error);
-            Alert.alert('修改失败', error.message || '修改笔记简介失败，请稍后重试');
+            console.log('修改笔记简介失败:', error);
+            toastShow(`修改笔记简介失败, ${error.message || '修改笔记简介失败，请稍后重试'}`, { type: 'danger', position: 'bottom' })
         }
     };
 
@@ -127,16 +138,17 @@ export const NoteSettingsAction = ({
             // 调用 API 删除笔记
             await NoteService.deleteNote(cardId);
 
+            toastShow('笔记删除成功', { type: 'success', position: 'bottom' });
+
             // 从本地 store 中删除笔记
             const { deleteNote } = useNoteStore.getState();
             deleteNote(cardId);
 
-            // 关闭对话框和底部操作表
-            actionDialogRef.current?.hide();
-            bottomActionSheetRef.current?.hide();
+            // 关闭对话框
+            useNoteStore.getState().hideNoteActionDialog();
         } catch (error: any) {
             console.error('删除笔记失败:', error);
-            Alert.alert('删除失败', error.message || '删除笔记失败，请稍后重试');
+            toastShow(`删除笔记失败, ${error.message || '删除笔记失败，请稍后重试'}`, { type: 'danger', position: 'bottom' });
         }
     }
 
@@ -171,10 +183,10 @@ export const NoteSettingsAction = ({
                         },
                     ]}
                     onPress={() => {
-                        actionDialogRef.current?.show({
-                            content: <RenameNoteAction ref={renameNoteActionRef} cardId={cardId} />,
-                            onConfirm: renameNoteDialog,
-                        });
+                        useNoteStore.getState().showNoteActionDialog(
+                            <RenameNoteAction ref={renameNoteActionRef} cardId={cardId} />,
+                            renameNoteDialog,
+                        );
                     }}
                 >
                     <Text style={[
@@ -195,10 +207,10 @@ export const NoteSettingsAction = ({
                         },
                     ]}
                     onPress={() => {
-                        actionDialogRef.current?.show({
-                            content: <EditIntroduceAction ref={editIntroduceActionRef} cardId={cardId} />,
-                            onConfirm: editIntroduceDialog,
-                        });
+                        useNoteStore.getState().showNoteActionDialog(
+                            <EditIntroduceAction ref={editIntroduceActionRef} cardId={cardId} />,
+                            editIntroduceDialog,
+                        );
                     }}
                 >
                     <Text style={[
@@ -219,10 +231,10 @@ export const NoteSettingsAction = ({
                         },
                     ]}
                     onPress={() => {
-                        actionDialogRef.current?.show({
-                            content: <DeleteNoteAction />,
-                            onConfirm: deleteNoteDialog,
-                        });
+                        useNoteStore.getState().showNoteActionDialog(
+                            <DeleteNoteAction />,
+                            deleteNoteDialog,
+                        );
                     }}
                 >
                     <Text style={[

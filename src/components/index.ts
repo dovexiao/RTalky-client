@@ -1,1 +1,2 @@
-export { default as BottomActionSheet } from './actionSheet/BottomActionSheet';
+export * from './sheet';
+export * from './dialog';

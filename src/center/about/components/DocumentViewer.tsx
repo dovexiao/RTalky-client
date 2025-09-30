@@ -11,6 +11,11 @@ export const DocumentViewer: FC<DocumentViewerProps> = ({ title, content }) => {
     const { themeColors } = useUnifiedTheme();
 
     useEffect(() => {
+        // 添加超时机制作为备选方案
+        const timeout = setTimeout(() => {
+            setIsReady(true);
+        }, 3000);
+
         const task = InteractionManager.runAfterInteractions(() => {
             setIsReady(true);
         });
