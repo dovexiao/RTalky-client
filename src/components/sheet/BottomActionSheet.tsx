@@ -3,6 +3,7 @@ import React, {
     useCallback,
     useEffect,
     useRef,
+    useState,
 } from 'react';
 import {
     Dimensions,
@@ -49,7 +50,7 @@ const BottomActionSheet: React.FC<BottomActionSheetProps> = ({
     dismissOnBackdropPress = true,
     dismissOnBackPress = true,
     showDuration = 500,
-    hideDuration = 300,
+    hideDuration = 400,
     onShowStart,
     onShowEnd,
     onHideStart,
@@ -60,6 +61,9 @@ const BottomActionSheet: React.FC<BottomActionSheetProps> = ({
     // 动画值 (0: 隐藏, 1: 显示)
     const animationProgress = useSharedValue(0);
     const isAnimatingRef = useRef(false);
+
+    // 用于跟踪是否应该渲染（在动画完成后才真正卸载）
+    const [shouldRender, setShouldRender] = useState(false);
 
     // 内容容器高度
     const containerHeight = useSharedValue(SCREEN_HEIGHT);
@@ -98,13 +102,17 @@ const BottomActionSheet: React.FC<BottomActionSheetProps> = ({
                 runOnJS(handleShowEnd)();
             }
         });
-    }, [showDuration, onShowStart, handleShowEnd]);
+    }, [showDuration, onShowStart, handleShowEnd, animationProgress]);
 
     // 隐藏动画完成回调
     const handleHideEnd = useCallback(() => {
         isAnimatingRef.current = false;
         onHideEnd?.();
-    }, [onHideEnd]);
+        // 动画完成后，如果不是 keepMounted，则卸载组件
+        if (!keepMounted) {
+            setShouldRender(false);
+        }
+    }, [onHideEnd, keepMounted]);
 
     // 隐藏动画
     const hide = useCallback(() => {
@@ -121,7 +129,7 @@ const BottomActionSheet: React.FC<BottomActionSheetProps> = ({
                 runOnJS(handleHideEnd)();
             }
         });
-    }, [hideDuration, onHideStart, handleHideEnd]);
+    }, [hideDuration, onHideStart, handleHideEnd, animationProgress]);
 
     // 处理遮罩点击
     const handleBackdropPress = useCallback(() => {
@@ -153,17 +161,18 @@ const BottomActionSheet: React.FC<BottomActionSheetProps> = ({
         return () => backHandler.remove();
     }, [visible, dismissOnBackPress, onRequestClose]);
 
-    // 根据 visible 控制动画
+    // 根据 visible 控制动画和渲染状态
     useEffect(() => {
         if (visible) {
+            setShouldRender(true);
             show();
         } else {
             hide();
         }
     }, [visible, show, hide]);
 
-    // 根据 keepMounted 决定是否渲染
-    if (!visible && !keepMounted && animationProgress.value < 0) {
+    // 根据渲染状态决定是否渲染
+    if (!shouldRender) {
         return null;
     }
 
@@ -203,7 +212,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const styles = StyleSheet.create({
     root: {
         ...StyleSheet.absoluteFillObject,
-        zIndex: 1000,
+        // zIndex: 1000,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
