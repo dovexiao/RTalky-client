@@ -180,7 +180,7 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
             // 清理监听器
             subscription.remove();
         };
-    }, []);
+    }, [autoSwitch]);
 
     // 向后兼容的方法
     const toggleSpecialTheme = () => {
