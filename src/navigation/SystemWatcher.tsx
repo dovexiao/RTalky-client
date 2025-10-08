@@ -137,6 +137,13 @@ export default function SystemWatcher() {
 
             const hashSession = await UserAuthManager.hasValidSessionStrict();
 
+            try {
+                const healthResponse = await SessionService.healthCheck();
+                console.log('健康检测结果', healthResponse);
+            } catch (error) {
+                console.log('健康检测失败', error);
+            }
+
             if (!hashSession) {
                 return;
             }

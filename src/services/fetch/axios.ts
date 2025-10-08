@@ -25,6 +25,9 @@ api.interceptors.request.use(async (config) => {
 
         if (config.headers) {
             (config.headers as AxiosRequestHeaders).set('Authorization', `Bearer ${token ?? ''}`);
+
+            (config.headers as AxiosRequestHeaders).set('Content-Type', 'application/json');
+            (config.headers as AxiosRequestHeaders).set('Accept', 'application/json');
         }
 
         // 为每个请求添加取消令牌

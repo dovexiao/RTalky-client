@@ -16,6 +16,17 @@ export interface SessionLogoutResponse {
 
 export class SessionService {
     /**
+     * 检查服务健康状态
+     */
+    static async healthCheck(): Promise<any> {
+        try {
+            return await get('/health');
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
      * 验证会话令牌
      * 注意：由于axios拦截器会自动从UserAuthManager获取token并设置Authorization头，
      * 所以这里不需要手动传递sessionToken参数
