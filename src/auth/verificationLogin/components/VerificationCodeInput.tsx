@@ -17,8 +17,6 @@ import {
     useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 
-const { width } = Dimensions.get('window');
-
 // 默认尺寸配置
 const DEFAULT_DIMENSIONS = {
     4: { width: 55, height: 55, margin: 10 },

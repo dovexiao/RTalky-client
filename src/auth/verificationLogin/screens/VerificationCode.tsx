@@ -1,29 +1,23 @@
 import React, {useMemo} from 'react';
 import {
     View,
-    TouchableOpacity,
     StyleSheet,
     SafeAreaView,
     StatusBar,
 } from 'react-native';
 import {
     VerificationCodeSection,
-    NoVerificationCodeHelper,
-    ResendTimer,
-} from '@/auth/verificationLogin/components';
+} from '../components';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider, Text } from '@ui-kitten/components';
-import { useGlobal } from '@contexts/GlobalContext.tsx';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { VerificationCodeProps } from '@/auth/verificationLogin/types';
 
 const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
     const { formattedNumber: internationalFormattedPhone } = useVerificationLoginStore.getState();
 
-    const { bottomActionSheetRef } = useGlobal();
-
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 
@@ -49,16 +43,16 @@ const VerificationCode: React.FC<VerificationCodeProps> = ({ navigation }) => {
                 <VerificationCodeSection />
 
                 {/* 辅助操作 */}
-                <View style={styles.helperContainer}>
-                    <TouchableOpacity onPress={() => {
-                        bottomActionSheetRef.current?.show(
-                            <NoVerificationCodeHelper />
-                        );
-                    }}>
-                        <Text style={styles.helperText}>收不到验证码？</Text>
-                    </TouchableOpacity>
-                    <ResendTimer initialCount={300} />
-                </View>
+                {/*<View style={styles.helperContainer}>*/}
+                {/*    <TouchableOpacity onPress={() => {*/}
+                {/*        bottomActionSheetRef.current?.show(*/}
+                {/*            <NoVerificationCodeHelper />*/}
+                {/*        );*/}
+                {/*    }}>*/}
+                {/*        <Text style={styles.helperText}>收不到验证码？</Text>*/}
+                {/*    </TouchableOpacity>*/}
+                {/*    <ResendTimer initialCount={300} />*/}
+                {/*</View>*/}
             </View>
         </SafeAreaView>
     );

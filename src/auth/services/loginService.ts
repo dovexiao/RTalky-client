@@ -1,4 +1,4 @@
-import { post } from '@services/fetch/request.ts';
+import { post } from '@core/auth/request.ts';
 import { DeviceInfoManager } from '@/auth/verificationLogin/utils';
 import { DeviceInfoUtils } from '@/auth/verificationLogin/utils';
 
@@ -78,7 +78,6 @@ export class LoginService {
             };
 
             const response = await post<LoginResponse>('/auth/sms-login', requestData);
-
             return response;
         } catch (error) {
             console.log('短信验证码登录失败:', error);

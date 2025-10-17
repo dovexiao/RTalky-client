@@ -14,6 +14,7 @@ export const DocumentViewer: FC<DocumentViewerProps> = ({ title, content }) => {
         // 添加超时机制作为备选方案
         const timeout = setTimeout(() => {
             setIsReady(true);
+            clearTimeout(timeout);
         }, 3000);
 
         const task = InteractionManager.runAfterInteractions(() => {
@@ -24,7 +25,7 @@ export const DocumentViewer: FC<DocumentViewerProps> = ({ title, content }) => {
     }, []);
 
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 

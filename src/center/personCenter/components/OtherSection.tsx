@@ -2,17 +2,15 @@ import React from 'react';
 import { MenuItem } from '@/center/personCenter/types';
 import SectionContainer from '@/center/personCenter/components/SectionContainer.tsx';
 // import { ConfirmExit } from '@/main/components';
-import { useGlobal, useUnifiedTheme } from '@/contexts';
+import { useGlobal } from '@/contexts';
 // import RNExitApp from 'react-native-exit-app';
 import { SessionService } from '@/auth/services';
-import { useAuthStore } from '@/auth/stores';
-import { useNavigationStore } from '@navigation/stores';
 import { ConfirmLogout } from '@/main/components';
+import { ExceptionUtils } from '@/utils';
+import { createSessionEvents, useSessionStore } from '@/core/session';
 
 export const OtherSection = () => {
-    const { actionDialogRef } = useGlobal();
-    const { resetThemeToDefault } = useUnifiedTheme();
-    const { toastShow } = useGlobal();
+    const { actionDialogRef, toastShow } = useGlobal();
 
     const menuItems: MenuItem[] = [{
     //     icon: 'sync-alt',
@@ -32,31 +30,23 @@ export const OtherSection = () => {
 
                     console.log('正在退出登录..., loading');
 
-                    const timer = setTimeout(async () => {
-                        try {
-                            // 登出
-                            const logoutResponse = await SessionService.logoutSession();
+                    try {
+                        // 登出
+                        const logoutResponse = await SessionService.logoutSession();
 
-                            if (logoutResponse) {
-                                // RNExitApp.exitApp();
-                                const { setIsLoggedIn } = useAuthStore.getState();
-                                const { resetInitialRouteName } = useNavigationStore.getState();
+                        if (logoutResponse.success) {
+                            toastShow('退出登录成功', { type: 'success', position: 'bottom' });
 
-                                resetInitialRouteName();
-                                setIsLoggedIn(false);
-                                resetThemeToDefault();
-
-                                toastShow('退出登录成功', { type: 'success', position: 'bottom' });
-                            } else {
-                                throw new Error('退出登录失败');
-                            }
-                        } catch (error: any) {
-                            toastShow(`退出登录失败, ${error?.message ?? error ?? '未知错误'}`, { type: 'danger', position: 'bottom' });
-                            console.log(error?.message ?? error ?? '未知错误');
-                        } finally {}
-
-                        clearTimeout(timer);
-                    }, 1000);
+                            const timer = setTimeout(() => {
+                                clearTimeout(timer);
+                                const events = createSessionEvents();
+                                useSessionStore.getState().dispatch(events.logoutSuccess());
+                            }, 500);
+                        }
+                    } catch (error: unknown) {
+                        ExceptionUtils.logError(error);
+                        toastShow(`退出登录失败, ${ExceptionUtils.getErrorMessage(error)}`, { type: 'danger', position: 'bottom' });
+                    } finally {}
                 },
             });
         },

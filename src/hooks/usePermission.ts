@@ -214,7 +214,7 @@ export const usePermission = (config: PermissionConfig) => {
             content: PermissionSettingsDialog({title: config.settings.title, message: config.settings.message}),
             confirmButtonText: config.settings.positiveButton,
             onConfirm: async () => {
-                await openSettings().catch(() => console.log('无法打开设置'));
+                await openSettings().catch(() => console.warn('无法打开设置'));
 
                 // 设置应用状态监听
                 if (appStateSubscription.current) {

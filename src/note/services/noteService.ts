@@ -1,4 +1,4 @@
-import { get, post, put, del } from '@services/fetch/request.ts';
+import { get, post, put, del } from '@core/auth/request.ts';
 
 // 笔记信息
 export interface NoteInfo {

@@ -3,9 +3,10 @@ import { Text, StyleSheet } from 'react-native';
 import { Button, Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@navigation/types';
+import { RootStackParamList } from '@/navigation';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { useGlobal } from '@/contexts';
+import { ExceptionUtils } from '@/utils';
 
 const LoadingIndicator = (): React.ReactElement => (
     <Spinner size="small" status="control" />
@@ -34,7 +35,7 @@ const VerifyLoginButton: React.FC = () => {
 
         // 设置防抖定时器
         debounceTimerRef.current = setTimeout(async () => {
-            if (isProcessingRef.current) {return;}
+            if (isProcessingRef.current) return;
 
             try {
                 isProcessingRef.current = true;
@@ -42,12 +43,11 @@ const VerifyLoginButton: React.FC = () => {
                 const { sendSmsCode } = useVerificationLoginStore.getState();
                 await sendSmsCode(() => {
                     navigation.navigate('VerificationCode');
-                    toastShow('短信验证码已发送, 请查收', { type: 'success', position: 'bottom' });
+                    toastShow('短信验证码已发送', { type: 'success', position: 'bottom' });
                 });
-            } catch (error: any) {
-                isProcessingRef.current = false;
-                toastShow(`发送短信验证码失败, ${error?.message ?? error}`, { type: 'danger', position: 'bottom' });
-                console.log('发送短信验证码失败, ', error?.message ?? error);
+            } catch (error: unknown) {
+                ExceptionUtils.logError(error, 'VerifyLoginButton');
+                toastShow(ExceptionUtils.getErrorMessage(error), {type: 'danger', position: 'bottom'});
             } finally {
                 isProcessingRef.current = false;
             }

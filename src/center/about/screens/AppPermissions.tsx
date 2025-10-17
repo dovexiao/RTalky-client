@@ -9,6 +9,7 @@ import { CheckmarkIcon, RefreshIcon } from '@/icon';
 import { PermissionItem, PermissionStatusText } from '@/center/about/types';
 import { permissionList as permissions } from '@/center/about/assets';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {ExceptionUtils} from "@/utils";
 
 const AppPermissions: React.FC<{}> = () => {
     const { themeColors } = useUnifiedTheme();
@@ -51,10 +52,9 @@ const AppPermissions: React.FC<{}> = () => {
             const permission = permissionType === 'camera' ? cameraPermission : photosPermission;
             await permission.requestPermission();
             await permission.checkPermission();
-        } catch (error: any) {
-            toastShow(`权限请求失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
-
-            console.log('权限请求失败:', error);
+        } catch (error: unknown) {
+            toastShow(ExceptionUtils.getErrorMessage(error), { type: 'danger', position: 'bottom' });
+            ExceptionUtils.logError(error);
         }
     };
 
@@ -63,9 +63,9 @@ const AppPermissions: React.FC<{}> = () => {
         try {
             const permission = permissionType === 'camera' ? cameraPermission : photosPermission;
             await permission.checkPermission();
-        } catch (error: any) {
-            toastShow(`权限刷新失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
-            console.log('权限刷新失败:', error);
+        } catch (error: unknown) {
+            toastShow(ExceptionUtils.getErrorMessage(error), { type: 'danger', position: 'bottom' });
+            ExceptionUtils.logError(error);
         }
     };
 
@@ -73,9 +73,9 @@ const AppPermissions: React.FC<{}> = () => {
     const handleOpenSettings = async () => {
         try {
             await openSettings();
-        } catch (error: any) {
-            toastShow(`打开设置失败, ${error.message ?? error}`, { type: 'danger', position: 'bottom' });
-            console.log('打开设置失败, ', error);
+        } catch (error: unknown) {
+            toastShow(ExceptionUtils.getErrorMessage(error), { type: 'danger', position: 'bottom' });
+            ExceptionUtils.logError(error);
         }
     };
 
@@ -162,7 +162,7 @@ const AppPermissions: React.FC<{}> = () => {
     };
 
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 

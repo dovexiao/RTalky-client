@@ -1,4 +1,4 @@
-import { get, post } from '@/services/fetch/request';
+import { get, post } from '@core/auth/request.ts';
 
 // 会话验证响应
 export interface SessionValidationResponse {
@@ -25,7 +25,7 @@ export class SessionService {
         try {
             const response = await get<SessionValidationResponse>('/auth/validate');
             return response;
-        } catch (error) {
+        } catch (error: unknown) {
             throw error;
         }
     }

@@ -1,4 +1,3 @@
-// import api from './axios.ts';
 import axiosApi from '@core/auth/index.ts';
 
 type ApiResponse<T> = {

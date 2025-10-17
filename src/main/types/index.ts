@@ -1,8 +1,7 @@
 // 定义导航属性类型
-import { RootStackParamList } from '@navigation/types';
+import { RootStackParamList } from '@/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import React from "react";
 
 type AppMainNavigationProp = NativeStackNavigationProp<
     RootStackParamList,

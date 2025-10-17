@@ -25,7 +25,7 @@ const AboutRTalky: React.FC = () => {
     };
 
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 

@@ -144,9 +144,9 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
 
                 onSuccess();
             } else {
-                throw new Error(response.message || '发送失败');
+                throw new Error('短信发送失败');
             }
-        } catch (error) {
+        } catch (error: unknown) {
             throw error;
         } finally {
             set({ isSendingSms: false });
@@ -162,13 +162,11 @@ export const useVerificationLoginStore = create<VerificationLoginState>((set, ge
             );
 
             if (response.success) {
-                console.log('短信验证码校验成功');
                 return response.data;
             } else {
-                console.log('验证码校验失败');
-                throw new Error(`验证码校验失败, ${response.message}`);
+                throw new Error('登录失败');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             throw error;
         }
     },

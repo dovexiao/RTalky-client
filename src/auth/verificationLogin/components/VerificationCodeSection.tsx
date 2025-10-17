@@ -1,13 +1,11 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, {useCallback} from 'react';
+import { StyleSheet, View } from 'react-native';
 import { VerificationCodeInput } from './VerificationCodeInput';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { useTheme } from '@ui-kitten/components';
 import { useGlobal } from '@/contexts';
-import { ImageCache } from '@/utils';
-import { useAuthStore } from '@/auth/stores';
-import { useNavigationStore } from '@navigation/stores';
-import UserAuthManager from '@utils/UserAuthManager.ts';
+import { ExceptionUtils, ImageCache, UserAuthManager } from '@/utils';
+import { createSessionEvents, UserProfile, useSessionStore } from '@/core/session';
 
 export const VerificationCodeSection = () => {
     const { codeDigits, verificationSmsLogin, setIsCodeCompleted } = useVerificationLoginStore.getState();
@@ -17,17 +15,28 @@ export const VerificationCodeSection = () => {
 
     const { toastShow } = useGlobal();
 
-    const handleCodeComplete = async (code: string) => {
+    const handleCodeComplete = useCallback(async (code: string) => {
         setIsCodeCompleted(true);
 
-        console.log('登录校验中, loading');
+        toastShow('正在登录校验', { type: 'info', position: 'bottom' });
 
-        try {
-            const loginData = await verificationSmsLogin(code);
+        const timer = setTimeout(async () => {
+            clearTimeout(timer);
+            try {
+                const loginData = await verificationSmsLogin(code);
 
-            if (UserAuthManager) {
+                toastShow('登录校验通过', {type: 'success', position: 'bottom'});
 
-                console.log('校验完成初始化中');
+                const userProfile: UserProfile = {
+                    userId: loginData.userId,
+                    nickname: loginData.userProfile.nickname,
+                    avatar: '',
+                    bio: loginData.userProfile.bio,
+                    theme: loginData.userProfile.theme,
+                };
+
+                const events = createSessionEvents();
+                useSessionStore.getState().dispatch(events.loginSuccess(userProfile));
 
                 await UserAuthManager.saveUserAuthComplete(
                     loginData.userId,
@@ -36,27 +45,16 @@ export const VerificationCodeSection = () => {
                         sessionToken: loginData.sessionToken,
                     },
                 );
-                const { setInitialRouteName } = useNavigationStore.getState();
-                const { handleLogin, setAvatar, setIsLoggedIn } = useAuthStore.getState();
 
-                setInitialRouteName('AppMain');
-
-                handleLogin(loginData.userId, loginData.userProfile);
-                const imagePath = await ImageCache.saveImageToFile(loginData.userProfile.avatar, 'AVATARS');
-                setAvatar(imagePath);
-
-                setIsLoggedIn(true);
-            } else {
-                console.log('初始化失败');
-                throw new Error('初始化失败, 相关服务缺失');
+                userProfile.avatar = await ImageCache.saveImageToFile(loginData.userProfile.avatar, 'AVATARS');
+            } catch (error: unknown) {
+                ExceptionUtils.logError(error, 'VerificationCodeSection');
+                toastShow(ExceptionUtils.getErrorMessage(error), {type: 'danger', position: 'bottom'});
+            } finally {
+                setIsCodeCompleted(false);
             }
-        } catch(error: any) {
-            console.log(error?.message ?? error);
-            toastShow(error?.message ?? error, { type: 'danger', position: 'bottom' });
-        } finally {
-            setIsCodeCompleted(false);
-        }
-    };
+        }, 500);
+    }, []);
 
     return (
         <View style={styles.codeInputContainer}>

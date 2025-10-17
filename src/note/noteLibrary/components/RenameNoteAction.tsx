@@ -1,5 +1,5 @@
-import {StyleSheet, View} from 'react-native';
-import {Input, Text} from '@ui-kitten/components';
+import { StyleSheet, View } from 'react-native';
+import { Input, Text } from '@ui-kitten/components';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import { useUnifiedTheme } from '@/contexts';

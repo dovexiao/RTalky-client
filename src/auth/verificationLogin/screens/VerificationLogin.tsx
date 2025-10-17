@@ -9,11 +9,10 @@ import {
     Image,
     Keyboard,
 } from 'react-native';
-import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
-import { Divider } from '@ui-kitten/components';
+// import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
+// import { Divider } from '@ui-kitten/components';
 // import Icon from 'react-native-vector-icons/MaterialIcons';
 import { VerificationLoginProps } from '@/auth/verificationLogin/types';
-import { useNavigationStore } from '@navigation/stores/navigationStore.ts';
 import PhoneInput from '../components/PhoneInput';
 import VerifyLoginButton from '../components/VerifyLoginButton';
 import AgreementCheckbox from '../components/AgreementCheckbox';
@@ -21,7 +20,6 @@ import { CountryCodeDialog, CountryCodeDialogAPI } from '@/auth/verificationLogi
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 
 const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => {
-    const initialRouteName = useNavigationStore(state => state.initialRouteName);
     const countryCodeDialogRef = useRef<CountryCodeDialogAPI>(null);
 
     // 密码登录跳转逻辑
@@ -35,21 +33,30 @@ const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => 
         countryCodeDialogRef.current?.show();
     }, [countryCodeDialogRef]);
 
-    const headerContent = useMemo(() => {
-        return initialRouteName === 'VerificationLogin' ? (
-            <View style={styles.logoContainer}>
-                <Image
-                    source={require('@assets/images/logo_ss.png')}
-                    style={styles.logo}
-                />
-            </View>
-        ) : (
-            <>
-                <TopNavigationOpe />
-                <Divider />
-            </>
-        );
-    }, [initialRouteName]);
+    const headerContent = (
+        <View style={styles.logoContainer}>
+            <Image
+                source={require('@assets/images/logo_ss.png')}
+                style={styles.logo}
+            />
+        </View>
+    );
+
+    // const headerContent = useMemo(() => {
+    //     return initialRouteName === 'VerificationLogin' ? (
+    //         <View style={styles.logoContainer}>
+    //             <Image
+    //                 source={require('@assets/images/logo_ss.png')}
+    //                 style={styles.logo}
+    //             />
+    //         </View>
+    //     ) : (
+    //         <>
+    //             <TopNavigationOpe />
+    //             <Divider />
+    //         </>
+    //     );
+    // }, [initialRouteName]);
 
     useEffect(() => {
         const { setHideCountryCodeDialogFn } = useVerificationLoginStore.getState();
@@ -59,7 +66,7 @@ const VerificationLogin: React.FC<VerificationLoginProps> = ({ navigation }) => 
     }, [countryCodeDialogRef.current]);
 
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 

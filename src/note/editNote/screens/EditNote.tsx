@@ -14,8 +14,8 @@ import { useNoteStore } from '../../noteLibrary/stores';
 import { NoteContentEditor, NoteIntroduceEditor, NoteTagsEditor, NoteTitleEditor } from '../../createNote/components';
 import { EditNoteProps } from '../types';
 import { NoteService } from '@/note/services';
-import { useUnifiedTheme } from '@/contexts';
-import { useNavigationStore } from '@navigation/stores';
+import { useGlobal, useUnifiedTheme } from '@/contexts';
+import { ExceptionUtils } from '@/utils';
 
 const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
     const { noteId } = route.params;
@@ -71,7 +71,9 @@ const EditNote: React.FC<EditNoteProps> = ({ navigation, route }) => {
 const SaveStepButton = ({ navigation }: { navigation: any }) => {
     const isSaveDisabled = useOpeNoteStore(state => state.isOpeDisabled);
     const [isSaving, setIsSaving] = useState(false);
-    const { setMessageText, setMessageType } = useNavigationStore.getState();
+
+    const { toastShow } = useGlobal();
+
     // 处理保存
     const handleSave = async () => {
         try {
@@ -94,8 +96,7 @@ const SaveStepButton = ({ navigation }: { navigation: any }) => {
             if ('success' in updatedNote) {
                 throw new Error(updatedNote.message);
             } else {
-                setMessageType('success');
-                setMessageText('笔记保存成功');
+                toastShow('笔记保存成功', { type: 'success', position: 'bottom' });
                 // 将 NoteResponse 转换为 Note 类型并更新本地 store
                 updateNote({
                     noteId: updatedNote.noteId,
@@ -111,10 +112,9 @@ const SaveStepButton = ({ navigation }: { navigation: any }) => {
                 // 返回上一页
                 navigation.goBack();
             }
-        } catch (error: any) {
-            setMessageType('danger');
-            setMessageText(error.message ?? error ?? '保存笔记失败');
-            console.log('保存笔记失败:', error.message ?? error);
+        } catch (error: unknown) {
+            ExceptionUtils.logError(error);
+            toastShow(`保存笔记失败: ${ExceptionUtils.getErrorMessage(error)}`, { type: 'danger', position: 'bottom' });
         } finally {
             setIsSaving(false);
         }

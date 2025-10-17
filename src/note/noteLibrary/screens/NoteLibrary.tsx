@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
     SafeAreaView,
     // ScrollView,
@@ -6,7 +6,6 @@ import {
     StyleSheet,
     // Text,
     View,
-    BackHandler,
 } from 'react-native';
 import TopNavigationOpe from '@/main/components/TopNavigationOpe.tsx';
 import { Divider, TopNavigationAction } from '@ui-kitten/components';
@@ -17,10 +16,9 @@ import {
 } from '../components';
 import { NoteLibraryProps } from '../types';
 import { useUnifiedTheme } from '@/contexts';
-import { BottomActionSheet } from '@/components';
+import { ActionDialog, BottomActionSheet } from '@/components';
 import { useNoteStore } from '@/note/noteLibrary/stores';
 import NoteSettingsAction from '@/note/noteLibrary/components/NoteSettingsAction.tsx';
-import ActionDialog from "../../../components/dialog/ActionDialog.tsx";
 
 const NoteLibrary: React.FC<NoteLibraryProps> = ({ navigation }) => {
 

@@ -1,4 +1,4 @@
-import { get, put } from '@/services/fetch/request';
+import { get, put } from '@core/auth/request.ts';
 
 // 用户信息数据
 export interface UserInfoData {

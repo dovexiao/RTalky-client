@@ -1,1 +1,1 @@
-export * from './verification.store.ts'
+export * from './verification.store.ts';

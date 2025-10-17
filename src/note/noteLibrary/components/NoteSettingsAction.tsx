@@ -1,6 +1,6 @@
 import { Text } from '@ui-kitten/components';
 import React, { useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useGlobal } from '@contexts/GlobalContext.tsx';
 import DeleteNoteAction from './DeleteNoteAction.tsx';
 import EditIntroduceAction, { EditIntroduceActionAPI } from './EditIntroduceAction.tsx';

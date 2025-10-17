@@ -4,7 +4,7 @@ import { CheckBox, useTheme } from '@ui-kitten/components';
 import { useVerificationLoginStore } from '@/auth/verificationLogin/stores';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@navigation/types';
+import { RootStackParamList } from '@/navigation';
 
 const AgreementCheckbox: React.FC = () => {
     const themes = useTheme();

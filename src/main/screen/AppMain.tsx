@@ -56,7 +56,7 @@ const AppMain: React.FC<AppMainProps> = ({}) => {
     }, [theme]);
 
     const StatusBarHeight = useMemo(() => {
-        console.log('StatusBar.currentHeight', StatusBar.currentHeight);
+        // console.log('StatusBar.currentHeight', StatusBar.currentHeight);
         return StatusBar.currentHeight || 36;
     }, []);
 

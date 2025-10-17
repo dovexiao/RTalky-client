@@ -1,4 +1,4 @@
-import { post } from '@services/fetch/request.ts';
+import { post } from '@core/auth/request.ts';
 import { DeviceInfoManager, DeviceInfoUtils } from '../verificationLogin/utils';
 
 /**
@@ -48,7 +48,6 @@ export class SmsService {
 
             // 发送请求
             const response = await post<SendSmsResponse>('/auth/sms-code', requestData);
-
             return response;
         } catch (error: any) {
             throw error;
