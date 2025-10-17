@@ -6,6 +6,7 @@ const { width } = Dimensions.get('window');
 
 export interface ToastAPI {
     show: (content?: string, options?: ToastOptions) => void;
+    active: () => void;
     hideAll: () => void;
 }
 
@@ -33,13 +34,11 @@ interface ToastMessage {
 interface ToastContainerProps {
     maxListSize?: number;
     typeTemplates?: Record<string, React.ComponentType<any>>;
-    enabled: boolean;
 }
 
 const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
     maxListSize = 5,
     typeTemplates,
-     enabled,
 }, ref) => {
     // 展示队列
     const [topList, setTopList] = useState<ToastMessage[]>([]);
@@ -50,6 +49,8 @@ const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
     const [bottomWaitingQueue, setBottomWaitingQueue] = useState<ToastMessage[]>([]);
 
     const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+    const [enabled, setEnabled] = useState<boolean>(false);
 
     // 暴露给父组件的方法
     useImperativeHandle(ref, () => ({
@@ -75,7 +76,7 @@ const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
                 setBottomWaitingQueue(prev => [...prev, message]);
             }
         },
-
+        active: () => setEnabled(true),
         hideAll: () => {
             // 清除所有定时器
             timersRef.current.forEach(timer => clearTimeout(timer));
@@ -177,7 +178,7 @@ const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
                 opacity: withTiming(1, { duration: 300 }),
                 transform: [
                     { translateY: withTiming(0, { duration: 300 }) },
-                    { scale: withTiming(1, { duration: 300 }) }
+                    { scale: withTiming(1, { duration: 300 }) },
                 ],
             },
         };
@@ -198,7 +199,7 @@ const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
                 opacity: withTiming(0, { duration: 200 }),
                 transform: [
                     { translateY: withTiming(-10, { duration: 200 }) },
-                    { scale: withTiming(0.8, { duration: 200 }) }
+                    { scale: withTiming(0.8, { duration: 200 }) },
                 ],
             },
         };
@@ -211,7 +212,7 @@ const ToastContainer = React.forwardRef<ToastAPI, ToastContainerProps>(({
             </View>
         ),
         'info': ({ text }) => (
-            <View style={[styles.templateContainer, { backgroundColor: '#40AEF7' }]}>
+            <View style={[styles.templateContainer, { backgroundColor: '#909399' }]}>
                 <Text style={styles.templateText}>{text}</Text>
             </View>
         ),

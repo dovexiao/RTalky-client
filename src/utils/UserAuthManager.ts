@@ -32,7 +32,7 @@ export interface AuthStatus {
  * 用户名属性: 对应字段名 (user_id, phone_number, session_token)
  * 密码属性: 对应值
  */
-class UserAuthManager {
+export class UserAuthManager {
     /**
      * 生成Keychain的服务键
      * @param userId 用户ID
@@ -594,9 +594,6 @@ class UserAuthManager {
         }
     }
 }
-
-// 导出UserAuthManager类
-export default UserAuthManager;
 
 // 导出便捷方法
 export const {

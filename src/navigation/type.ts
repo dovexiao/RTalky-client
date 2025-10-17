@@ -45,4 +45,14 @@ export type RootStackParamList = {
     AboutRTalky: undefined;
     // 测试模块
     TestPage: undefined;
+    // 导航过渡占位符
+    TransitionPlaceholder: undefined;
 };
+
+export type RouteName = keyof RootStackParamList;
+
+export const ROUTE_NAMES = {
+    INITIAL: 'VerificationLogin',
+    APP_MAIN: 'AppMain',
+    LOGIN_LOGIN: 'VerificationLogin',
+} as const satisfies Record<string, RouteName>;

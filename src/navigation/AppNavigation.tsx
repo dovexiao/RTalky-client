@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@navigation/types';
+import { RootStackParamList, ROUTE_NAMES, RouteName } from './type.ts';
 // import BootSplash from 'react-native-bootsplash';
 import AppMain from '@/main/screen/AppMain.tsx';
 import TestPage from '@/test/TestPage.tsx';
@@ -23,14 +23,15 @@ import OneTapLogin from '@/auth/oneTapLogin/screens/OneTapLogin.tsx';
 import VerificationLogin from '@/auth/verificationLogin/screens/VerificationLogin.tsx';
 import VerificationCode from '@/auth/verificationLogin/screens/VerificationCode.tsx';
 import PasswordLogin from '@/auth/passwordLogin/screens/PasswordLogin.tsx';
-import { RouteName, useNavigationStore } from '@navigation/stores';
 import { navigationRef } from '@navigation/navigationRef.ts';
-import SystemWatcher from './SystemWatcher.tsx';
+import { TransitionPlaceholder } from './TransitionPlaceholder.tsx';
+import { SessionEffectManager } from '@core/session';
+import { ConnectivityEffectManager } from '@core/connectivity';
 
 const { Navigator, Screen } = createNativeStackNavigator<RootStackParamList>();
 
 const AppStackNavigator = () => {
-    const initialRouteName: RouteName = useNavigationStore.getState().initialRouteName;
+    const initialRouteName: RouteName = ROUTE_NAMES.INITIAL;
 
     return (
         <Navigator initialRouteName={initialRouteName} screenOptions={{headerShown: false}}>
@@ -64,6 +65,8 @@ const AppStackNavigator = () => {
             <Screen name="AboutRTalky" component={AboutRTalky} />
             {/*/!* 测试页面 *!/*/}
             <Screen name="TestPage" component={TestPage} />
+            {/*导航过渡 占位符*/}
+            <Screen name="TransitionPlaceholder" component={TransitionPlaceholder} />
         </Navigator>
     );
 };
@@ -76,7 +79,9 @@ export const AppNavigator = () => {
                 // BootSplash.hide({ fade: true });
             }}
         >
-            <SystemWatcher />
+            {/*<SystemWatcher />*/}
+            <ConnectivityEffectManager />
+            <SessionEffectManager />
             <AppStackNavigator />
         </NavigationContainer>
     );

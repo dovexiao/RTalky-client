@@ -13,3 +13,6 @@ export * from './UserAuthManager.ts';
 // 导出图片缓存工具
 export * from './ImageCache';
 
+// 导出异常处理工具
+export * from './ExceptionUtils.ts';
+

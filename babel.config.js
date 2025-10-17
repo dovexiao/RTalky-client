@@ -21,6 +21,7 @@ module.exports = {
                     '@stores': './src/stores',
                     '@types': './src/types',
                     '@navigation': './src/navigation',
+                    '@core': './src/core',
                     '@': './src',
                     '@root': '.',
                 },

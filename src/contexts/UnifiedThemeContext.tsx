@@ -75,6 +75,9 @@ interface UnifiedThemeContextType {
     /** 重置主题设置为初始状态（浅色主题，不跟随系统） */
     resetThemeToDefault: () => void;
 
+    /** 判断当前主题是否为默认重置状态（浅色，不跟随系统） */
+    isDefaultTheme: () => boolean;
+
     // 向后兼容属性
     specialTheme: ThemeType;
     specialThemeColors: SpecialThemeColors;
@@ -163,16 +166,21 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         console.log('主题设置已重置为默认状态: 浅色主题，不跟随系统');
     };
 
+    // 判定是否处于默认主题状态（用于登出后的主题一致性判断）
+    const isDefaultTheme = () => {
+        return !autoSwitch && effectiveTheme === 'light';
+    };
+
     React.useEffect(() => {
-        const colorScheme: ColorSchemeName = Appearance.getColorScheme();
-        if (autoSwitch && colorScheme) {
-            setCurrentTheme(colorScheme);
+        const initialScheme: ColorSchemeName = Appearance.getColorScheme();
+        if (autoSwitch && initialScheme) {
+            setCurrentTheme(initialScheme);
         }
 
         // 监听主题变化
-        const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-            if (autoSwitch && colorScheme) {
-                setCurrentTheme(colorScheme);
+        const subscription = Appearance.addChangeListener(({ colorScheme: nextScheme }) => {
+            if (autoSwitch && nextScheme) {
+                setCurrentTheme(nextScheme);
             }
         });
 
@@ -207,6 +215,7 @@ export const UnifiedThemeProvider: React.FC<{ children: React.ReactNode }> = ({c
         previewAutoSwitch,
         handleAutoSwitch,
         resetThemeToDefault,
+        isDefaultTheme,
         // 向后兼容
         specialTheme: currentTheme,
         specialThemeColors,

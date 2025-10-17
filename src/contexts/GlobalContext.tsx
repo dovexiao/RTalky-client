@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
     ActionDialog,
     Toast,
@@ -7,11 +7,11 @@ import type {
     ActionDialogAPI,
     ToastAPI,
 } from '@/global';
-import { useNavigationStore } from '@navigation/stores';
 
 interface GlobalContextType {
     actionDialogRef: React.RefObject<ActionDialogAPI>
     toastShow: ToastAPI['show'];
+    toastActive: ToastAPI['active'];
     toastClean: ToastAPI['hideAll'];
 }
 
@@ -21,11 +21,13 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     const actionDialogRef = useRef<ActionDialogAPI>(null);
     const toastRef = useRef<ToastAPI>(null);
 
-    const isActive = useNavigationStore((state) => state.isActive);
-
     // 使用 useCallback 动态包装方法调用
     const toastShow = useCallback<NonNullable<GlobalContextType['toastShow']>>((content?, options?) => {
         return toastRef.current?.show?.(content, options);
+    }, []);
+
+    const toastActive = useCallback<NonNullable<GlobalContextType['toastActive']>>(() => {
+        return toastRef.current?.active?.();
     }, []);
 
     const toastClean = useCallback<NonNullable<GlobalContextType['toastClean']>>(() => {
@@ -35,6 +37,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
     const globalValue: GlobalContextType = {
         actionDialogRef,
         toastShow,
+        toastActive,
         toastClean,
     };
 
@@ -42,7 +45,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = ({ children }) 
         <GlobalContext.Provider value={globalValue}>
             {children}
             <ActionDialog ref={actionDialogRef} />
-            <Toast ref={toastRef} enabled={isActive} />
+            <Toast ref={toastRef} />
         </GlobalContext.Provider>
     );
 };
