@@ -1,5 +1,5 @@
-// api/request.ts
-import api from './axios.ts';
+// import api from './axios.ts';
+import axiosApi from '@core/auth/index.ts';
 
 type ApiResponse<T> = {
     success: boolean;
@@ -19,11 +19,12 @@ export const get = async <T = any>(
     config?: Record<string, any>
 ): Promise<T> => {
     try {
-        const response = await api.get<T>(url, config);
+        const response = await axiosApi.get<T>(url, config);
         return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
         // 统一错误处理逻辑
-        throw handleApiError(error);
+        // throw handleApiError(error);
+        throw error;
     }
 };
 
@@ -40,11 +41,12 @@ export const post = async <T = any>(
     config?: Record<string, any>
 ): Promise<T> => {
     try {
-        const response = await api.post<T>(url, data, config);
+        const response = await axiosApi.post<T>(url, data, config);
         return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
         // 统一错误处理逻辑
-        throw handleApiError(error);
+        // throw handleApiError(error);
+        throw error;
     }
 };
 
@@ -61,11 +63,12 @@ export const put = async <T = any>(
     config?: Record<string, any>
 ): Promise<T> => {
     try {
-        const response = await api.put<T>(url, data, config);
+        const response = await axiosApi.put<T>(url, data, config);
         return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
         // 统一错误处理逻辑
-        throw handleApiError(error);
+        // throw handleApiError(error);
+        throw error;
     }
 };
 
@@ -80,11 +83,12 @@ export const del = async <T = any>(
     config?: Record<string, any>
 ): Promise<T> => {
     try {
-        const response = await api.delete<T>(url, config);
+        const response = await axiosApi.delete<T>(url, config);
         return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
         // 统一错误处理逻辑
-        throw handleApiError(error);
+        // throw handleApiError(error);
+        throw error;
     }
 };
 

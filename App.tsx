@@ -13,15 +13,20 @@ import { UnifiedThemeProvider, useUnifiedTheme } from '@contexts/UnifiedThemeCon
 import { AppNavigator } from '@navigation/AppNavigation.tsx';
 import { GlobalProvider } from '@contexts/GlobalContext.tsx';
 import Orientation from 'react-native-orientation-locker';
+import { connectivityService } from '@core/connectivity';
+import { sessionValidationService } from '@core/session';
 
 function App(): JSX.Element {
     useEffect(() => {
         // 锁定为竖屏方向
         Orientation.lockToPortrait();
+        connectivityService.start();
+        sessionValidationService.validateSession();
 
-        // 组件卸载时解除锁定（可选）
+        // 组件卸载时解除锁定
         return () => {
             Orientation.unlockAllOrientations();
+            connectivityService.stop();
         };
     }, []);
 
@@ -35,8 +40,8 @@ function App(): JSX.Element {
     );
 }
 
-// 分离的 App 内容组件
-const AppContent: React.FC = () => {
+// 为了获取主题而进行的分离
+const AppContent = () => {
     const { themeColors } = useUnifiedTheme();
 
     return (
